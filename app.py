@@ -185,12 +185,14 @@ def admin_login():
             conn.execute(
                 'UPDATE admin SET last_login = ? WHERE username = ?',
                 (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username)
+            )  # ✅ Fixed: added closing parenthesis here
             conn.commit()
             conn.close()
             return redirect(url_for('admin_dashboard'))
         else:
             flash('Invalid username or password', 'danger')
             conn.close()
+            
     return render_template('admin/login.html')
 
 @app.route('/admin/dashboard')
