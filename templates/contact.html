@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - GOVT. BOYS HIGH SCHOOL PETH MAKHAMA{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Contact GOVT. BOYS HIGH SCHOOL PETH MAKHAMA</h1>
+    
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h3><i class="bi bi-envelope"></i> Send Us a Message</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('contact') }}" id="contactForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Your Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <div class="invalid-feedback">Please provide your name.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="invalid-feedback">Please provide a valid email.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="subject" name="subject" required>
+                            <div class="invalid-feedback">Please provide a subject.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                            <div class="invalid-feedback">Please write your message.</div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send"></i> Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h3><i class="bi bi-info-circle"></i> Contact Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5 class="text-primary"><i class="bi bi-geo-alt"></i> Address</h5>
+                        <p>GOVT. BOYS HIGH SCHOOL PETH MAKHAMA<br>
+                        Peth Makhama, Jammu and Kashmir - 185101</p>
+                        <div class="ratio ratio-16x9 mt-3">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3306.123456789012!2d74.12345678901234!3d34.12345678901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDA3JzI0LjQiTiA3NMKwMDcnMjQuNCJF!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin" allowfullscreen="" loading="lazy"></iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded">
+                                <h5 class="text-primary"><i class="bi bi-telephone"></i> Phone</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>School Office:</strong> +91 1234567890</li>
+                                    <li><strong>Principal:</strong> +91 9876543210</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded">
+                                <h5 class="text-primary"><i class="bi bi-envelope"></i> Email</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>General:</strong> contact@gbhspm.edu.in</li>
+                                    <li><strong>Principal:</strong> principal@gbhspm.edu.in</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="text-primary"><i class="bi bi-clock"></i> Office Hours</h5>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th>Monday to Friday</th>
+                                    <td>9:00 AM - 4:00 PM</td>
+                                </tr>
+                                <tr>
+                                    <th>Saturday</th>
+                                    <td>9:00 AM - 1:00 PM</td>
+                                </tr>
+                                <tr>
+                                    <th>Sunday</th>
+                                    <td>Closed</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="text-primary"><i class="bi bi-share"></i> Follow Us</h5>
+                        <div class="d-flex gap-3">
+                            <a href="#" class="btn btn-outline-primary"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="btn btn-outline-info"><i class="bi bi-twitter"></i></a>
+                            <a href="#" class="btn btn-outline-danger"><i class="bi bi-youtube"></i></a>
+                            <a href="#" class="btn btn-outline-secondary"><i class="bi bi-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
