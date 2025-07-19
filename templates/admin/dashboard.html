@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h1 class="mb-3 mb-md-0">Admin Dashboard</h1>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('change_password') }}" class="btn btn-warning">
+                <i class="bi bi-key"></i> Change Password
+            </a>
+            <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+        </div>
+    </div>
+    
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Notifications</h6>
+                            <h3 class="mb-0">
+                                {{ notifications_count }}
+                            </h3>
+                        </div>
+                        <div class="icon-circle bg-primary text-white">
+                            <i class="bi bi-megaphone"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{{ url_for('admin_notifications') }}" class="btn btn-sm btn-outline-primary w-100">
+                            Manage Notifications
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Syllabus</h6>
+                            <h3 class="mb-0">
+                                {{ syllabus_count }}
+                            </h3>
+                        </div>
+                        <div class="icon-circle bg-success text-white">
+                            <i class="bi bi-journal-bookmark"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{{ url_for('upload_syllabus') }}" class="btn btn-sm btn-outline-success w-100">
+                            Upload Syllabus
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Documents</h6>
+                            <h3 class="mb-0">
+                                {{ documents_count }}
+                            </h3>
+                        </div>
+                        <div class="icon-circle bg-info text-white">
+                            <i class="bi bi-files"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{{ url_for('documents') }}" class="btn btn-sm btn-outline-info w-100">
+                            Manage Documents
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Feedbacks</h6>
+                            <h3 class="mb-0">
+                                {{ feedbacks_count }}
+                            </h3>
+                        </div>
+                        <div class="icon-circle bg-warning text-white">
+                            <i class="bi bi-chat-left-text"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="#feedbacks" class="btn btn-sm btn-outline-warning w-100">
+                            View Feedbacks
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4" id="feedbacks">
+        <div class="card-header bg-secondary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-chat-left-text"></i> Recent Student Feedbacks</h5>
+                <span class="badge bg-light text-dark">{{ feedbacks|length }} total</span>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            {% if feedbacks %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Message</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for feedback in feedbacks %}
+                        <tr>
+                            <td>{{ feedback.name }}</td>
+                            <td><a href="mailto:{{ feedback.email }}">{{ feedback.email }}</a></td>
+                            <td>{{ feedback.subject }}</td>
+                            <td>{{ feedback.message|truncate(30) }}</td>
+                            <td>{{ feedback.date.split()[0] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center p-5">
+                <i class="bi bi-chat-square-text fs-1 text-muted mb-3"></i>
+                <h4>No feedbacks yet</h4>
+                <p class="text-muted">Student feedbacks will appear here</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
