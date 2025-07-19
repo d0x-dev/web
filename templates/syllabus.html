@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Syllabus - GOVT. BOYS HIGH SCHOOL PETH MAKHAMA{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h1>School Syllabus</h1>
+        {% if session.get('admin_logged_in') %}
+        <a href="{{ url_for('upload_syllabus') }}" class="btn btn-primary mt-3 mt-md-0">
+            <i class="bi bi-upload"></i> Upload Syllabus
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0"><i class="bi bi-journal-bookmark"></i> Syllabus Filter</h3>
+        </div>
+        <div class="card-body">
+            <form class="row g-3">
+                <div class="col-md-3">
+                    <label for="classFilter" class="form-label">Class</label>
+                    <select class="form-select" id="classFilter">
+                        <option value="">All Classes</option>
+                        {% for class_num in range(1, 13) %}
+                        <option value="Class {{ class_num }}">Class {{ class_num }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="subjectFilter" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="subjectFilter" placeholder="Any subject">
+                </div>
+                <div class="col-md-3">
+                    <label for="yearFilter" class="form-label">Year</label>
+                    <select class="form-select" id="yearFilter">
+                        <option value="">All Years</option>
+                        {% for year in range(2020, 2026) %}
+                        <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" class="btn btn-outline-secondary w-100" id="resetFilters">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0"><i class="bi bi-journal-text"></i> Available Syllabi</h3>
+        </div>
+        <div class="card-body p-0">
+            {% if syllabus %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="syllabusTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Class</th>
+                            <th>Subject</th>
+                            <th>Exam</th>
+                            <th>Year/Month</th>
+                            <th>Upload Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in syllabus %}
+                        <tr>
+                            <td>{{ item['class_name'] }}</td>
+                            <td>{{ item['subject'] }}</td>
+                            <td>{{ item['exam_name'] }}</td>
+                            <td>{{ item['year'] }}/{{ item['month'] }}</td>
+                            <td>{{ item['upload_date'].split()[0] }}</td>
+                            <td>
+                                <a href="{{ url_for('download_file', filename=item['filename']) }}" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="bi bi-download"></i> Download
+                                </a>
+                                {% if session.get('admin_logged_in') %}
+                                <button class="btn btn-sm btn-outline-danger ms-2" data-bs-toggle="modal" data-bs-target="#deleteSyllabusModal{{ item['id'] }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center p-5">
+                <i class="bi bi-journal-x fs-1 text-muted mb-3"></i>
+                <h4>No syllabus available</h4>
+                <p class="text-muted">Please check back later or contact administration</p>
+                {% if session.get('admin_logged_in') %}
+                <a href="{{ url_for('upload_syllabus') }}" class="btn btn-primary mt-3">
+                    <i class="bi bi-upload"></i> Upload Syllabus
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modals -->
+{% if session.get('admin_logged_in') %}
+    {% for item in syllabus %}
+    <div class="modal fade" id="deleteSyllabusModal{{ item['id'] }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the syllabus for <strong>{{ item['class_name'] }} - {{ item['subject'] }}</strong>?</p>
+                    <p class="text-muted">This action cannot be undone and will remove the file permanently.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form method="POST" action="{{ url_for('delete_syllabus', id=item['id']) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const classFilter = document.getElementById('classFilter');
+    const subjectFilter = document.getElementById('subjectFilter');
+    const yearFilter = document.getElementById('yearFilter');
+    const resetBtn = document.getElementById('resetFilters');
+    const tableRows = document.querySelectorAll('#syllabusTable tbody tr');
+    
+    function filterSyllabus() {
+        const classValue = classFilter.value.toLowerCase();
+        const subjectValue = subjectFilter.value.toLowerCase();
+        const yearValue = yearFilter.value.toLowerCase();
+        
+        tableRows.forEach(row => {
+            const classText = row.cells[0].textContent.toLowerCase();
+            const subjectText = row.cells[1].textContent.toLowerCase();
+            const yearText = row.cells[3].textContent.toLowerCase();
+            
+            const classMatch = classValue === '' || classText.includes(classValue);
+            const subjectMatch = subjectValue === '' || subjectText.includes(subjectValue);
+            const yearMatch = yearValue === '' || yearText.includes(yearValue);
+            
+            if (classMatch && subjectMatch && yearMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    
+    classFilter.addEventListener('change', filterSyllabus);
+    subjectFilter.addEventListener('input', filterSyllabus);
+    yearFilter.addEventListener('change', filterSyllabus);
+    
+    resetBtn.addEventListener('click', function() {
+        classFilter.value = '';
+        subjectFilter.value = '';
+        yearFilter.value = '';
+        filterSyllabus();
+    });
+});
+</script>
+{% endblock %}
