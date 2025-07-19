@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Documents - GOVT. BOYS HIGH SCHOOL PETH MAKHAMA{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h1>School Documents</h1>
+        {% if session.get('admin_logged_in') %}
+        <button class="btn btn-primary mt-3 mt-md-0" data-bs-toggle="modal" data-bs-target="#uploadModal">
+            <i class="bi bi-upload"></i> Upload Document
+        </button>
+        {% endif %}
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Document Name</th>
+                            <th>Category</th>
+                            <th>Upload Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents %}
+                        <tr>
+                            <td>{{ doc['name'] }}</td>
+                            <td><span class="badge bg-primary">{{ doc['category'] }}</span></td>
+                            <td>{{ doc['upload_date'].split()[0] }}</td>
+                            <td>
+                                <a href="{{ url_for('download_file', filename=doc['filename']) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-download"></i> Download
+                                </a>
+                                {% if session.get('admin_logged_in') %}
+                                <button class="btn btn-sm btn-outline-danger ms-2" data-bs-toggle="modal" data-bs-target="#deleteModal{{ doc['id'] }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4">No documents available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    {% if session.get('admin_logged_in') %}
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Upload Document</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{{ url_for('upload_document') }}" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Document Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Academics">Academics</option>
+                                <option value="Admission">Admission</option>
+                                <option value="Events">Events</option>
+                                <option value="Holidays">Holidays</option>
+                                <option value="Circulars">Circulars</option>
+                                <option value="Results">Results</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="file" class="form-label">File (PDF, DOC, XLS, JPG)</label>
+                            <input type="file" class="form-control" id="file" name="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" required>
+                            <div class="form-text">Max file size: 5MB</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Delete Modals -->
+    {% if session.get('admin_logged_in') %}
+        {% for doc in documents %}
+        <div class="modal fade" id="deleteModal{{ doc['id'] }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">Confirm Deletion</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete the document <strong>{{ doc['name'] }}</strong>?</p>
+                        <p class="text-muted">This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form method="POST" action="{{ url_for('delete_document', id=doc['id']) }}" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}
