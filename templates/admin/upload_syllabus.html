@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Syllabus - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h1 class="mb-3 mb-md-0">Upload Syllabus</h1>
+        <div>
+            <a href="{{ url_for('syllabus') }}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-eye"></i> View Syllabus
+            </a>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-upload"></i> Upload New Syllabus</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('upload_syllabus') }}" enctype="multipart/form-data">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="class_name" class="form-label">Class Name <span class="text-danger">*</span></label>
+                        <select class="form-select" id="class_name" name="class_name" required>
+                            <option value="">Select Class</option>
+                            {% for class_num in range(1, 13) %}
+                            <option value="Class {{ class_num }}">Class {{ class_num }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="subject" class="form-label">Subject <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="subject" name="subject" required>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="year" class="form-label">Year <span class="text-danger">*</span></label>
+                        <select class="form-select" id="year" name="year" required>
+                            <option value="">Select Year</option>
+                            {% for year in range(2020, 2026) %}
+                            <option value="{{ year }}">{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="month" class="form-label">Month <span class="text-danger">*</span></label>
+                        <select class="form-select" id="month" name="month" required>
+                            <option value="">Select Month</option>
+                            <option value="January">January</option>
+                            <option value="February">February</option>
+                            <option value="March">March</option>
+                            <option value="April">April</option>
+                            <option value="May">May</option>
+                            <option value="June">June</option>
+                            <option value="July">July</option>
+                            <option value="August">August</option>
+                            <option value="September">September</option>
+                            <option value="October">October</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="exam_name" class="form-label">Exam Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="exam_name" name="exam_name" required>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="file" class="form-label">Syllabus File (PDF/DOC/DOCX) <span class="text-danger">*</span></label>
+                    <input class="form-control" type="file" id="file" name="file" accept=".pdf,.doc,.docx" required>
+                    <div class="form-text">Max file size: 5MB. Only PDF, DOC, and DOCX files are allowed.</div>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-upload"></i> Upload Syllabus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
