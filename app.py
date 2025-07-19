@@ -232,50 +232,6 @@ def delete_syllabus(id):
     
     return redirect(url_for('syllabus'))
 
-@app.route('/admin/upload_syllabus', methods=['GET', 'POST'])
-@admin_required
-def upload_syllabus():
-    if request.method == 'POST':
-        try:
-            class_name = request.form.get('class_name')
-            year = request.form.get('year')
-            month = request.form.get('month')
-            exam_name = request.form.get('exam_name')
-            subject = request.form.get('subject')
-            file = request.files.get('file')
-            
-            if not all([class_name, year, month, exam_name, subject, file]):
-                flash('Please fill all required fields', 'danger')
-                return redirect(url_for('upload_syllabus'))
-            
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                
-                # Ensure the upload directory exists
-                os.makedirs(os.path.dirname(file_path), exist_ok=True)
-                
-                # Save the file
-                file.save(file_path)
-                
-                conn = get_db_connection()
-                conn.execute(
-                    'INSERT INTO syllabus (class_name, year, month, exam_name, subject, filename, upload_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                    (class_name, year, month, exam_name, subject, filename, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-                )
-                conn.commit()
-                conn.close()
-                
-                flash('Syllabus uploaded successfully!', 'success')
-                return redirect(url_for('syllabus'))
-            else:
-                flash('Invalid file type. Only PDF, DOC, and DOCX files are allowed.', 'danger')
-        except Exception as e:
-            print(f"Error uploading syllabus: {e}")
-            flash('An error occurred while uploading syllabus', 'danger')
-    
-    return render_template('admin/upload_syllabus.html')
-
 @app.route('/admin/notifications', methods=['GET', 'POST'])
 @admin_required
 def admin_notifications():
@@ -302,25 +258,39 @@ def admin_notifications():
 def upload_syllabus():
     if request.method == 'POST':
         try:
-            class_name = request.form.get('class_name')
-            year = request.form.get('year')
-            month = request.form.get('month')
-            exam_name = request.form.get('exam_name')
-            subject = request.form.get('subject')
-            file = request.files.get('file')
-            
-            if not all([class_name, year, month, exam_name, subject, file]):
+            # Validate all required fields are present
+            required_fields = ['class_name', 'year', 'month', 'exam_name', 'subject']
+            if not all(request.form.get(field) for field in required_fields) or not request.files.get('file'):
                 flash('Please fill all required fields', 'danger')
                 return redirect(url_for('upload_syllabus'))
             
+            file = request.files['file']
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                upload_folder = app.config['UPLOAD_FOLDER']
                 
+                # Ensure upload directory exists
+                os.makedirs(upload_folder, exist_ok=True)
+                
+                # Save file
+                file_path = os.path.join(upload_folder, filename)
+                file.save(file_path)
+                
+                # Save to database
                 conn = get_db_connection()
                 conn.execute(
-                    'INSERT INTO syllabus (class_name, year, month, exam_name, subject, filename, upload_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                    (class_name, year, month, exam_name, subject, filename, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                    '''INSERT INTO syllabus 
+                    (class_name, year, month, exam_name, subject, filename, upload_date) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                    (
+                        request.form['class_name'],
+                        request.form['year'],
+                        request.form['month'],
+                        request.form['exam_name'],
+                        request.form['subject'],
+                        filename,
+                        datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    )
                 )
                 conn.commit()
                 conn.close()
@@ -328,9 +298,9 @@ def upload_syllabus():
                 flash('Syllabus uploaded successfully!', 'success')
                 return redirect(url_for('syllabus'))
             else:
-                flash('Invalid file type', 'danger')
+                flash('Invalid file type. Allowed formats: PDF, DOC, DOCX', 'danger')
         except Exception as e:
-            print(f"Error uploading syllabus: {e}")
+            print(f"Error uploading syllabus: {str(e)}")
             flash('An error occurred while uploading syllabus', 'danger')
     
     return render_template('admin/upload_syllabus.html')
