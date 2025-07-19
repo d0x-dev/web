@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}About - GOVT. BOYS HIGH SCHOOL PETH MAKHAMA{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h3><i class="bi bi-building"></i> Our History</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Established in 1950, GOVT. BOYS HIGH SCHOOL PETH MAKHAMA has been a cornerstone of education in the region for over 70 years.</p>
+                    <p>We began as a small village school and have grown into one of the most respected government schools in Jammu and Kashmir. Our alumni include prominent civil servants, doctors, engineers, and leaders who have made significant contributions to society.</p>
+                    <div class="text-center mt-4">
+                        <img src="{{ url_for('static', filename='images/school-old.jpg') }}" alt="School in early days" class="img-fluid rounded">
+                        <p class="text-muted small mt-2">Our school in the early days</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mt-4 mt-lg-0">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h3><i class="bi bi-bullseye"></i> Our Mission & Vision</h3>
+                </div>
+                <div class="card-body">
+                    <h5 class="text-primary">Mission:</h5>
+                    <p>To provide quality education that empowers students from all backgrounds to achieve their full potential and become responsible citizens.</p>
+                    
+                    <h5 class="text-primary mt-4">Vision:</h5>
+                    <p>To be a center of excellence that nurtures intellectual curiosity, creativity, and character development.</p>
+                    
+                    <div class="mt-4">
+                        <h5 class="text-primary">We strive to:</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle text-success me-2"></i> Deliver excellent academic instruction</li>
+                            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle text-success me-2"></i> Foster critical thinking and creativity</li>
+                            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle text-success me-2"></i> Promote values of integrity and service</li>
+                            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle text-success me-2"></i> Develop well-rounded individuals</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-5">
+        <div class="card-header bg-info text-white">
+            <h3><i class="bi bi-award"></i> Our Achievements</h3>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="text-center p-3">
+                        <div class="icon-circle bg-info text-white mb-3 mx-auto">
+                            <i class="bi bi-trophy fs-3"></i>
+                        </div>
+                        <h5>Academic Excellence</h5>
+                        <p class="text-muted">Consistently high pass percentages in board examinations with several state rank holders</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center p-3">
+                        <div class="icon-circle bg-info text-white mb-3 mx-auto">
+                            <i class="bi bi-people fs-3"></i>
+                        </div>
+                        <h5>Sports</h5>
+                        <p class="text-muted">Multiple district and state level championships in cricket, football, and athletics</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center p-3">
+                        <div class="icon-circle bg-info text-white mb-3 mx-auto">
+                            <i class="bi bi-building fs-3"></i>
+                        </div>
+                        <h5>Facilities</h5>
+                        <p class="text-muted">Well-equipped labs, library with 10,000+ books, and modern sports facilities</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h3><i class="bi bi-person-video3"></i> Our Staff</h3>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='images/principal.jpg') }}" class="rounded-circle mb-3" width="120" height="120" alt="Principal">
+                        <h5>Mr. Abdul Hamid</h5>
+                        <p class="text-muted">Principal</p>
+                        <p class="small">M.Ed, Ph.D in Education, 25+ years experience</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='images/vice-principal.jpg') }}" class="rounded-circle mb-3" width="120" height="120" alt="Vice Principal">
+                        <h5>Mr. Rajesh Kumar</h5>
+                        <p class="text-muted">Vice Principal</p>
+                        <p class="small">M.Sc, B.Ed, 20+ years experience</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='images/senior-teacher.jpg') }}" class="rounded-circle mb-3" width="120" height="120" alt="Senior Teacher">
+                        <h5>Mrs. Sunita Sharma</h5>
+                        <p class="text-muted">Senior Teacher</p>
+                        <p class="small">M.A, B.Ed, 15+ years experience</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='images/pt-teacher.jpg') }}" class="rounded-circle mb-3" width="120" height="120" alt="PT Teacher">
+                        <h5>Mr. Vijay Singh</h5>
+                        <p class="text-muted">Physical Education</p>
+                        <p class="small">M.P.Ed, State level athlete</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="{{ url_for('contact') }}" class="btn btn-primary">
+                    <i class="bi bi-envelope"></i> Contact Our Staff
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
