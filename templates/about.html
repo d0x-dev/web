@@ -90,36 +90,139 @@
         </div>
         <div class="card-body">
             <div class="row g-4">
+                <!-- Principal -->
                 <div class="col-md-6 col-lg-3">
-                    <div class="text-center">
-                        <img src="{{ url_for('static', filename='images/principal.jpg') }}" class="rounded-circle mb-3" width="120" height="120" alt="Principal">
-                        <h5>Mr. A.....</h5>
-                        <p class="text-muted">Principal</p>
-                        <p class="small">M.Ed, Ph.D in Education, 25+ years experience</p>
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
+                                 class="staff-image" 
+                                 alt="Principal Yousuf"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Yousuf</h5>
+                            <p class="position">Principal</p>
+                            <p class="qualifications">M.Ed, Ph.D in Education<br>28+ years experience</p>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Vice Principal -->
                 <div class="col-md-6 col-lg-3">
-                    <div class="text-center">
-                        <img src="{{ url_for('static', filename='images/vice-principal.jpg') }}" class="rounded-circle mb-3" width="120" height="120" alt="Vice Principal">
-                        <h5>Mr. .......</h5>
-                        <p class="text-muted">Vice Principal</p>
-                        <p class="small">M.Sc, B.Ed, 20+ years experience</p>
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/vice-principal.jpg') }}" 
+                                 class="staff-image" 
+                                 alt="Vice Principal Altaf"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Altaf</h5>
+                            <p class="position">Vice Principal</p>
+                            <p class="qualifications">M.Sc, B.Ed<br>22+ years experience</p>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Staff Member 1 -->
                 <div class="col-md-6 col-lg-3">
-                    <div class="text-center">
-                        <img src="{{ url_for('static', filename='images/senior-teacher.jpg') }}" class="rounded-circle mb-3" width="120" height="120" alt="Senior Teacher">
-                        <h5>Mrs. .....</h5>
-                        <p class="text-muted">Senior Teacher</p>
-                        <p class="small">M.A, B.Ed, 15+ years experience</p>
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/muzaffar1.jpg') }}" 
+                                 class="staff-image" 
+                                 alt="Muzaffar Sir"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Muzaffar</h5>
+                            <p class="position">Senior Teacher</p>
+                            <p class="qualifications">M.A (English), B.Ed<br>18+ years experience</p>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Staff Member 2 -->
                 <div class="col-md-6 col-lg-3">
-                    <div class="text-center">
-                        <img src="{{ url_for('static', filename='images/pt-teacher.jpg') }}" class="rounded-circle mb-3" width="120" height="120" alt="PT Teacher">
-                        <h5>Mr. Vijay Singh</h5>
-                        <p class="text-muted">Physical Education</p>
-                        <p class="small">M.P.Ed, State level athlete</p>
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/muzaffar2.jpg') }}" 
+                                 class="staff-image" 
+                                 alt="Muzaffar"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Muzaffar</h5>
+                            <p class="position">Mathematics Teacher</p>
+                            <p class="qualifications">M.Sc (Maths), B.Ed<br>15+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Member 3 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/waseem.jpg') }}" 
+                                 class="staff-image" 
+                                 alt="Waseem Abdullah"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Waseem Abdullah</h5>
+                            <p class="position">Science Teacher</p>
+                            <p class="qualifications">M.Sc (Physics), B.Ed<br>12+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Member 4 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/tasleem.jpg') }}" 
+                                 class="staff-image" 
+                                 alt="Tasleem"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Tasleem</h5>
+                            <p class="position">Social Studies Teacher</p>
+                            <p class="qualifications">M.A (History), B.Ed<br>10+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Member 5 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/tahir.jpg') }}" 
+                                 class="staff-image" 
+                                 alt="Tahir Sir"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Tahir</h5>
+                            <p class="position">Urdu Teacher</p>
+                            <p class="qualifications">M.A (Urdu), B.Ed<br>14+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Member 6 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/pt-teacher.jpg') }}" 
+                                 class="staff-image" 
+                                 alt="Physical Education Teacher"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Vijay Singh</h5>
+                            <p class="position">Physical Education</p>
+                            <p class="qualifications">M.P.Ed<br>State level athlete</p>
+                        </div>
                     </div>
                 </div>
             </div>
