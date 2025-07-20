@@ -232,6 +232,35 @@ def delete_syllabus(id):
     
     return redirect(url_for('syllabus'))
 
+@app.route('/admin/delete_document/<int:id>', methods=['POST'])
+@admin_required
+def delete_document(id):
+    try:
+        conn = get_db_connection()
+        
+        # First get the filename to delete the file
+        document = conn.execute('SELECT filename FROM documents WHERE id = ?', (id,)).fetchone()
+        if not document:
+            flash('Document not found', 'danger')
+            return redirect(url_for('documents'))
+        
+        # Delete the file from uploads folder
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], document['filename'])
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        
+        # Delete from database
+        conn.execute('DELETE FROM documents WHERE id = ?', (id,))
+        conn.commit()
+        conn.close()
+        
+        flash('Document deleted successfully!', 'success')
+    except Exception as e:
+        print(f"Error deleting document: {e}")
+        flash('An error occurred while deleting document', 'danger')
+    
+    return redirect(url_for('documents'))
+
 @app.route('/admin/notifications', methods=['GET', 'POST'])
 @admin_required
 def admin_notifications():
