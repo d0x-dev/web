@@ -10,17 +10,21 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.secret_key = app.config['SECRET_KEY']
 
-# Load users from JSON file
-def load_users():
+# File paths for user data
+USERS_FILE = 'users.json'
+PENDING_FILE = 'pending_users.json'
+DECLINED_FILE = 'declined_users.json'
+
+def load_json(file_path):
     try:
-        with open('users.json', 'r') as f:
+        with open(file_path, 'r') as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        return [{
-            "username": "student",
-            "password": "student123",
-            "role": "student"
-        }]
+        return []
+
+def save_json(data, file_path):
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=2)
 
 # Database setup
 def get_db_connection():
@@ -119,6 +123,10 @@ def admin_required(f):
     return decorated_function
 
 # Routes
+@app.route('/')
+def index():
+    return redirect(url_for('login'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if session.get('logged_in'):
@@ -128,7 +136,15 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         
-        users = load_users()
+        # Check declined users first
+        declined_users = load_json(DECLINED_FILE)
+        declined = next((u for u in declined_users if u['username'] == username), None)
+        if declined:
+            flash(f'Your account was declined. Reason: {declined.get("reason", "No reason provided")}', 'danger')
+            return redirect(url_for('login'))
+        
+        # Check approved users
+        users = load_json(USERS_FILE)
         user = next((u for u in users if u['username'] == username), None)
         
         if user and user['password'] == password:
@@ -141,13 +157,86 @@ def login():
     
     return render_template('login.html')
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        try:
+            first_name = request.form.get('first_name')
+            last_name = request.form.get('last_name')
+            username = request.form.get('username')
+            password = request.form.get('password')
+            class_name = request.form.get('class')
+            roll_number = request.form.get('roll_number')
+            
+            if not all([first_name, last_name, username, password, class_name, roll_number]):
+                flash('Please fill all required fields', 'danger')
+                return redirect(url_for('signup'))
+            
+            # Check if username exists in any files
+            all_users = load_json(USERS_FILE) + load_json(PENDING_FILE) + load_json(DECLINED_FILE)
+            if any(u['username'] == username for u in all_users):
+                flash('Username already exists', 'danger')
+                return redirect(url_for('signup'))
+            
+            new_user = {
+                'first_name': first_name,
+                'last_name': last_name,
+                'username': username,
+                'password': password,
+                'class': class_name,
+                'roll_number': roll_number,
+                'status': 'pending',
+                'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+            
+            # Save to pending users
+            pending_users = load_json(PENDING_FILE)
+            pending_users.append(new_user)
+            save_json(pending_users, PENDING_FILE)
+            
+            flash('Your application has been submitted for admin approval', 'success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            print(f"Error during signup: {e}")
+            flash('An error occurred during registration', 'danger')
+    
+    return render_template('signup.html')
+
+@app.route('/contact-admin', methods=['GET', 'POST'])
+def contact_admin():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        subject = request.form.get('subject')
+        message = request.form.get('message')
+        
+        if not all([name, email, subject, message]):
+            flash('Please fill all required fields', 'danger')
+            return redirect(url_for('contact_admin'))
+        
+        try:
+            conn = get_db_connection()
+            conn.execute(
+                'INSERT INTO feedback (name, email, subject, message, date) VALUES (?, ?, ?, ?, ?)',
+                (name, email, subject, message, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            )
+            conn.commit()
+            conn.close()
+            
+            flash('Your message has been sent to admin!', 'success')
+            return redirect(url_for('contact_admin'))
+        except Exception as e:
+            print(f"Error saving contact message: {e}")
+            flash('Failed to send your message', 'danger')
+    
+    return render_template('contact_admin.html')
+
 @app.route('/logout')
 def logout():
     session.clear()
     flash('You have been logged out successfully', 'success')
     return redirect(url_for('login'))
 
-@app.route('/')
 @app.route('/home')
 @login_required
 def home():
@@ -158,6 +247,125 @@ def home():
         return render_template('index.html', pinned_notices=pinned_notices, recent_syllabus=recent_syllabus)
     finally:
         conn.close()
+
+# Admin routes
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if session.get('admin_logged_in'):
+        return redirect(url_for('admin_dashboard'))
+        
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        conn = get_db_connection()
+        admin = conn.execute('SELECT * FROM admin WHERE username = ?', (username,)).fetchone()
+        
+        if admin and check_password_hash(admin['password'], password):
+            session['admin_logged_in'] = True
+            session['admin_username'] = username
+            conn.execute(
+                'UPDATE admin SET last_login = ? WHERE username = ?',
+                (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username)
+            )
+            conn.commit()
+            conn.close()
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid username or password', 'danger')
+            conn.close()
+            
+    return render_template('admin/login.html')
+
+@app.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    conn = get_db_connection()
+    try:
+        # Get counts for dashboard
+        notifications_count = conn.execute('SELECT COUNT(*) FROM notifications').fetchone()[0]
+        syllabus_count = conn.execute('SELECT COUNT(*) FROM syllabus').fetchone()[0]
+        documents_count = conn.execute('SELECT COUNT(*) FROM documents').fetchone()[0]
+        feedbacks_count = conn.execute('SELECT COUNT(*) FROM feedback').fetchone()[0]
+        
+        # Get recent feedbacks
+        feedbacks = conn.execute('SELECT * FROM feedback ORDER BY date DESC LIMIT 5').fetchall()
+        
+        # Get pending users count
+        pending_users = load_json(PENDING_FILE)
+        
+        return render_template('admin/dashboard.html',
+                           notifications_count=notifications_count,
+                           syllabus_count=syllabus_count,
+                           documents_count=documents_count,
+                           feedbacks_count=feedbacks_count,
+                           feedbacks=feedbacks,
+                           pending_users_count=len(pending_users))
+    finally:
+        conn.close()
+
+@app.route('/admin/pending-users')
+@admin_required
+def pending_users():
+    pending_users = load_json(PENDING_FILE)
+    return render_template('admin/pending_users.html', users=pending_users)
+
+@app.route('/admin/approve-user/<username>')
+@admin_required
+def approve_user(username):
+    try:
+        pending_users = load_json(PENDING_FILE)
+        user = next((u for u in pending_users if u['username'] == username), None)
+        
+        if user:
+            # Remove from pending
+            pending_users = [u for u in pending_users if u['username'] != username]
+            save_json(pending_users, PENDING_FILE)
+            
+            # Add to approved users
+            approved_users = load_json(USERS_FILE)
+            approved_users.append(user)
+            save_json(approved_users, USERS_FILE)
+            
+            flash(f'User {username} approved successfully', 'success')
+        else:
+            flash('User not found in pending list', 'danger')
+    except Exception as e:
+        print(f"Error approving user: {e}")
+        flash('Failed to approve user', 'danger')
+    
+    return redirect(url_for('pending_users'))
+
+@app.route('/admin/decline-user/<username>', methods=['GET', 'POST'])
+@admin_required
+def decline_user(username):
+    if request.method == 'POST':
+        reason = request.form.get('reason', 'No reason provided')
+        try:
+            pending_users = load_json(PENDING_FILE)
+            user = next((u for u in pending_users if u['username'] == username), None)
+            
+            if user:
+                # Remove from pending
+                pending_users = [u for u in pending_users if u['username'] != username]
+                save_json(pending_users, PENDING_FILE)
+                
+                # Add to declined with reason
+                user['reason'] = reason
+                declined_users = load_json(DECLINED_FILE)
+                declined_users.append(user)
+                save_json(declined_users, DECLINED_FILE)
+                
+                flash(f'User {username} declined with reason: {reason}', 'success')
+            else:
+                flash('User not found in pending list', 'danger')
+        except Exception as e:
+            print(f"Error declining user: {e}")
+            flash('Failed to decline user', 'danger')
+        
+        return redirect(url_for('pending_users'))
+    
+    return render_template('admin/decline_user.html', username=username)
 
 @app.route('/about')
 @login_required
@@ -230,45 +438,6 @@ def contact():
             print(f"Error processing contact form: {e}")
             flash('An error occurred while sending your message', 'danger')
     return render_template('contact.html')
-
-# Admin routes
-@app.route('/admin/login', methods=['GET', 'POST'])
-def admin_login():
-    if session.get('admin_logged_in'):
-        return redirect(url_for('admin_dashboard'))
-        
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        
-        conn = get_db_connection()
-        admin = conn.execute('SELECT * FROM admin WHERE username = ?', (username,)).fetchone()
-        
-        if admin and check_password_hash(admin['password'], password):
-            session['admin_logged_in'] = True
-            session['admin_username'] = username
-            conn.execute(
-                'UPDATE admin SET last_login = ? WHERE username = ?',
-                (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username)
-            )
-            conn.commit()
-            conn.close()
-            return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Invalid username or password', 'danger')
-            conn.close()
-            
-    return render_template('admin/login.html')
-
-@app.route('/admin/dashboard')
-@admin_required
-def admin_dashboard():
-    conn = get_db_connection()
-    try:
-        feedbacks = conn.execute('SELECT * FROM feedback ORDER BY date DESC').fetchall()
-        return render_template('admin/dashboard.html', feedbacks=feedbacks)
-    finally:
-        conn.close()
 
 @app.route('/admin/delete_syllabus/<int:id>', methods=['POST'])
 @admin_required
