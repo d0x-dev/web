@@ -597,7 +597,7 @@ def upload_document():
             conn.close()
             
             flash('Document uploaded successfully', 'success')
-            return redirect(url_for('manage_documents'))
+            return redirect(url_for('documents'))
         else:
             flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif', 'danger')
     
