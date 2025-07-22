@@ -111,11 +111,11 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Routes
+# Main routes
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if session.get('logged_in'):
-        return redirect(url_for('index'))
+        return redirect(url_for('home'))
     
     if request.method == 'POST':
         username = request.form.get('username')
@@ -131,7 +131,7 @@ def login():
             
             # Redirect to next URL if provided
             next_url = request.args.get('next')
-            return redirect(next_url or url_for('index'))
+            return redirect(next_url or url_for('home'))
         else:
             flash('Invalid username or password', 'danger')
     
@@ -146,47 +146,9 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/')
+@app.route('/home')
 @login_required
-def index():
-    conn = get_db_connection()
-    pinned_notices = conn.execute('SELECT * FROM notifications WHERE is_pinned = 1 ORDER BY date_posted DESC LIMIT 2').fetchall()
-    recent_syllabus = conn.execute('SELECT * FROM syllabus ORDER BY upload_date DESC LIMIT 2').fetchall()
-    conn.close()
-    return render_template('index.html', pinned_notices=pinned_notices, recent_syllabus=recent_syllabus)
-
-# ... [Keep all your other existing routes as they are, just add @login_required decorator to all routes except login and static files]
-
-# Admin routes (keep them as they are)
-@app.route('/admin/login', methods=['GET', 'POST'])
-def admin_login():
-    if session.get('admin_logged_in'):
-        return redirect(url_for('admin_dashboard'))
-        
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        
-        conn = get_db_connection()
-        admin = conn.execute('SELECT * FROM admin WHERE username = ?', (username,)).fetchone()
-        
-        if admin and check_password_hash(admin['password'], password):
-            session['admin_logged_in'] = True
-            session['admin_username'] = username
-            conn.execute(
-                'UPDATE admin SET last_login = ? WHERE username = ?',
-                (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username)
-            )
-            conn.commit()
-            conn.close()
-            return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Invalid username or password', 'danger')
-            conn.close()
-            
-    return render_template('admin/login.html')
-# Routes
-@app.route('/')
-def index():
+def home():
     conn = get_db_connection()
     pinned_notices = conn.execute('SELECT * FROM notifications WHERE is_pinned = 1 ORDER BY date_posted DESC LIMIT 2').fetchall()
     recent_syllabus = conn.execute('SELECT * FROM syllabus ORDER BY upload_date DESC LIMIT 2').fetchall()
@@ -194,10 +156,12 @@ def index():
     return render_template('index.html', pinned_notices=pinned_notices, recent_syllabus=recent_syllabus)
 
 @app.route('/about')
+@login_required
 def about():
     return render_template('about.html')
 
 @app.route('/documents')
+@login_required
 def documents():
     conn = get_db_connection()
     documents = conn.execute('SELECT * FROM documents ORDER BY upload_date DESC').fetchall()
@@ -205,6 +169,7 @@ def documents():
     return render_template('documents.html', documents=documents)
 
 @app.route('/syllabus')
+@login_required
 def syllabus():
     conn = get_db_connection()
     syllabus = conn.execute('''
@@ -215,6 +180,7 @@ def syllabus():
     return render_template('syllabus.html', syllabus=syllabus)
 
 @app.route('/notifications')
+@login_required
 def notifications():
     conn = get_db_connection()
     notifications = conn.execute('SELECT * FROM notifications ORDER BY date_posted DESC').fetchall()
@@ -222,10 +188,12 @@ def notifications():
     return render_template('notifications.html', notifications=notifications)
 
 @app.route('/download/<filename>')
+@login_required
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 @app.route('/contact', methods=['GET', 'POST'])
+@login_required
 def contact():
     if request.method == 'POST':
         try:
@@ -272,7 +240,7 @@ def admin_login():
             conn.execute(
                 'UPDATE admin SET last_login = ? WHERE username = ?',
                 (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username)
-            )  # ✅ Fixed: added closing parenthesis here
+            )
             conn.commit()
             conn.close()
             return redirect(url_for('admin_dashboard'))
@@ -502,7 +470,7 @@ def admin_logout():
     session.pop('admin_logged_in', None)
     session.pop('admin_username', None)
     flash('You have been logged out successfully', 'success')
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
