@@ -1,11 +1,11 @@
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import os
 import json
 from datetime import datetime
 import sqlite3
 from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory
-from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -215,21 +215,9 @@ def signup():
 def about():
     return render_template('about.html')
 
-@app.route('/syllabus')
+@app.route('/contact', methods=['GET', 'POST'])
 @login_required
-def syllabus():
-    conn = get_db_connection()
-    try:
-        syllabus = conn.execute('''
-            SELECT * FROM syllabus 
-            ORDER BY year DESC, class_name ASC, subject ASC
-        ''').fetchall()
-        return render_template('syllabus.html', syllabus=syllabus)
-    finally:
-        conn.close()
-
-@app.route('/contact-admin', methods=['GET', 'POST'])
-def contact_admin():
+def contact():
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
@@ -238,7 +226,7 @@ def contact_admin():
         
         if not all([name, email, subject, message]):
             flash('Please fill all required fields', 'danger')
-            return redirect(url_for('contact_admin'))
+            return redirect(url_for('contact'))
         
         try:
             conn = get_db_connection()
@@ -249,24 +237,12 @@ def contact_admin():
             conn.commit()
             conn.close()
             
-            flash('Your message has been sent to admin!', 'success')
-            return redirect(url_for('contact_admin'))
+            flash('Your message has been sent successfully!', 'success')
+            return redirect(url_for('contact'))
         except Exception as e:
-            print(f"Error saving contact message: {e}")
-            flash('Failed to send your message', 'danger')
-    
-    return render_template('contact_admin.html')
-
-# Add this route for regular users to view documents
-@app.route('/documents')
-@login_required
-def documents():
-    conn = get_db_connection()
-    try:
-        documents = conn.execute('SELECT * FROM documents ORDER BY upload_date DESC').fetchall()
-        return render_template('documents.html', documents=documents)
-    finally:
-        conn.close()
+            print(f"Error processing contact form: {e}")
+            flash('An error occurred while sending your message', 'danger')
+    return render_template('contact.html')
 
 @app.route('/logout')
 def logout():
@@ -284,6 +260,44 @@ def home():
         return render_template('index.html', pinned_notices=pinned_notices, recent_syllabus=recent_syllabus)
     finally:
         conn.close()
+
+@app.route('/documents')
+@login_required
+def documents():
+    conn = get_db_connection()
+    try:
+        documents = conn.execute('SELECT * FROM documents ORDER BY upload_date DESC').fetchall()
+        return render_template('documents.html', documents=documents)
+    finally:
+        conn.close()
+
+@app.route('/syllabus')
+@login_required
+def syllabus():
+    conn = get_db_connection()
+    try:
+        syllabus = conn.execute('''
+            SELECT * FROM syllabus 
+            ORDER BY year DESC, class_name ASC, subject ASC
+        ''').fetchall()
+        return render_template('syllabus.html', syllabus=syllabus)
+    finally:
+        conn.close()
+
+@app.route('/notifications')
+@login_required
+def notifications():
+    conn = get_db_connection()
+    try:
+        notifications = conn.execute('SELECT * FROM notifications ORDER BY date_posted DESC').fetchall()
+        return render_template('notifications.html', notifications=notifications)
+    finally:
+        conn.close()
+
+@app.route('/download/<filename>')
+@login_required
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 # Admin routes
 @app.route('/admin/login', methods=['GET', 'POST'])
@@ -428,18 +442,134 @@ def resolve_feedback(id):
     
     return redirect(url_for('admin_dashboard'))
 
-# Document management routes
-@app.route('/admin/documents')
+@app.route('/admin/notifications', methods=['GET', 'POST'])
 @admin_required
-def manage_documents():
+def admin_notifications():
     conn = get_db_connection()
     try:
-        documents = conn.execute('SELECT * FROM documents ORDER BY upload_date DESC').fetchall()
-        return render_template('admin/documents.html', documents=documents)
+        if request.method == 'POST':
+            title = request.form.get('title')
+            content = request.form.get('content')
+            is_pinned = 1 if request.form.get('is_pinned') else 0
+            date_posted = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+            conn.execute(
+                'INSERT INTO notifications (title, content, date_posted, is_pinned) VALUES (?, ?, ?, ?)',
+                (title, content, date_posted, is_pinned))
+            conn.commit()
+            flash('Notification added successfully!', 'success')
+        
+        notifications = conn.execute('SELECT * FROM notifications ORDER BY date_posted DESC').fetchall()
+        return render_template('admin/notifications.html', notifications=notifications)
     finally:
         conn.close()
 
-@app.route('/admin/upload-document', methods=['GET', 'POST'])
+@app.route('/admin/delete_notification/<int:id>')
+@admin_required
+def delete_notification(id):
+    conn = get_db_connection()
+    try:
+        conn.execute('DELETE FROM notifications WHERE id = ?', (id,))
+        conn.commit()
+        flash('Notification deleted successfully!', 'success')
+    finally:
+        conn.close()
+    return redirect(url_for('admin_notifications'))
+
+@app.route('/admin/toggle-pin/<int:id>')
+@admin_required
+def toggle_pin_notification(id):
+    conn = get_db_connection()
+    try:
+        notification = conn.execute('SELECT * FROM notifications WHERE id = ?', (id,)).fetchone()
+        if notification:
+            new_status = 0 if notification['is_pinned'] else 1
+            conn.execute('UPDATE notifications SET is_pinned = ? WHERE id = ?', (new_status, id))
+            conn.commit()
+            flash('Notification pin status updated', 'success')
+        else:
+            flash('Notification not found', 'danger')
+    except Exception as e:
+        print(f"Error toggling pin status: {e}")
+        flash('Failed to update pin status', 'danger')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('admin_notifications'))
+
+@app.route('/admin/upload_syllabus', methods=['GET', 'POST'])
+@admin_required
+def upload_syllabus():
+    if request.method == 'POST':
+        try:
+            required_fields = ['class_name', 'year', 'month', 'exam_name', 'subject']
+            if not all(request.form.get(field) for field in required_fields) or not request.files.get('file'):
+                flash('Please fill all required fields', 'danger')
+                return redirect(url_for('upload_syllabus'))
+            
+            file = request.files['file']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                upload_folder = app.config['UPLOAD_FOLDER']
+                
+                os.makedirs(upload_folder, exist_ok=True)
+                file_path = os.path.join(upload_folder, filename)
+                file.save(file_path)
+                
+                conn = get_db_connection()
+                conn.execute(
+                    '''INSERT INTO syllabus 
+                    (class_name, year, month, exam_name, subject, filename, upload_date) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                    (
+                        request.form['class_name'],
+                        request.form['year'],
+                        request.form['month'],
+                        request.form['exam_name'],
+                        request.form['subject'],
+                        filename,
+                        datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    )
+                )
+                conn.commit()
+                conn.close()
+                
+                flash('Syllabus uploaded successfully!', 'success')
+                return redirect(url_for('syllabus'))
+            else:
+                flash('Invalid file type. Allowed formats: PDF, DOC, DOCX', 'danger')
+        except Exception as e:
+            print(f"Error uploading syllabus: {str(e)}")
+            flash('An error occurred while uploading syllabus', 'danger')
+    
+    return render_template('admin/upload_syllabus.html')
+
+@app.route('/admin/delete_syllabus/<int:id>', methods=['POST'])
+@admin_required
+def delete_syllabus(id):
+    try:
+        conn = get_db_connection()
+        syllabus = conn.execute('SELECT filename FROM syllabus WHERE id = ?', (id,)).fetchone()
+        if not syllabus:
+            flash('Syllabus not found', 'danger')
+            return redirect(url_for('syllabus'))
+        
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], syllabus['filename'])
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        
+        conn.execute('DELETE FROM syllabus WHERE id = ?', (id,))
+        conn.commit()
+        conn.close()
+        
+        flash('Syllabus deleted successfully!', 'success')
+    except Exception as e:
+        print(f"Error deleting syllabus: {e}")
+        flash('An error occurred while deleting syllabus', 'danger')
+    
+    return redirect(url_for('syllabus'))
+
+@app.route('/admin/upload_document', methods=['GET', 'POST'])
 @admin_required
 def upload_document():
     if request.method == 'POST':
@@ -473,173 +603,72 @@ def upload_document():
     
     return render_template('admin/upload_document.html')
 
-@app.route('/admin/delete-document/<int:id>')
+@app.route('/admin/delete_document/<int:id>', methods=['POST'])
 @admin_required
 def delete_document(id):
-    conn = get_db_connection()
     try:
-        document = conn.execute('SELECT * FROM documents WHERE id = ?', (id,)).fetchone()
-        if document:
-            # Delete file from filesystem
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], document['filename'])
-            if os.path.exists(file_path):
-                os.unlink(file_path)
-            
-            # Delete record from database
-            conn.execute('DELETE FROM documents WHERE id = ?', (id,))
-            conn.commit()
-            flash('Document deleted successfully', 'success')
-        else:
+        conn = get_db_connection()
+        document = conn.execute('SELECT filename FROM documents WHERE id = ?', (id,)).fetchone()
+        if not document:
             flash('Document not found', 'danger')
+            return redirect(url_for('documents'))
+        
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], document['filename'])
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        
+        conn.execute('DELETE FROM documents WHERE id = ?', (id,))
+        conn.commit()
+        conn.close()
+        
+        flash('Document deleted successfully!', 'success')
     except Exception as e:
         print(f"Error deleting document: {e}")
-        flash('Failed to delete document', 'danger')
-    finally:
-        conn.close()
+        flash('An error occurred while deleting document', 'danger')
     
-    return redirect(url_for('manage_documents'))
+    return redirect(url_for('documents'))
 
-# Syllabus management routes
-@app.route('/admin/syllabus')
+@app.route('/admin/change_password', methods=['GET', 'POST'])
 @admin_required
-def manage_syllabus():
-    conn = get_db_connection()
-    try:
-        syllabus = conn.execute('SELECT * FROM syllabus ORDER BY upload_date DESC').fetchall()
-        return render_template('admin/syllabus.html', syllabus=syllabus)
-    finally:
-        conn.close()
-
-@app.route('/admin/upload-syllabus', methods=['GET', 'POST'])
-@admin_required
-def upload_syllabus():
+def change_password():
     if request.method == 'POST':
-        if 'file' not in request.files:
-            flash('No file part', 'danger')
-            return redirect(request.url)
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
         
-        file = request.files['file']
-        if file.filename == '':
-            flash('No selected file', 'danger')
-            return redirect(request.url)
+        if not all([current_password, new_password, confirm_password]):
+            flash('Please fill all fields', 'danger')
+            return redirect(url_for('change_password'))
         
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            
-            class_name = request.form.get('class_name')
-            year = request.form.get('year')
-            month = request.form.get('month')
-            exam_name = request.form.get('exam_name')
-            subject = request.form.get('subject')
-            
-            conn = get_db_connection()
-            conn.execute(
-                'INSERT INTO syllabus (class_name, year, month, exam_name, subject, filename, upload_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (class_name, year, month, exam_name, subject, filename, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-            conn.commit()
-            conn.close()
-            
-            flash('Syllabus uploaded successfully', 'success')
-            return redirect(url_for('manage_syllabus'))
-        else:
-            flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif', 'danger')
-    
-    return render_template('admin/upload_syllabus.html')
-
-@app.route('/admin/delete-syllabus/<int:id>')
-@admin_required
-def delete_syllabus(id):
-    conn = get_db_connection()
-    try:
-        syllabus = conn.execute('SELECT * FROM syllabus WHERE id = ?', (id,)).fetchone()
-        if syllabus:
-            # Delete file from filesystem
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], syllabus['filename'])
-            if os.path.exists(file_path):
-                os.unlink(file_path)
-            
-            # Delete record from database
-            conn.execute('DELETE FROM syllabus WHERE id = ?', (id,))
-            conn.commit()
-            flash('Syllabus deleted successfully', 'success')
-        else:
-            flash('Syllabus not found', 'danger')
-    except Exception as e:
-        print(f"Error deleting syllabus: {e}")
-        flash('Failed to delete syllabus', 'danger')
-    finally:
-        conn.close()
-    
-    return redirect(url_for('manage_syllabus'))
-
-# Notification management routes
-@app.route('/admin/notifications')
-@admin_required
-def manage_notifications():
-    conn = get_db_connection()
-    try:
-        notifications = conn.execute('SELECT * FROM notifications ORDER BY date_posted DESC').fetchall()
-        return render_template('admin/notifications.html', notifications=notifications)
-    finally:
-        conn.close()
-
-@app.route('/admin/add-notification', methods=['GET', 'POST'])
-@admin_required
-def add_notification():
-    if request.method == 'POST':
-        title = request.form.get('title')
-        content = request.form.get('content')
-        is_pinned = 1 if request.form.get('is_pinned') else 0
+        if new_password != confirm_password:
+            flash('New passwords do not match', 'danger')
+            return redirect(url_for('change_password'))
         
         conn = get_db_connection()
-        conn.execute(
-            'INSERT INTO notifications (title, content, date_posted, is_pinned) VALUES (?, ?, ?, ?)',
-            (title, content, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), is_pinned))
-        conn.commit()
-        conn.close()
-        
-        flash('Notification added successfully', 'success')
-        return redirect(url_for('manage_notifications'))
-    
-    return render_template('admin/add_notification.html')
-
-@app.route('/admin/delete-notification/<int:id>')
-@admin_required
-def delete_notification(id):
-    conn = get_db_connection()
-    try:
-        conn.execute('DELETE FROM notifications WHERE id = ?', (id,))
-        conn.commit()
-        flash('Notification deleted successfully', 'success')
-    except Exception as e:
-        print(f"Error deleting notification: {e}")
-        flash('Failed to delete notification', 'danger')
-    finally:
-        conn.close()
-    
-    return redirect(url_for('manage_notifications'))
-
-@app.route('/admin/toggle-pin/<int:id>')
-@admin_required
-def toggle_pin_notification(id):
-    conn = get_db_connection()
-    try:
-        notification = conn.execute('SELECT * FROM notifications WHERE id = ?', (id,)).fetchone()
-        if notification:
-            new_status = 0 if notification['is_pinned'] else 1
-            conn.execute('UPDATE notifications SET is_pinned = ? WHERE id = ?', (new_status, id))
+        try:
+            admin = conn.execute('SELECT * FROM admin WHERE username = ?', (session['admin_username'],)).fetchone()
+            
+            if not check_password_hash(admin['password'], current_password):
+                flash('Current password is incorrect', 'danger')
+                return redirect(url_for('change_password'))
+            
+            conn.execute(
+                'UPDATE admin SET password = ? WHERE username = ?',
+                (generate_password_hash(new_password), session['admin_username']))
             conn.commit()
-            flash('Notification pin status updated', 'success')
-        else:
-            flash('Notification not found', 'danger')
-    except Exception as e:
-        print(f"Error toggling pin status: {e}")
-        flash('Failed to update pin status', 'danger')
-    finally:
-        conn.close()
+            flash('Password changed successfully!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        finally:
+            conn.close()
     
-    return redirect(url_for('manage_notifications'))
+    return render_template('admin/change_password.html')
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin_logged_in', None)
+    session.pop('admin_username', None)
+    flash('You have been logged out successfully', 'success')
+    return redirect(url_for('login'))
 
 # Static file serving
 @app.route('/uploads/<filename>')
