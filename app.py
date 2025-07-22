@@ -135,25 +135,6 @@ def admin_required(f):
 def index():
     return redirect(url_for('login'))
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-# Syllabus page
-@app.route('/syllabus')
-def syllabus():
-    return render_template('syllabus.html')
-
-# Notifications page
-@app.route('/notifications')
-def notifications():
-    return render_template('notifications.html')
-
-# Documents page
-@app.route('/documents')
-def documents():
-    return render_template('documents.html')
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if session.get('logged_in'):
