@@ -4,8 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Portal - Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #1e272e;
+            --darker: #0f1519;
+            --light: #f5f6fa;
+            --danger: #ff7675;
+            --success: #55efc4;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -14,92 +24,119 @@
         }
         
         body {
-            background: url('https://source.unsplash.com/random/1920x1080/?school,university') no-repeat center center fixed;
-            background-size: cover;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            color: var(--light);
         }
         
         .login-container {
-            position: relative;
             width: 90%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.2);
+            max-width: 420px;
+            background: rgba(30, 39, 46, 0.8);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
+            animation: fadeIn 0.5s ease-out;
         }
         
         .login-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 2rem;
         }
         
         .login-header h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
         
         .login-header p {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             opacity: 0.8;
         }
         
-        .form-group {
-            margin-bottom: 20px;
+        .login-form .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
         }
         
-        .form-group label {
+        .login-form label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--light);
         }
         
-        .form-group input {
+        .login-form input {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.1);
+            padding: 0.9rem 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            color: white;
+            color: var(--light);
             font-size: 1rem;
             transition: all 0.3s ease;
         }
         
-        .form-group input:focus {
+        .login-form input:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
         }
         
-        .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+        .login-form input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
         }
         
         .btn-login {
             width: 100%;
-            padding: 12px;
-            background: linear-gradient(45deg, #3498db, #2ecc71);
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border: none;
             border-radius: 8px;
             color: white;
             font-size: 1rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 10px;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .forgot-password {
+            display: block;
+            text-align: right;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .forgot-password:hover {
+            color: var(--primary);
         }
         
         .flash-messages {
@@ -112,19 +149,23 @@
         }
         
         .alert {
-            padding: 12px 20px;
+            padding: 1rem 1.5rem;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 1rem;
             color: white;
             animation: slideIn 0.5s forwards;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .alert-danger {
-            background: rgba(231, 76, 60, 0.9);
+            background: var(--danger);
         }
         
         .alert-success {
-            background: rgba(46, 204, 113, 0.9);
+            background: var(--success);
+            color: var(--dark);
         }
         
         @keyframes slideIn {
@@ -135,6 +176,29 @@
             to {
                 transform: translateX(0);
                 opacity: 1;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 1.5rem;
+                width: 95%;
+            }
+            
+            .login-header h1 {
+                font-size: 1.8rem;
             }
         }
     </style>
@@ -153,22 +217,36 @@
     <div class="login-container">
         <div class="login-header">
             <h1>Welcome Back</h1>
-            <p>Please login to access your account</p>
+            <p>Sign in to access your dashboard</p>
         </div>
         
-        <form method="POST" action="{{ url_for('login') }}">
+        <form class="login-form" method="POST" action="{{ url_for('login') }}">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required autofocus>
             </div>
             
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <a href="#" class="forgot-password">Forgot Password?</a>
             </div>
             
             <button type="submit" class="btn-login">Login</button>
         </form>
     </div>
+
+    <script>
+        // Auto-hide flash messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 300);
+                }, 5000);
+            });
+        });
+    </script>
 </body>
 </html>
