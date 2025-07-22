@@ -12,8 +12,15 @@ app.secret_key = app.config['SECRET_KEY']
 
 # Load users from JSON file
 def load_users():
-    with open('users.json', 'r') as f:
-        return json.load(f)
+    try:
+        with open('users.json', 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return [{
+            "username": "student",
+            "password": "student123",
+            "role": "student"
+        }]
 
 # Database setup
 def get_db_connection():
@@ -111,7 +118,7 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Main routes
+# Routes
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if session.get('logged_in'):
@@ -128,10 +135,7 @@ def login():
             session['logged_in'] = True
             session['username'] = username
             session['role'] = user['role']
-            
-            # Redirect to next URL if provided
-            next_url = request.args.get('next')
-            return redirect(next_url or url_for('home'))
+            return redirect(url_for('home'))
         else:
             flash('Invalid username or password', 'danger')
     
@@ -139,9 +143,7 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
-    session.pop('username', None)
-    session.pop('role', None)
+    session.clear()
     flash('You have been logged out successfully', 'success')
     return redirect(url_for('login'))
 
@@ -150,10 +152,12 @@ def logout():
 @login_required
 def home():
     conn = get_db_connection()
-    pinned_notices = conn.execute('SELECT * FROM notifications WHERE is_pinned = 1 ORDER BY date_posted DESC LIMIT 2').fetchall()
-    recent_syllabus = conn.execute('SELECT * FROM syllabus ORDER BY upload_date DESC LIMIT 2').fetchall()
-    conn.close()
-    return render_template('index.html', pinned_notices=pinned_notices, recent_syllabus=recent_syllabus)
+    try:
+        pinned_notices = conn.execute('SELECT * FROM notifications WHERE is_pinned = 1 ORDER BY date_posted DESC LIMIT 2').fetchall()
+        recent_syllabus = conn.execute('SELECT * FROM syllabus ORDER BY upload_date DESC LIMIT 2').fetchall()
+        return render_template('index.html', pinned_notices=pinned_notices, recent_syllabus=recent_syllabus)
+    finally:
+        conn.close()
 
 @app.route('/about')
 @login_required
@@ -164,28 +168,34 @@ def about():
 @login_required
 def documents():
     conn = get_db_connection()
-    documents = conn.execute('SELECT * FROM documents ORDER BY upload_date DESC').fetchall()
-    conn.close()
-    return render_template('documents.html', documents=documents)
+    try:
+        documents = conn.execute('SELECT * FROM documents ORDER BY upload_date DESC').fetchall()
+        return render_template('documents.html', documents=documents)
+    finally:
+        conn.close()
 
 @app.route('/syllabus')
 @login_required
 def syllabus():
     conn = get_db_connection()
-    syllabus = conn.execute('''
-        SELECT * FROM syllabus 
-        ORDER BY year DESC, class_name ASC, subject ASC
-    ''').fetchall()
-    conn.close()
-    return render_template('syllabus.html', syllabus=syllabus)
+    try:
+        syllabus = conn.execute('''
+            SELECT * FROM syllabus 
+            ORDER BY year DESC, class_name ASC, subject ASC
+        ''').fetchall()
+        return render_template('syllabus.html', syllabus=syllabus)
+    finally:
+        conn.close()
 
 @app.route('/notifications')
 @login_required
 def notifications():
     conn = get_db_connection()
-    notifications = conn.execute('SELECT * FROM notifications ORDER BY date_posted DESC').fetchall()
-    conn.close()
-    return render_template('notifications.html', notifications=notifications)
+    try:
+        notifications = conn.execute('SELECT * FROM notifications ORDER BY date_posted DESC').fetchall()
+        return render_template('notifications.html', notifications=notifications)
+    finally:
+        conn.close()
 
 @app.route('/download/<filename>')
 @login_required
@@ -254,28 +264,26 @@ def admin_login():
 @admin_required
 def admin_dashboard():
     conn = get_db_connection()
-    feedbacks = conn.execute('SELECT * FROM feedback ORDER BY date DESC').fetchall()
-    conn.close()
-    return render_template('admin/dashboard.html', feedbacks=feedbacks)
+    try:
+        feedbacks = conn.execute('SELECT * FROM feedback ORDER BY date DESC').fetchall()
+        return render_template('admin/dashboard.html', feedbacks=feedbacks)
+    finally:
+        conn.close()
 
 @app.route('/admin/delete_syllabus/<int:id>', methods=['POST'])
 @admin_required
 def delete_syllabus(id):
     try:
         conn = get_db_connection()
-        
-        # First get the filename to delete the file
         syllabus = conn.execute('SELECT filename FROM syllabus WHERE id = ?', (id,)).fetchone()
         if not syllabus:
             flash('Syllabus not found', 'danger')
             return redirect(url_for('syllabus'))
         
-        # Delete the file from uploads folder
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], syllabus['filename'])
         if os.path.exists(file_path):
             os.remove(file_path)
         
-        # Delete from database
         conn.execute('DELETE FROM syllabus WHERE id = ?', (id,))
         conn.commit()
         conn.close()
@@ -292,19 +300,15 @@ def delete_syllabus(id):
 def delete_document(id):
     try:
         conn = get_db_connection()
-        
-        # First get the filename to delete the file
         document = conn.execute('SELECT filename FROM documents WHERE id = ?', (id,)).fetchone()
         if not document:
             flash('Document not found', 'danger')
             return redirect(url_for('documents'))
         
-        # Delete the file from uploads folder
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], document['filename'])
         if os.path.exists(file_path):
             os.remove(file_path)
         
-        # Delete from database
         conn.execute('DELETE FROM documents WHERE id = ?', (id,))
         conn.commit()
         conn.close()
@@ -320,29 +324,30 @@ def delete_document(id):
 @admin_required
 def admin_notifications():
     conn = get_db_connection()
-    if request.method == 'POST':
-        title = request.form.get('title')
-        content = request.form.get('content')
-        is_pinned = 1 if request.form.get('is_pinned') else 0
-        date_posted = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    try:
+        if request.method == 'POST':
+            title = request.form.get('title')
+            content = request.form.get('content')
+            is_pinned = 1 if request.form.get('is_pinned') else 0
+            date_posted = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+            conn.execute(
+                'INSERT INTO notifications (title, content, date_posted, is_pinned) VALUES (?, ?, ?, ?)',
+                (title, content, date_posted, is_pinned)
+            )
+            conn.commit()
+            flash('Notification added successfully!', 'success')
         
-        conn.execute(
-            'INSERT INTO notifications (title, content, date_posted, is_pinned) VALUES (?, ?, ?, ?)',
-            (title, content, date_posted, is_pinned)
-        )
-        conn.commit()
-        flash('Notification added successfully!', 'success')
-    
-    notifications = conn.execute('SELECT * FROM notifications ORDER BY date_posted DESC').fetchall()
-    conn.close()
-    return render_template('admin/notifications.html', notifications=notifications)
+        notifications = conn.execute('SELECT * FROM notifications ORDER BY date_posted DESC').fetchall()
+        return render_template('admin/notifications.html', notifications=notifications)
+    finally:
+        conn.close()
 
 @app.route('/admin/upload_syllabus', methods=['GET', 'POST'])
 @admin_required
 def upload_syllabus():
     if request.method == 'POST':
         try:
-            # Validate all required fields are present
             required_fields = ['class_name', 'year', 'month', 'exam_name', 'subject']
             if not all(request.form.get(field) for field in required_fields) or not request.files.get('file'):
                 flash('Please fill all required fields', 'danger')
@@ -353,14 +358,10 @@ def upload_syllabus():
                 filename = secure_filename(file.filename)
                 upload_folder = app.config['UPLOAD_FOLDER']
                 
-                # Ensure upload directory exists
                 os.makedirs(upload_folder, exist_ok=True)
-                
-                # Save file
                 file_path = os.path.join(upload_folder, filename)
                 file.save(file_path)
                 
-                # Save to database
                 conn = get_db_connection()
                 conn.execute(
                     '''INSERT INTO syllabus 
@@ -393,10 +394,12 @@ def upload_syllabus():
 @admin_required
 def delete_notification(id):
     conn = get_db_connection()
-    conn.execute('DELETE FROM notifications WHERE id = ?', (id,))
-    conn.commit()
-    conn.close()
-    flash('Notification deleted successfully!', 'success')
+    try:
+        conn.execute('DELETE FROM notifications WHERE id = ?', (id,))
+        conn.commit()
+        flash('Notification deleted successfully!', 'success')
+    finally:
+        conn.close()
     return redirect(url_for('admin_notifications'))
 
 @app.route('/admin/upload_document', methods=['POST'])
@@ -416,14 +419,15 @@ def upload_document():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         
         conn = get_db_connection()
-        conn.execute(
-            'INSERT INTO documents (name, category, filename, upload_date) VALUES (?, ?, ?, ?)',
-            (request.form['name'], request.form['category'], filename, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-        )
-        conn.commit()
-        conn.close()
-        
-        flash('Document uploaded successfully!', 'success')
+        try:
+            conn.execute(
+                'INSERT INTO documents (name, category, filename, upload_date) VALUES (?, ?, ?, ?)',
+                (request.form['name'], request.form['category'], filename, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            )
+            conn.commit()
+            flash('Document uploaded successfully!', 'success')
+        finally:
+            conn.close()
     else:
         flash('Invalid file type', 'danger')
     
@@ -446,22 +450,22 @@ def change_password():
             return redirect(url_for('change_password'))
         
         conn = get_db_connection()
-        admin = conn.execute('SELECT * FROM admin WHERE username = ?', (session['admin_username'],)).fetchone()
-        
-        if not check_password_hash(admin['password'], current_password):
-            flash('Current password is incorrect', 'danger')
+        try:
+            admin = conn.execute('SELECT * FROM admin WHERE username = ?', (session['admin_username'],)).fetchone()
+            
+            if not check_password_hash(admin['password'], current_password):
+                flash('Current password is incorrect', 'danger')
+                return redirect(url_for('change_password'))
+            
+            conn.execute(
+                'UPDATE admin SET password = ? WHERE username = ?',
+                (generate_password_hash(new_password), session['admin_username'])
+            )
+            conn.commit()
+            flash('Password changed successfully!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        finally:
             conn.close()
-            return redirect(url_for('change_password'))
-        
-        conn.execute(
-            'UPDATE admin SET password = ? WHERE username = ?',
-            (generate_password_hash(new_password), session['admin_username'])
-        )
-        conn.commit()
-        conn.close()
-        
-        flash('Password changed successfully!', 'success')
-        return redirect(url_for('admin_dashboard'))
     
     return render_template('admin/change_password.html')
 
