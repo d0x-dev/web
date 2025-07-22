@@ -1,253 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>School Portal - Sign Up</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6c5ce7;
-            --primary-light: #a29bfe;
-            --dark: #2d3436;
-            --light: #f5f6fa;
-            --accent: #fd79a8;
-            --success: #00b894;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>School Portal - Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6c5ce7;
+      --primary-light: #a29bfe;
+      --dark: #2d3436;
+      --light: #f5f6fa;
+      --accent: #fd79a8;
+      --success: #00b894;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        html, body {
-            font-family: 'Montserrat', sans-serif;
-            min-height: 100%;
-            background-color: var(--dark);
-            color: var(--light);
-        }
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--dark);
+      position: relative;
+      overflow-x: hidden;
+    }
 
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 1rem;
-            overflow-x: hidden;
-        }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      z-index: 1;
+    }
 
-        .background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center;
-            background-size: cover;
-            z-index: -2;
-            animation: zoom 30s infinite alternate;
-        }
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center;
+      background-size: cover;
+      z-index: -2;
+      animation: zoom 30s infinite alternate;
+    }
 
-        .background-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(45, 52, 54, 0.7);
-            z-index: -1;
-        }
+    .background-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(45, 52, 54, 0.7);
+      z-index: -1;
+    }
 
-        @keyframes zoom {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
-        }
+    @keyframes zoom {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
 
-        .signup-container {
-            width: 100%;
-            max-width: 500px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeInUp 0.8s ease-out;
-        }
+    .signup-container {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: fadeInUp 0.8s ease-out;
+      z-index: 2;
+    }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        .signup-header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
+    .signup-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
 
-        .signup-header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            background: linear-gradient(to right, var(--primary), var(--primary-light));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 0.3rem;
-        }
+    .signup-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      background: linear-gradient(to right, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.3rem;
+    }
 
-        .signup-header p {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
+    .signup-header p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
 
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.2rem;
-        }
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+    }
 
-        .form-group {
-            flex: 1 1 100%;
-        }
+    .form-group {
+      flex: 1 1 100%;
+    }
 
-        .form-group label {
-            display: block;
-            font-size: 0.9rem;
-            margin-bottom: 0.4rem;
-        }
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
 
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: white;
-        }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      color: white;
+    }
 
-        .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
+    .form-group input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
 
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
-        }
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+    }
 
-        .btn-signup {
-            width: 100%;
-            padding: 0.9rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            margin-top: 0.5rem;
-            letter-spacing: 1px;
-        }
+    .btn-signup {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      margin-top: 0.5rem;
+      letter-spacing: 1px;
+    }
 
-        .btn-signup::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: 0.5s;
-        }
+    .btn-signup::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: 0.5s;
+    }
 
-        .btn-signup:hover::before {
-            left: 100%;
-        }
+    .btn-signup:hover::before {
+      left: 100%;
+    }
 
-        .signup-footer {
-            text-align: center;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-        }
+    .signup-footer {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
 
-        .signup-footer a {
-            color: var(--primary-light);
-            text-decoration: none;
-        }
+    .signup-footer a {
+      color: var(--primary-light);
+      text-decoration: none;
+    }
 
-        .signup-footer a:hover {
-            color: var(--accent);
-            text-decoration: underline;
-        }
+    .signup-footer a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
 
-        @media (min-width: 600px) {
-            .form-row .form-group {
-                flex: 1 1 48%;
-            }
-        }
-    </style>
+    @media (min-width: 600px) {
+      .form-row .form-group {
+        flex: 1 1 48%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="background"></div>
-    <div class="background-overlay"></div>
+  <div class="background"></div>
+  <div class="background-overlay"></div>
 
-    <div class="signup-container">
-        <div class="signup-header">
-            <h1>Create Account</h1>
-            <p>Fill in your details to register</p>
-        </div>
-
-        <form method="POST" action="{{ url_for('signup') }}">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="first_name">First Name</label>
-                    <input type="text" id="first_name" name="first_name" placeholder="Your first name" required>
-                </div>
-                <div class="form-group">
-                    <label for="last_name">Last Name</label>
-                    <input type="text" id="last_name" name="last_name" placeholder="Your last name" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Choose a username" required>
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Create a password" required>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="class">Class</label>
-                    <select id="class" name="class" required>
-                        <option value="" disabled selected>Select your class</option>
-                        <option value="9">Class 9</option>
-                        <option value="10">Class 10</option>
-                        <option value="11">Class 11</option>
-                        <option value="12">Class 12</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="roll_number">Roll Number</label>
-                    <input type="text" id="roll_number" name="roll_number" placeholder="Enter roll number" required>
-                </div>
-            </div>
-
-            <button type="submit" class="btn-signup">Submit for Approval</button>
-
-            <div class="signup-footer">
-                Already have an account? <a href="{{ url_for('login') }}">Login here</a>
-            </div>
-        </form>
+  <div class="signup-container">
+    <div class="signup-header">
+      <h1>Create Account</h1>
+      <p>Fill in your details to register</p>
     </div>
+
+    <form method="POST" action="{{ url_for('signup') }}">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="first_name">First Name</label>
+          <input type="text" id="first_name" name="first_name" placeholder="Your first name" required>
+        </div>
+        <div class="form-group">
+          <label for="last_name">Last Name</label>
+          <input type="text" id="last_name" name="last_name" placeholder="Your last name" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Choose a username" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Create a password" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="class">Class</label>
+          <select id="class" name="class" required>
+            <option value="" disabled selected>Select your class</option>
+            <option value="9">Class 9</option>
+            <option value="10">Class 10</option>
+            <option value="11">Class 11</option>
+            <option value="12">Class 12</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="roll_number">Roll Number</label>
+          <input type="text" id="roll_number" name="roll_number" placeholder="Enter roll number" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-signup">Submit for Approval</button>
+
+      <div class="signup-footer">
+        Already have an account? <a href="{{ url_for('login') }}">Login here</a>
+      </div>
+    </form>
+  </div>
 </body>
 </html>
