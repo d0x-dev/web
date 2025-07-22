@@ -4,106 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Portal - Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6c5ce7;
-            --secondary: #a29bfe;
-            --dark: #1e272e;
-            --darker: #0f1519;
+            --primary-light: #a29bfe;
+            --dark: #2d3436;
             --light: #f5f6fa;
-            --danger: #ff7675;
-            --success: #55efc4;
+            --accent: #fd79a8;
+            --success: #00b894;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
         }
-        
+
         body {
-            background: linear-gradient(135deg, var(--darker), var(--dark));
+            font-family: 'Montserrat', sans-serif;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: var(--light);
+            overflow: hidden;
+            position: relative;
+            background-color: var(--dark);
         }
-        
+
+        /* Animated Background */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center;
+            background-size: cover;
+            z-index: -2;
+            animation: zoom 30s infinite alternate;
+        }
+
+        .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(45, 52, 54, 0.7);
+            z-index: -1;
+        }
+
+        @keyframes zoom {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Login Container */
         .login-container {
             width: 90%;
             max-width: 420px;
-            background: rgba(30, 39, 46, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 16px;
             padding: 2.5rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            animation: fadeIn 0.5s ease-out;
+            animation: fadeInUp 0.8s ease-out;
+            color: var(--light);
         }
-        
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
         .login-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
-        
+
         .login-header h1 {
-            font-size: 2.2rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            letter-spacing: 1px;
         }
-        
+
         .login-header p {
             font-size: 0.95rem;
             opacity: 0.8;
+            letter-spacing: 0.5px;
         }
-        
-        .login-form .form-group {
+
+        /* Form Elements */
+        .form-group {
             margin-bottom: 1.5rem;
             position: relative;
         }
-        
-        .login-form label {
+
+        .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             font-size: 0.95rem;
             font-weight: 500;
             color: var(--light);
+            letter-spacing: 0.5px;
         }
-        
-        .login-form input {
+
+        .form-group input {
             width: 100%;
-            padding: 0.9rem 1.2rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             color: var(--light);
             font-size: 1rem;
             transition: all 0.3s ease;
+            letter-spacing: 0.5px;
         }
-        
-        .login-form input:focus {
+
+        .form-group input:focus {
             outline: none;
             border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
         }
-        
-        .login-form input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
-        
+
+        /* Button */
         .btn-login {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             border: none;
             border-radius: 8px;
             color: white;
@@ -114,31 +167,53 @@
             margin-top: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
+        }
+
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
-        
+
         .btn-login:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
-        
-        .forgot-password {
-            display: block;
-            text-align: right;
-            margin-top: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--secondary);
+
+        /* Footer Links */
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .login-footer a {
+            color: var(--primary-light);
             text-decoration: none;
-            transition: color 0.2s;
+            transition: color 0.3s;
         }
-        
-        .forgot-password:hover {
-            color: var(--primary);
+
+        .login-footer a:hover {
+            color: var(--accent);
+            text-decoration: underline;
         }
-        
+
+        /* Flash Messages */
         .flash-messages {
             position: fixed;
             top: 20px;
@@ -147,7 +222,7 @@
             width: 90%;
             max-width: 400px;
         }
-        
+
         .alert {
             padding: 1rem 1.5rem;
             border-radius: 8px;
@@ -157,17 +232,19 @@
             display: flex;
             align-items: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.7);
+            border-left: 4px solid var(--primary);
         }
-        
+
         .alert-danger {
-            background: var(--danger);
+            border-left-color: #ff7675;
         }
-        
+
         .alert-success {
-            background: var(--success);
-            color: var(--dark);
+            border-left-color: var(--success);
         }
-        
+
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -178,42 +255,39 @@
                 opacity: 1;
             }
         }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Responsive adjustments */
+
+        /* Responsive Adjustments */
         @media (max-width: 480px) {
             .login-container {
                 padding: 1.5rem;
-                width: 95%;
             }
             
             .login-header h1 {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="background"></div>
+    <div class="background-overlay"></div>
+
+    <!-- Flash Messages -->
     <div class="flash-messages">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    <div class="alert alert-{{ category }}">
+                        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }}" style="margin-right: 10px;"></i>
+                        {{ message }}
+                    </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
     </div>
     
+    <!-- Login Container -->
     <div class="login-container">
         <div class="login-header">
             <h1>Welcome Back</h1>
@@ -229,10 +303,15 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                <a href="#" class="forgot-password">Forgot Password?</a>
             </div>
             
-            <button type="submit" class="btn-login">Login</button>
+            <button type="submit" class="btn-login">
+                <span>Login</span>
+            </button>
+            
+            <div class="login-footer">
+                <a href="#">Forgot password?</a> • <a href="#">Need help?</a>
+            </div>
         </form>
     </div>
 
@@ -246,7 +325,57 @@
                     setTimeout(() => alert.remove(), 300);
                 }, 5000);
             });
+
+            // Add ripple effect to button
+            const buttons = document.querySelectorAll('.btn-login');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Create ripple element
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    
+                    // Position the ripple
+                    const rect = button.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size/2;
+                    const y = e.clientY - rect.top - size/2;
+                    
+                    // Style the ripple
+                    ripple.style.width = ripple.style.height = `${size}px`;
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple 0.6s linear';
+                    ripple.style.pointerEvents = 'none';
+                    
+                    // Add ripple to button
+                    button.appendChild(ripple);
+                    
+                    // Remove ripple after animation
+                    setTimeout(() => {
+                        ripple.remove();
+                        button.closest('form').submit();
+                    }, 600);
+                });
+            });
         });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
