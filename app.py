@@ -102,7 +102,6 @@ def init_db():
             conn.execute(
                 'INSERT INTO admin (username, password) VALUES (?, ?)',
                 ('admin', generate_password_hash('admin123'))
-            )
             conn.commit()
         conn.close()
 
@@ -210,6 +209,11 @@ def signup():
     
     return render_template('signup.html')
 
+@app.route('/about')
+@login_required
+def about():
+    return render_template('about.html')
+
 @app.route('/contact-admin', methods=['GET', 'POST'])
 def contact_admin():
     if request.method == 'POST':
@@ -274,8 +278,7 @@ def admin_login():
             session['admin_username'] = username
             conn.execute(
                 'UPDATE admin SET last_login = ? WHERE username = ?',
-                (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username)
-            )
+                (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username))
             conn.commit()
             conn.close()
             return redirect(url_for('admin_dashboard'))
@@ -390,8 +393,7 @@ def resolve_feedback(id):
         conn = get_db_connection()
         conn.execute(
             'UPDATE feedback SET status = ?, admin_notes = ? WHERE id = ?',
-            ('resolved', notes, id)
-        )
+            ('resolved', notes, id))
         conn.commit()
         conn.close()
         flash('Feedback marked as resolved', 'success')
@@ -401,7 +403,223 @@ def resolve_feedback(id):
     
     return redirect(url_for('admin_dashboard'))
 
-# [Include all other existing routes for documents, syllabus, notifications, etc.]
+# Document management routes
+@app.route('/admin/documents')
+@admin_required
+def manage_documents():
+    conn = get_db_connection()
+    try:
+        documents = conn.execute('SELECT * FROM documents ORDER BY upload_date DESC').fetchall()
+        return render_template('admin/documents.html', documents=documents)
+    finally:
+        conn.close()
+
+@app.route('/admin/upload-document', methods=['GET', 'POST'])
+@admin_required
+def upload_document():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part', 'danger')
+            return redirect(request.url)
+        
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file', 'danger')
+            return redirect(request.url)
+        
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            
+            name = request.form.get('name')
+            category = request.form.get('category')
+            
+            conn = get_db_connection()
+            conn.execute(
+                'INSERT INTO documents (name, category, filename, upload_date) VALUES (?, ?, ?, ?)',
+                (name, category, filename, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            conn.commit()
+            conn.close()
+            
+            flash('Document uploaded successfully', 'success')
+            return redirect(url_for('manage_documents'))
+        else:
+            flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif', 'danger')
+    
+    return render_template('admin/upload_document.html')
+
+@app.route('/admin/delete-document/<int:id>')
+@admin_required
+def delete_document(id):
+    conn = get_db_connection()
+    try:
+        document = conn.execute('SELECT * FROM documents WHERE id = ?', (id,)).fetchone()
+        if document:
+            # Delete file from filesystem
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], document['filename'])
+            if os.path.exists(file_path):
+                os.unlink(file_path)
+            
+            # Delete record from database
+            conn.execute('DELETE FROM documents WHERE id = ?', (id,))
+            conn.commit()
+            flash('Document deleted successfully', 'success')
+        else:
+            flash('Document not found', 'danger')
+    except Exception as e:
+        print(f"Error deleting document: {e}")
+        flash('Failed to delete document', 'danger')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('manage_documents'))
+
+# Syllabus management routes
+@app.route('/admin/syllabus')
+@admin_required
+def manage_syllabus():
+    conn = get_db_connection()
+    try:
+        syllabus = conn.execute('SELECT * FROM syllabus ORDER BY upload_date DESC').fetchall()
+        return render_template('admin/syllabus.html', syllabus=syllabus)
+    finally:
+        conn.close()
+
+@app.route('/admin/upload-syllabus', methods=['GET', 'POST'])
+@admin_required
+def upload_syllabus():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part', 'danger')
+            return redirect(request.url)
+        
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file', 'danger')
+            return redirect(request.url)
+        
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            
+            class_name = request.form.get('class_name')
+            year = request.form.get('year')
+            month = request.form.get('month')
+            exam_name = request.form.get('exam_name')
+            subject = request.form.get('subject')
+            
+            conn = get_db_connection()
+            conn.execute(
+                'INSERT INTO syllabus (class_name, year, month, exam_name, subject, filename, upload_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (class_name, year, month, exam_name, subject, filename, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            conn.commit()
+            conn.close()
+            
+            flash('Syllabus uploaded successfully', 'success')
+            return redirect(url_for('manage_syllabus'))
+        else:
+            flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif', 'danger')
+    
+    return render_template('admin/upload_syllabus.html')
+
+@app.route('/admin/delete-syllabus/<int:id>')
+@admin_required
+def delete_syllabus(id):
+    conn = get_db_connection()
+    try:
+        syllabus = conn.execute('SELECT * FROM syllabus WHERE id = ?', (id,)).fetchone()
+        if syllabus:
+            # Delete file from filesystem
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], syllabus['filename'])
+            if os.path.exists(file_path):
+                os.unlink(file_path)
+            
+            # Delete record from database
+            conn.execute('DELETE FROM syllabus WHERE id = ?', (id,))
+            conn.commit()
+            flash('Syllabus deleted successfully', 'success')
+        else:
+            flash('Syllabus not found', 'danger')
+    except Exception as e:
+        print(f"Error deleting syllabus: {e}")
+        flash('Failed to delete syllabus', 'danger')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('manage_syllabus'))
+
+# Notification management routes
+@app.route('/admin/notifications')
+@admin_required
+def manage_notifications():
+    conn = get_db_connection()
+    try:
+        notifications = conn.execute('SELECT * FROM notifications ORDER BY date_posted DESC').fetchall()
+        return render_template('admin/notifications.html', notifications=notifications)
+    finally:
+        conn.close()
+
+@app.route('/admin/add-notification', methods=['GET', 'POST'])
+@admin_required
+def add_notification():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        is_pinned = 1 if request.form.get('is_pinned') else 0
+        
+        conn = get_db_connection()
+        conn.execute(
+            'INSERT INTO notifications (title, content, date_posted, is_pinned) VALUES (?, ?, ?, ?)',
+            (title, content, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), is_pinned))
+        conn.commit()
+        conn.close()
+        
+        flash('Notification added successfully', 'success')
+        return redirect(url_for('manage_notifications'))
+    
+    return render_template('admin/add_notification.html')
+
+@app.route('/admin/delete-notification/<int:id>')
+@admin_required
+def delete_notification(id):
+    conn = get_db_connection()
+    try:
+        conn.execute('DELETE FROM notifications WHERE id = ?', (id,))
+        conn.commit()
+        flash('Notification deleted successfully', 'success')
+    except Exception as e:
+        print(f"Error deleting notification: {e}")
+        flash('Failed to delete notification', 'danger')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('manage_notifications'))
+
+@app.route('/admin/toggle-pin/<int:id>')
+@admin_required
+def toggle_pin_notification(id):
+    conn = get_db_connection()
+    try:
+        notification = conn.execute('SELECT * FROM notifications WHERE id = ?', (id,)).fetchone()
+        if notification:
+            new_status = 0 if notification['is_pinned'] else 1
+            conn.execute('UPDATE notifications SET is_pinned = ? WHERE id = ?', (new_status, id))
+            conn.commit()
+            flash('Notification pin status updated', 'success')
+        else:
+            flash('Notification not found', 'danger')
+    except Exception as e:
+        print(f"Error toggling pin status: {e}")
+        flash('Failed to update pin status', 'danger')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('manage_notifications'))
+
+# Static file serving
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
     # Create required files if they don't exist
