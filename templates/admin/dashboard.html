@@ -16,24 +16,23 @@
         </div>
     </div>
     
+    <!-- Quick Stats -->
     <div class="row g-3 mb-4">
         <div class="col-md-6 col-lg-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">Notifications</h6>
-                            <h3 class="mb-0">
-                                {{ notifications_count }}
-                            </h3>
+                            <h6 class="text-muted mb-2">Pending Approvals</h6>
+                            <h3 class="mb-0">{{ pending_approvals }}</h3>
                         </div>
-                        <div class="icon-circle bg-primary text-white">
-                            <i class="bi bi-megaphone"></i>
+                        <div class="icon-circle bg-warning text-white">
+                            <i class="bi bi-person-plus"></i>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <a href="{{ url_for('admin_notifications') }}" class="btn btn-sm btn-outline-primary w-100">
-                            Manage Notifications
+                        <a href="{{ url_for('pending_users') }}" class="btn btn-sm btn-outline-warning w-100">
+                            Review Applications
                         </a>
                     </div>
                 </div>
@@ -45,18 +44,16 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">Syllabus</h6>
-                            <h3 class="mb-0">
-                                {{ syllabus_count }}
-                            </h3>
+                            <h6 class="text-muted mb-2">Approved Users</h6>
+                            <h3 class="mb-0">{{ approved_users }}</h3>
                         </div>
                         <div class="icon-circle bg-success text-white">
-                            <i class="bi bi-journal-bookmark"></i>
+                            <i class="bi bi-person-check"></i>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <a href="{{ url_for('upload_syllabus') }}" class="btn btn-sm btn-outline-success w-100">
-                            Upload Syllabus
+                        <a href="#" class="btn btn-sm btn-outline-success w-100">
+                            View Users
                         </a>
                     </div>
                 </div>
@@ -68,18 +65,16 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">Documents</h6>
-                            <h3 class="mb-0">
-                                {{ documents_count }}
-                            </h3>
+                            <h6 class="text-muted mb-2">Declined Users</h6>
+                            <h3 class="mb-0">{{ declined_users }}</h3>
                         </div>
-                        <div class="icon-circle bg-info text-white">
-                            <i class="bi bi-files"></i>
+                        <div class="icon-circle bg-danger text-white">
+                            <i class="bi bi-person-x"></i>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <a href="{{ url_for('documents') }}" class="btn btn-sm btn-outline-info w-100">
-                            Manage Documents
+                        <a href="#" class="btn btn-sm btn-outline-danger w-100">
+                            View Declined
                         </a>
                     </div>
                 </div>
@@ -92,16 +87,14 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-2">Feedbacks</h6>
-                            <h3 class="mb-0">
-                                {{ feedbacks_count }}
-                            </h3>
+                            <h3 class="mb-0">{{ feedbacks_count }}</h3>
                         </div>
-                        <div class="icon-circle bg-warning text-white">
+                        <div class="icon-circle bg-info text-white">
                             <i class="bi bi-chat-left-text"></i>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <a href="#feedbacks" class="btn btn-sm btn-outline-warning w-100">
+                        <a href="#feedbacks" class="btn btn-sm btn-outline-info w-100">
                             View Feedbacks
                         </a>
                     </div>
@@ -110,11 +103,12 @@
         </div>
     </div>
 
+    <!-- Recent Feedbacks -->
     <div class="card border-0 shadow-sm mb-4" id="feedbacks">
         <div class="card-header bg-secondary text-white">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="bi bi-chat-left-text"></i> Recent Student Feedbacks</h5>
-                <span class="badge bg-light text-dark">{{ feedbacks|length }} total</span>
+                <span class="badge bg-light text-dark">{{ feedbacks|length }} of {{ feedbacks_count }} total</span>
             </div>
         </div>
         <div class="card-body p-0">
@@ -126,8 +120,9 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Subject</th>
-                            <th>Message</th>
+                            <th>Status</th>
                             <th>Date</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -136,9 +131,52 @@
                             <td>{{ feedback.name }}</td>
                             <td><a href="mailto:{{ feedback.email }}">{{ feedback.email }}</a></td>
                             <td>{{ feedback.subject }}</td>
-                            <td>{{ feedback.message|truncate(30) }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if feedback.status == 'resolved' else 'warning' }}">
+                                    {{ feedback.status }}
+                                </span>
+                            </td>
                             <td>{{ feedback.date.split()[0] }}</td>
+                            <td>
+                                {% if feedback.status != 'resolved' %}
+                                <form method="POST" action="{{ url_for('resolve_feedback', id=feedback.id) }}" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="bi bi-check-lg"></i> Resolve
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#feedbackModal{{ feedback.id }}">
+                                    <i class="bi bi-eye"></i> View
+                                </button>
+                            </td>
                         </tr>
+                        
+                        <!-- Feedback Modal -->
+                        <div class="modal fade" id="feedbackModal{{ feedback.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Feedback Details</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>From:</strong> {{ feedback.name }} &lt;{{ feedback.email }}&gt;</p>
+                                        <p><strong>Date:</strong> {{ feedback.date }}</p>
+                                        <hr>
+                                        <h6>{{ feedback.subject }}</h6>
+                                        <p>{{ feedback.message }}</p>
+                                        {% if feedback.admin_notes %}
+                                        <hr>
+                                        <h6>Admin Notes:</h6>
+                                        <p>{{ feedback.admin_notes }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -150,6 +188,49 @@
                 <p class="text-muted">Student feedbacks will appear here</p>
             </div>
             {% endif %}
+        </div>
+    </div>
+
+    <!-- System Management Cards -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-megaphone"></i> Notifications</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h3 class="mb-0">{{ notifications_count }}</h3>
+                            <small class="text-muted">Total Notifications</small>
+                        </div>
+                        <a href="{{ url_for('admin_notifications') }}" class="btn btn-primary">
+                            <i class="bi bi-plus-lg"></i> Add New
+                        </a>
+                    </div>
+                    <p class="text-muted">Manage all system notifications and announcements</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-journal-bookmark"></i> Syllabus</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h3 class="mb-0">{{ syllabus_count }}</h3>
+                            <small class="text-muted">Syllabus Files</small>
+                        </div>
+                        <a href="{{ url_for('upload_syllabus') }}" class="btn btn-success">
+                            <i class="bi bi-upload"></i> Upload
+                        </a>
+                    </div>
+                    <p class="text-muted">Manage all class syllabus and exam schedules</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
