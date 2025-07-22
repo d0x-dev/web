@@ -8,42 +8,51 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        /* Theme colors */
+        :root {
+            --primary-color: #0d6efd;
+            --dark-primary: #1a1a2e;
+            --dark-bg: #121212;
+            --dark-card: #1e1e1e;
+            --dark-border: #2d2d2d;
+            --light-text: #f8f9fa;
+            --muted-light: #adb5bd;
+        }
+        
         .bg-primary {
-            background-color: #0d6efd !important;
+            background-color: var(--primary-color) !important;
         }
         
         .dark-mode .bg-primary {
-            background-color: #1a1a2e !important;
+            background-color: var(--dark-primary) !important;
         }
         
         .dark-mode .bg-dark {
-            background-color: #121212 !important;
+            background-color: var(--dark-bg) !important;
         }
         
         .dark-mode {
-            background-color: #121212;
-            color: #f8f9fa;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
         }
         
         .dark-mode .card {
-            background-color: #1e1e1e;
-            color: #f8f9fa;
-            border-color: #2d2d2d;
+            background-color: var(--dark-card);
+            color: var(--light-text);
+            border-color: var(--dark-border);
         }
         
         .dark-mode .card-header {
-            background-color: #2d2d2d !important;
+            background-color: var(--dark-border) !important;
         }
         
         .dark-mode .list-group-item {
-            background-color: #1e1e1e;
-            color: #f8f9fa;
-            border-color: #2d2d2d;
+            background-color: var(--dark-card);
+            color: var(--light-text);
+            border-color: var(--dark-border);
         }
         
         .dark-mode .text-muted {
-            color: #adb5bd !important;
+            color: var(--muted-light) !important;
         }
         
         .dark-mode .alert-info {
@@ -53,7 +62,7 @@
         }
         
         .dark-mode .table {
-            color: #f8f9fa;
+            color: var(--light-text);
         }
         
         /* Mobile-first responsive adjustments */
@@ -105,7 +114,27 @@
         }
         
         .dark-mode .theme-toggle {
-            color: #f8f9fa;
+            color: var(--light-text);
+        }
+        
+        /* Fix for form elements in dark mode */
+        .dark-mode .form-control {
+            background-color: var(--dark-card);
+            color: var(--light-text);
+            border-color: var(--dark-border);
+        }
+        
+        .dark-mode .form-control:focus {
+            background-color: var(--dark-card);
+            color: var(--light-text);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .dark-mode .form-select {
+            background-color: var(--dark-card);
+            color: var(--light-text);
+            border-color: var(--dark-border);
         }
     </style>
 </head>
@@ -113,7 +142,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">Dashboard</a>
+            <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">Dashboard</a>
             <div class="d-flex align-items-center order-lg-2">
                 <!-- Theme Toggle Button -->
                 <button class="theme-toggle" id="themeToggle">
@@ -127,7 +156,7 @@
             <div class="collapse navbar-collapse order-lg-1" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('about') }}">About</a>
@@ -151,6 +180,11 @@
                     {% else %}
                     <li class="nav-item">
                         <a class="nav-link admin-link" href="{{ url_for('admin_login') }}">Admin Login</a>
+                    </li>
+                    {% endif %}
+                    {% if session.get('logged_in') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -188,7 +222,7 @@
                 <div class="col-md-4 mb-3 mb-md-0">
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{{ url_for('index') }}" class="text-white">Home</a></li>
+                        <li><a href="{{ url_for('home') }}" class="text-white">Home</a></li>
                         <li><a href="{{ url_for('notifications') }}" class="text-white">Notifications</a></li>
                         <li><a href="{{ url_for('syllabus') }}" class="text-white">Syllabus</a></li>
                         <li><a href="{{ url_for('documents') }}" class="text-white">Documents</a></li>
