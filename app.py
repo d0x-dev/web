@@ -215,6 +215,19 @@ def signup():
 def about():
     return render_template('about.html')
 
+@app.route('/syllabus')
+@login_required
+def syllabus():
+    conn = get_db_connection()
+    try:
+        syllabus = conn.execute('''
+            SELECT * FROM syllabus 
+            ORDER BY year DESC, class_name ASC, subject ASC
+        ''').fetchall()
+        return render_template('syllabus.html', syllabus=syllabus)
+    finally:
+        conn.close()
+
 @app.route('/contact-admin', methods=['GET', 'POST'])
 def contact_admin():
     if request.method == 'POST':
