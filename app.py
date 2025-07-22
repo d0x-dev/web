@@ -102,6 +102,7 @@ def init_db():
             conn.execute(
                 'INSERT INTO admin (username, password) VALUES (?, ?)',
                 ('admin', generate_password_hash('admin123'))
+            )
             conn.commit()
         conn.close()
 
