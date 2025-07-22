@@ -244,6 +244,17 @@ def contact_admin():
     
     return render_template('contact_admin.html')
 
+# Add this route for regular users to view documents
+@app.route('/documents')
+@login_required
+def documents():
+    conn = get_db_connection()
+    try:
+        documents = conn.execute('SELECT * FROM documents ORDER BY upload_date DESC').fetchall()
+        return render_template('documents.html', documents=documents)
+    finally:
+        conn.close()
+
 @app.route('/logout')
 def logout():
     session.clear()
