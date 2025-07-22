@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory, json
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
@@ -9,6 +9,11 @@ from functools import wraps
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.secret_key = app.config['SECRET_KEY']
+
+# Load users from JSON file
+def load_users():
+    with open('users.json', 'r') as f:
+        return json.load(f)
 
 # Database setup
 def get_db_connection():
@@ -87,16 +92,98 @@ init_db()
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-# Auth decorator
+# Auth decorators
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('logged_in'):
+            flash('Please log in to access this page', 'danger')
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('admin_logged_in'):
-            flash('Please log in to access admin panel', 'danger')
+            flash('Please log in as admin to access this page', 'danger')
             return redirect(url_for('admin_login'))
         return f(*args, **kwargs)
     return decorated_function
 
+# Routes
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if session.get('logged_in'):
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        users = load_users()
+        user = next((u for u in users if u['username'] == username), None)
+        
+        if user and user['password'] == password:
+            session['logged_in'] = True
+            session['username'] = username
+            session['role'] = user['role']
+            
+            # Redirect to next URL if provided
+            next_url = request.args.get('next')
+            return redirect(next_url or url_for('index'))
+        else:
+            flash('Invalid username or password', 'danger')
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    session.pop('username', None)
+    session.pop('role', None)
+    flash('You have been logged out successfully', 'success')
+    return redirect(url_for('login'))
+
+@app.route('/')
+@login_required
+def index():
+    conn = get_db_connection()
+    pinned_notices = conn.execute('SELECT * FROM notifications WHERE is_pinned = 1 ORDER BY date_posted DESC LIMIT 2').fetchall()
+    recent_syllabus = conn.execute('SELECT * FROM syllabus ORDER BY upload_date DESC LIMIT 2').fetchall()
+    conn.close()
+    return render_template('index.html', pinned_notices=pinned_notices, recent_syllabus=recent_syllabus)
+
+# ... [Keep all your other existing routes as they are, just add @login_required decorator to all routes except login and static files]
+
+# Admin routes (keep them as they are)
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if session.get('admin_logged_in'):
+        return redirect(url_for('admin_dashboard'))
+        
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        conn = get_db_connection()
+        admin = conn.execute('SELECT * FROM admin WHERE username = ?', (username,)).fetchone()
+        
+        if admin and check_password_hash(admin['password'], password):
+            session['admin_logged_in'] = True
+            session['admin_username'] = username
+            conn.execute(
+                'UPDATE admin SET last_login = ? WHERE username = ?',
+                (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username)
+            )
+            conn.commit()
+            conn.close()
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid username or password', 'danger')
+            conn.close()
+            
+    return render_template('admin/login.html')
 # Routes
 @app.route('/')
 def index():
