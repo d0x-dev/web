@@ -1,167 +1,139 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>{% block title %}Dashboard{% endblock %}</title>
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAWFhYAKzG3gA6OjoAJyQmAOrq6gArKysAQEE/AEdFRACUtNgANC8wAElLTAA4ODgA+vr/AOjo6ACrw98AlbThAMbu+gBFRUUAo6SiAJGqxABDQ0MANDQ0ALXs+QCrxeMA+vn7APH0+QBBQUEAmrXXAOr1/wAsUU8AganZAERKSQBdXV0AICUmADI0NQA/Pz8AICQpAP/+/gCTrcUARUZEANHR0QBOTUkAq8LcAKHc5gA9PT0Au8vbAP3+/wBBQkAAzc3NAJy44QA7NzYAQkFDABgeIwA5OTkAsMPSACAlKABSWF0Ac3NzAKvi7wDLy8sAOTU0AOfr7ABERkYAkKzKAEpHQwDc/P8AGiMmADc3NwDl5+cA2NjYADUzMgDc390A4P//AFNTUwBCREQAREREAP///gCzydsAqampAEJCQgBGSUcA4+PjAMXFxQCvw9QAOjk7APP6/QBAQEAAlq7GALK0tABeXFwATU1NAD4+PgDu7u4AR0JDAN/f3wA4MzQA9PXzAICm1gBRU00A+fv7AOb0/wA6PDwAS0tLAMzOzgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXV8pMVNTPEZSAAAAAAAAAABSRBYWAwZEBQAAAAAAAAAORDYMDAwMNhYAAAAAAAAASldXLVxcLSQkOgAAAAAAAFcVUEwoElA0TCEAAAAAAABPZ1sLID9eKlFoAAAAAAAAAAgISGQmTWNBAAAAAAAAAAATYRkNGlYvWQAAAAAAAAAAAD4dWCdlRQAAAAAAAAAAAAAAQGIfFAAAAAAAAAAAAAAAVBwyEAlOOywAAAAAAAAAADcCKxgPLhcRAAAAAAAAAAA1QyI4JQRJAAAAAAAAAAAAVWYHMEsbQgAAAAAAAABaAQpgMz1HIx45AAAAAAAAAAAAAAAAAAAAAAAAAOAPAADwDwAA4A8AAOAHAADgBwAA4AcAAPAPAADwDwAA+B8AAPw/AAD4BwAA+AcAAPgPAAD4DwAA4AcAAP//AAA=" type="image/x-icon">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Custom Styles -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>{% block title %}App{% endblock %}</title>
+    <link rel="icon" href="data:image/x-icon;base64,...your-icon..." type="image/x-icon" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
     <style>
         :root {
             --primary-color: #0d6efd;
-            --dark-primary: #1a1a2e;
             --dark-bg: #121212;
             --dark-card: #1e1e1e;
-            --dark-border: #2d2d2d;
             --light-text: #f8f9fa;
-            --muted-light: #adb5bd;
         }
-        .bg-primary { background-color: var(--primary-color) !important; }
-        .dark-mode .bg-primary { background-color: var(--dark-primary) !important; }
-        .dark-mode .bg-dark { background-color: var(--dark-bg) !important; }
-        .dark-mode { background-color: var(--dark-bg); color: var(--light-text); }
-        .dark-mode .card { background-color: var(--dark-card); color: var(--light-text); border-color: var(--dark-border); }
-        .dark-mode .card-header { background-color: var(--dark-border) !important; }
-        .dark-mode .list-group-item { background-color: var(--dark-card); color: var(--light-text); border-color: var(--dark-border); }
-        .dark-mode .text-muted { color: var(--muted-light) !important; }
-        .dark-mode .alert-info { background-color: #1a3a4a; border-color: #2a4a5a; color: #e1f5fe; }
-        .dark-mode .table { color: var(--light-text); }
-        .navbar-brand { font-size: 1rem; white-space: normal; }
-        .hero-section h1 { font-size: 1.8rem; }
-        .icon-circle {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        body {
+            background-color: #f2f2f2;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            padding-bottom: 70px; /* For bottom nav */
         }
-        .card { transition: transform 0.3s; }
-        .card:hover { transform: translateY(-5px); }
-        @media (min-width: 768px) {
-            .navbar-brand { font-size: 1.25rem; }
-            .hero-section h1 { font-size: 2.5rem; }
+
+        .dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--light-text);
         }
-        .theme-toggle {
-            border: none;
-            background: transparent;
+
+        .app-header {
+            padding: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            background-color: var(--primary-color);
             color: white;
-            font-size: 1.25rem;
-            padding: 0.5rem;
-            cursor: pointer;
-            margin-right: 0.5rem;
         }
-        .dark-mode .theme-toggle { color: var(--light-text); }
-        .dark-mode .form-control,
-        .dark-mode .form-select {
-            background-color: var(--dark-card);
-            color: var(--light-text);
-            border-color: var(--dark-border);
+
+        main.container {
+            padding-top: 1rem;
         }
-        .dark-mode .form-control:focus {
-            background-color: var(--dark-card);
-            color: var(--light-text);
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #ffffff;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            z-index: 1000;
+        }
+
+        .bottom-nav a {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #555;
+            text-decoration: none;
+        }
+
+        .bottom-nav a.active, .bottom-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .bottom-nav i {
+            font-size: 1.2rem;
+            display: block;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 10px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            z-index: 1001;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: #1e1e1e;
+            border-color: #333;
+        }
+
+        .dark-mode .bottom-nav a {
+            color: #aaa;
+        }
+
+        .dark-mode .bottom-nav a.active,
+        .dark-mode .bottom-nav a:hover {
+            color: #0dcaf0;
+        }
+
+        footer {
+            display: none;
         }
     </style>
+
     {% block extra_css %}{% endblock %}
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">Dashboard</a>
-            <div class="d-flex align-items-center order-lg-2">
-                <button class="theme-toggle" id="themeToggle">
-                    <i class="bi bi-moon-fill" id="themeIcon"></i>
-                </button>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-            <div class="collapse navbar-collapse order-lg-1" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('about') }}">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('documents') }}">Documents</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('syllabus') }}">Syllabus</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('notifications') }}">Notifications</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
-                    {% if session.get('logged_in') %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Flash messages -->
-    <div class="container mt-3">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+<body class="d-flex flex-column min-vh-100">
+    <div class="app-header">
+        School Portal
+        <button class="theme-toggle" id="themeToggle">
+            <i class="bi bi-moon-fill" id="themeIcon"></i>
+        </button>
     </div>
 
-    <!-- Main content -->
-    <main class="container my-4">
+    <main class="container">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <h5>GOVT. BOYS HIGH SCHOOL PETH MAKHAMA</h5>
-                    <p>Peth Makhama, Jammu and Kashmir - 185101</p>
-                </div>
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{{ url_for('home') }}" class="text-white">Home</a></li>
-                        <li><a href="{{ url_for('notifications') }}" class="text-white">Notifications</a></li>
-                        <li><a href="{{ url_for('syllabus') }}" class="text-white">Syllabus</a></li>
-                        <li><a href="{{ url_for('documents') }}" class="text-white">Documents</a></li>
-                        <li><a href="{{ url_for('classwork') }}" class="text-white">Class Work</a></li>
-                        <li><a href="{{ url_for('homework') }}" class="text-white">Homework</a></li>
-                        <li><a href="{{ url_for('books') }}" class="text-white">Books</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Contact Us</h5>
-                    <p>Email: contact@gbhspm.edu.in<br>Phone: +91 1234567890</p>
-                </div>
-            </div>
-            <hr>
-            <div class="text-center">
-                <p class="mb-0 text-white">
-                    &copy; 2023 GOVT. BOYS HIGH SCHOOL PETH MAKHAMA. All rights reserved.<br>
-                    Made With <span style="color: red;">&#10084;&#65039;</span> by Dark &amp; Ubaid
-                </p>
-            </div>
-        </div>
-    </footer>
+    <nav class="bottom-nav">
+        <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">
+            <i class="bi bi-house-door-fill"></i> Home
+        </a>
+        <a href="{{ url_for('documents') }}" class="{% if request.endpoint == 'documents' %}active{% endif %}">
+            <i class="bi bi-file-earmark-text"></i> Docs
+        </a>
+        <a href="{{ url_for('notifications') }}" class="{% if request.endpoint == 'notifications' %}active{% endif %}">
+            <i class="bi bi-bell-fill"></i> Alerts
+        </a>
+        <a href="{{ url_for('syllabus') }}" class="{% if request.endpoint == 'syllabus' %}active{% endif %}">
+            <i class="bi bi-journal-bookmark"></i> Syllabus
+        </a>
+        <a href="{{ url_for('contact') }}" class="{% if request.endpoint == 'contact' %}active{% endif %}">
+            <i class="bi bi-person-lines-fill"></i> Contact
+        </a>
+    </nav>
 
-    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const themeToggle = document.getElementById('themeToggle');
             const themeIcon = document.getElementById('themeIcon');
             const htmlElement = document.documentElement;
@@ -175,8 +147,9 @@
                 themeIcon.classList.replace('bi-moon-fill', 'bi-sun-fill');
             }
 
-            themeToggle.addEventListener('click', function() {
-                if (htmlElement.getAttribute('data-bs-theme') === 'dark') {
+            themeToggle.addEventListener('click', function () {
+                const current = htmlElement.getAttribute('data-bs-theme');
+                if (current === 'dark') {
                     htmlElement.setAttribute('data-bs-theme', 'light');
                     document.body.classList.remove('dark-mode');
                     themeIcon.classList.replace('bi-sun-fill', 'bi-moon-fill');
@@ -187,14 +160,6 @@
                     themeIcon.classList.replace('bi-moon-fill', 'bi-sun-fill');
                     localStorage.setItem('theme', 'dark');
                 }
-            });
-
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                const newTheme = e.matches ? 'dark' : 'light';
-                htmlElement.setAttribute('data-bs-theme', newTheme);
-                document.body.classList.toggle('dark-mode', newTheme === 'dark');
-                themeIcon.className = newTheme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
-                localStorage.setItem('theme', newTheme);
             });
         });
     </script>
