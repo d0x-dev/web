@@ -154,36 +154,44 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         ip_address = request.remote_addr
-        
-        # Check if user/IP is blocked
+
+        # ✅ 1. Check if user/IP is blocked
         if is_blocked(username, ip_address):
             flash('Too many failed attempts. Please try again after 24 hours.', 'danger')
             return redirect(url_for('login'))
-        
+
+        # ✅ 2. Check if user is in declined_users.json
+        declined_users = load_json('declined_users.json')
+        declined_user = next((u for u in declined_users if u['username'] == username), None)
+        if declined_user:
+            reason = declined_user.get('reason', 'No reason provided')
+            flash(f'You are Declined. Reason: {reason}', 'danger')
+            return redirect(url_for('login'))
+
+        # ✅ 3. Validate against regular users
         users = load_json(USERS_FILE)
         user = next((u for u in users if u['username'] == username), None)
-        
+
         if user and user['password'] == password:
-            # Successful login - reset attempts if any
+            # ✅ Successful login - reset attempts
             attempts_data = load_failed_attempts()
             if username in attempts_data:
                 attempts_data[username]['attempts'] = 0
-                save_failed_attempts(attempts_data)
             if ip_address in attempts_data:
                 attempts_data[ip_address]['attempts'] = 0
-                save_failed_attempts(attempts_data)
-            
+            save_failed_attempts(attempts_data)
+
             session['logged_in'] = True
             session['username'] = username
             session['role'] = user.get('role', 'student')
             return redirect(url_for('home'))
         else:
-            # Failed login - record attempt
+            # ❌ Failed login - record attempt
             record_failed_attempt(username, ip_address)
             flash('Invalid username or password', 'danger')
-    
+
     return render_template('login.html')
-    
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
