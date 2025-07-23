@@ -408,9 +408,14 @@ def admin_dashboard():
 @app.route('/admin/approved-users')
 @admin_required
 def approved_users():
-    # Your logic to fetch and display approved users
-    approved = User.query.filter_by(status='approved').all()
-    return render_template('admin/approved_users.html', users=approved)
+    # Load users from users.json
+    with open('users.json') as f:
+        users = json.load(f)
+    
+    # Filter approved users (assuming status field exists)
+    approved_users = [user for user in users if user.get('status') == 'approved']
+    
+    return render_template('admin/approved_users.html', users=approved_users)
 
 @app.route('/admin/pending-users')
 @admin_required
