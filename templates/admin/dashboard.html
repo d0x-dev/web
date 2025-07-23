@@ -1,161 +1,133 @@
 {% extends "base.html" %}
-{% set hide_menu_button = True %}
-{% set hide_footer = True %}
+
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
+<div class="container mt-3 mb-5">
+
+    <h2 class="text-center mb-4">Admin Dashboard</h2>
+
+    <!-- Stats Grid -->
+    <div class="row g-3 mb-3 text-center">
+        <div class="col-4">
+            <a href="{{ url_for('pending_users') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+                <i class="bi bi-hourglass-split fs-2 text-warning"></i>
+                <div>Pending</div>
+                <strong>{{ pending_approvals }}</strong>
+            </a>
+        </div>
+        <div class="col-4">
+            <a class="card p-3 shadow-sm text-decoration-none text-dark">
+                <i class="bi bi-person-check fs-2 text-success"></i>
+                <div>Approved</div>
+                <strong>{{ approved_users }}</strong>
+            </a>
+        </div>
+        <div class="col-4">
+            <a class="card p-3 shadow-sm text-decoration-none text-dark">
+                <i class="bi bi-person-x fs-2 text-danger"></i>
+                <div>Declined</div>
+                <strong>{{ declined_users }}</strong>
+            </a>
+        </div>
+    </div>
+
+    <!-- Upload Actions Grid -->
+    <div class="row g-3 text-center">
+        <div class="col-6">
+            <a href="{{ url_for('admin_notifications') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+                <i class="bi bi-megaphone fs-2 text-primary"></i>
+                <div>Notifications</div>
+                <small>{{ notifications_count }} items</small>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{{ url_for('upload_syllabus') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+                <i class="bi bi-journal-text fs-2 text-success"></i>
+                <div>Syllabus</div>
+                <small>{{ syllabus_count }} files</small>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{{ url_for('upload_document') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+                <i class="bi bi-file-earmark-text fs-2 text-info"></i>
+                <div>Documents</div>
+                <small>{{ documents_count }} files</small>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{{ url_for('upload_classwork') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+                <i class="bi bi-journal-richtext fs-2 text-warning"></i>
+                <div>Classwork</div>
+                <small>{{ classwork_count }} files</small>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{{ url_for('upload_homework') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+                <i class="bi bi-house-door fs-2 text-danger"></i>
+                <div>Homework</div>
+                <small>{{ homework_count }} files</small>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{{ url_for('upload_book') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+                <i class="bi bi-book fs-2 text-purple" style="color: #6f42c1;"></i>
+                <div>Books</div>
+                <small>{{ books_count }} files</small>
+            </a>
+        </div>
+    </div>
+
+    <!-- Feedbacks (simple preview, optional) -->
+    <div class="mt-4">
+        <h5 class="text-muted">Recent Feedbacks</h5>
+        {% if feedbacks %}
+        <ul class="list-group">
+            {% for fb in feedbacks %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ fb.name }}</strong> - {{ fb.subject }}
+                    <br><small>{{ fb.date.split()[0] }}</small>
+                </div>
+                {% if fb.status != 'resolved' %}
+                <form method="POST" action="{{ url_for('resolve_feedback', id=fb.id) }}">
+                    <button class="btn btn-sm btn-outline-success">Resolve</button>
+                </form>
+                {% else %}
+                <span class="badge bg-success">Resolved</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted">No feedbacks yet.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Bottom Navigation -->
+<nav class="navbar navbar-dark bg-dark navbar-expand fixed-bottom shadow">
+    <div class="container justify-content-around">
+        <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-speedometer2"></i><br>Dashboard
+        </a>
+        <a class="nav-link text-white" href="{{ url_for('change_password') }}">
+            <i class="bi bi-key"></i><br>Password
+        </a>
+        <a class="nav-link text-white" href="{{ url_for('admin_logout') }}">
+            <i class="bi bi-box-arrow-right"></i><br>Logout
+        </a>
+    </div>
+</nav>
+
 <style>
-  .dashboard-card {
-    border-radius: 12px;
-    padding: 20px;
-    color: white;
-    background: linear-gradient(135deg, #3f51b5, #5c6bc0);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  }
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #222;
-    color: white;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    z-index: 999;
-    border-top: 1px solid #444;
-  }
-  .bottom-nav a {
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-    text-align: center;
-  }
-  .bottom-nav i {
-    display: block;
-    font-size: 20px;
-  }
+    .nav-link {
+        font-size: 0.8rem;
+        text-align: center;
+    }
+    .card:hover {
+        background-color: #f9f9f9;
+    }
 </style>
-
-<div class="container mt-4 mb-5">
-  <div class="row g-3">
-    <div class="col-6 col-md-4">
-      <div class="dashboard-card text-center">
-        <h6>Notifications</h6>
-        <p class="fs-4">{{ notifications_count }}</p>
-        <a href="{{ url_for('admin_notifications') }}" class="btn btn-light btn-sm">View</a>
-      </div>
-    </div>
-    <div class="col-6 col-md-4">
-      <div class="dashboard-card text-center">
-        <h6>Syllabus</h6>
-        <p class="fs-4">{{ syllabus_count }}</p>
-        <a href="{{ url_for('upload_syllabus') }}" class="btn btn-light btn-sm">Upload</a>
-      </div>
-    </div>
-    <div class="col-6 col-md-4">
-      <div class="dashboard-card text-center">
-        <h6>Documents</h6>
-        <p class="fs-4">{{ documents_count }}</p>
-        <a href="{{ url_for('upload_document') }}" class="btn btn-light btn-sm">Upload</a>
-      </div>
-    </div>
-    <div class="col-6 col-md-4">
-      <div class="dashboard-card text-center">
-        <h6>Classwork</h6>
-        <a href="{{ url_for('upload_classwork') }}" class="btn btn-light btn-sm mt-2">Upload</a>
-      </div>
-    </div>
-    <div class="col-6 col-md-4">
-      <div class="dashboard-card text-center">
-        <h6>Homework</h6>
-        <a href="{{ url_for('upload_homework') }}" class="btn btn-light btn-sm mt-2">Upload</a>
-      </div>
-    </div>
-    <div class="col-6 col-md-4">
-      <div class="dashboard-card text-center">
-        <h6>Books</h6>
-        <a href="{{ url_for('upload_book') }}" class="btn btn-light btn-sm mt-2">Upload</a>
-      </div>
-    </div>
-  </div>
-
-  <hr class="my-4">
-
-  <div class="row g-3">
-    <div class="col-4">
-      <div class="dashboard-card text-center bg-success">
-        <h6>Pending Users</h6>
-        <p class="fs-4">{{ pending_approvals }}</p>
-        <a href="{{ url_for('approved_users') }}" class="btn btn-light btn-sm">Manage</a>
-      </div>
-    </div>
-    <div class="col-4">
-      <div class="dashboard-card text-center bg-primary">
-        <h6>Approved</h6>
-        <p class="fs-4">{{ approved_users }}</p>
-      </div>
-    </div>
-    <div class="col-4">
-      <div class="dashboard-card text-center bg-danger">
-        <h6>Declined</h6>
-        <p class="fs-4">{{ decline_users }}</p>
-      </div>
-    </div>
-  </div>
-
-  <hr class="my-4">
-
-  <h5>Recent Feedback</h5>
-  {% if feedbacks %}
-    <ul class="list-group">
-      {% for f in feedbacks %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <strong>{{ f.name }}</strong> <br>
-          <small>{{ f.date }}</small><br>
-          {{ f.message[:50] }}...
-        </div>
-        <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#feedbackModal{{ f.id }}">View</a>
-      </li>
-
-      <!-- Feedback Modal -->
-      <div class="modal fade" id="feedbackModal{{ f.id }}" tabindex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">{{ f.name }}</h5>
-              <button class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-              <p><strong>Email:</strong> {{ f.email }}</p>
-              <p><strong>Date:</strong> {{ f.date }}</p>
-              <hr>
-              <p>{{ f.message }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No feedbacks yet.</p>
-  {% endif %}
-</div>
-
-<!-- Bottom Nav -->
-<div class="bottom-nav d-md-none">
-  <a href="{{ url_for('admin_dashboard') }}">
-    <i class="bi bi-house-door-fill"></i> Home
-  </a>
-  <a href="{{ url_for('admin_notifications') }}">
-    <i class="bi bi-bell-fill"></i> Notify
-  </a>
-  <a href="{{ url_for('upload_document') }}">
-    <i class="bi bi-upload"></i> Upload
-  </a>
-  <a href="{{ url_for('logout') }}">
-    <i class="bi bi-box-arrow-right"></i> Logout
-  </a>
-</div>
 {% endblock %}
