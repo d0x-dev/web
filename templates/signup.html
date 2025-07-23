@@ -150,51 +150,56 @@
   </div>
 
   <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const alerts = document.querySelectorAll('.alert');
-      alerts.forEach(alert => {
-        setTimeout(() => {
-          const bsAlert = new bootstrap.Alert(alert);
-          bsAlert.close();
-        }, 5000);
-      });
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      setTimeout(() => {
+        const bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
+      }, 5000);
+    });
 
-      const usernameInput = document.getElementById('username');
-      const feedback = document.getElementById('username-feedback');
+    const usernameInput = document.getElementById('username');
+    const feedback = document.getElementById('username-feedback');
+    const submitBtn = document.querySelector('button[type="submit"]');
 
-      usernameInput.addEventListener('input', function () {
-        const username = this.value.trim();
+    usernameInput.addEventListener('input', function () {
+      const username = this.value.trim();
 
-        if (username.length < 3) {
-          feedback.textContent = '';
-          return;
+      if (username.length < 3) {
+        feedback.textContent = '';
+        submitBtn.disabled = true;
+        return;
+      }
+
+      fetch('/check_username', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.available) {
+          feedback.textContent = '✅ Username available';
+          feedback.style.color = 'green';
+          submitBtn.disabled = false;
+        } else {
+          feedback.textContent = '❌ Username already taken';
+          feedback.style.color = 'red';
+          submitBtn.disabled = true;
         }
-
-        fetch('/check_username', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ username })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.available) {
-            feedback.textContent = '✅ Username available';
-            feedback.style.color = 'green';
-          } else {
-            feedback.textContent = '❌ Username already taken';
-            feedback.style.color = 'red';
-          }
-        })
-        .catch(() => {
-          feedback.textContent = '⚠️ Error checking username';
-          feedback.style.color = 'orange';
-        });
+      })
+      .catch(() => {
+        feedback.textContent = '⚠️ Error checking username';
+        feedback.style.color = 'orange';
+        submitBtn.disabled = true;
       });
     });
-  </script>
-</body>
-</html>
+
+    // Disable submit on load until valid username
+    submitBtn.disabled = true;
+  });
+</script>
