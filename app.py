@@ -11,6 +11,15 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.secret_key = app.config['SECRET_KEY']
 
+import time
+from datetime import datetime, timedelta
+import json
+
+# Add these with your other configuration variables
+MAX_LOGIN_ATTEMPTS = 4
+BLOCK_TIME_HOURS = 24
+FAILED_ATTEMPTS_FILE = 'failed_attempts.json'
+
 # File paths for user data
 USERS_FILE = 'users.json'
 PENDING_FILE = 'pending_users.json'
@@ -143,28 +152,37 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+        ip_address = request.remote_addr
         
-        # Check declined users first
-        declined_users = load_json(DECLINED_FILE)
-        declined = next((u for u in declined_users if u['username'] == username), None)
-        if declined:
-            flash(f'Your account was declined. Reason: {declined.get("reason", "No reason provided")}', 'danger')
+        # Check if user/IP is blocked
+        if is_blocked(username, ip_address):
+            flash('Too many failed attempts. Please try again after 24 hours.', 'danger')
             return redirect(url_for('login'))
         
-        # Check approved users
         users = load_json(USERS_FILE)
         user = next((u for u in users if u['username'] == username), None)
         
         if user and user['password'] == password:
+            # Successful login - reset attempts if any
+            attempts_data = load_failed_attempts()
+            if username in attempts_data:
+                attempts_data[username]['attempts'] = 0
+                save_failed_attempts(attempts_data)
+            if ip_address in attempts_data:
+                attempts_data[ip_address]['attempts'] = 0
+                save_failed_attempts(attempts_data)
+            
             session['logged_in'] = True
             session['username'] = username
             session['role'] = user.get('role', 'student')
             return redirect(url_for('home'))
         else:
+            # Failed login - record attempt
+            record_failed_attempt(username, ip_address)
             flash('Invalid username or password', 'danger')
     
     return render_template('login.html')
-
+    
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -299,7 +317,6 @@ def notifications():
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
-# Admin routes
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if session.get('admin_logged_in'):
@@ -308,20 +325,38 @@ def admin_login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+        ip_address = request.remote_addr
+        
+        # Check if admin/IP is blocked
+        if is_blocked(username, ip_address):
+            flash('Too many failed attempts. Please try again after 24 hours.', 'danger')
+            return redirect(url_for('admin_login'))
         
         conn = get_db_connection()
         admin = conn.execute('SELECT * FROM admin WHERE username = ?', (username,)).fetchone()
         
         if admin and check_password_hash(admin['password'], password):
+            # Successful login - reset attempts if any
+            attempts_data = load_failed_attempts()
+            if username in attempts_data:
+                attempts_data[username]['attempts'] = 0
+                save_failed_attempts(attempts_data)
+            if ip_address in attempts_data:
+                attempts_data[ip_address]['attempts'] = 0
+                save_failed_attempts(attempts_data)
+            
             session['admin_logged_in'] = True
             session['admin_username'] = username
             conn.execute(
                 'UPDATE admin SET last_login = ? WHERE username = ?',
-                (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username))
+                (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username)
+            )
             conn.commit()
             conn.close()
             return redirect(url_for('admin_dashboard'))
         else:
+            # Failed login - record attempt
+            record_failed_attempt(username, ip_address)
             flash('Invalid username or password', 'danger')
             conn.close()
             
@@ -674,6 +709,65 @@ def admin_logout():
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+def load_failed_attempts():
+    try:
+        with open(FAILED_ATTEMPTS_FILE, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+def save_failed_attempts(data):
+    with open(FAILED_ATTEMPTS_FILE, 'w') as f:
+        json.dump(data, f)
+
+def is_blocked(username, ip_address):
+    attempts_data = load_failed_attempts()
+    now = datetime.now()
+    
+    # Check by username
+    if username in attempts_data:
+        last_attempt = datetime.fromisoformat(attempts_data[username]['timestamp'])
+        if attempts_data[username]['attempts'] >= MAX_LOGIN_ATTEMPTS:
+            if now - last_attempt < timedelta(hours=BLOCK_TIME_HOURS):
+                return True
+            else:
+                # Block period expired, reset attempts
+                attempts_data[username]['attempts'] = 0
+                save_failed_attempts(attempts_data)
+    
+    # Check by IP address
+    if ip_address in attempts_data:
+        last_attempt = datetime.fromisoformat(attempts_data[ip_address]['timestamp'])
+        if attempts_data[ip_address]['attempts'] >= MAX_LOGIN_ATTEMPTS:
+            if now - last_attempt < timedelta(hours=BLOCK_TIME_HOURS):
+                return True
+            else:
+                # Block period expired, reset attempts
+                attempts_data[ip_address]['attempts'] = 0
+                save_failed_attempts(attempts_data)
+    
+    return False
+
+def record_failed_attempt(username, ip_address):
+    attempts_data = load_failed_attempts()
+    now = datetime.now().isoformat()
+    
+    # Track by username
+    if username in attempts_data:
+        attempts_data[username]['attempts'] += 1
+        attempts_data[username]['timestamp'] = now
+    else:
+        attempts_data[username] = {'attempts': 1, 'timestamp': now}
+    
+    # Track by IP address
+    if ip_address in attempts_data:
+        attempts_data[ip_address]['attempts'] += 1
+        attempts_data[ip_address]['timestamp'] = now
+    else:
+        attempts_data[ip_address] = {'attempts': 1, 'timestamp': now}
+    
+    save_failed_attempts(attempts_data)
 
 if __name__ == '__main__':
     # Create required files if they don't exist
