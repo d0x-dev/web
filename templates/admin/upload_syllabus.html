@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% set hide_header = True %}
 
 {% block title %}Upload Syllabus - Admin Panel{% endblock %}
 
 {% block content %}
-<div class="container mt-3">
+<div class="container mt-4 mb-5 pb-5">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-        <h1 class="mb-3 mb-md-0">Upload Syllabus</h1>
+        <h2 class="mb-3 mb-md-0">Upload Syllabus</h2>
         <div>
             <a href="{{ url_for('syllabus') }}" class="btn btn-outline-secondary me-2">
                 <i class="bi bi-eye"></i> View Syllabus
@@ -16,7 +17,7 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
+    <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0"><i class="bi bi-upload"></i> Upload New Syllabus</h5>
         </div>
@@ -37,7 +38,7 @@
                         <input type="text" class="form-control" id="subject" name="subject" required>
                     </div>
                 </div>
-                
+
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="year" class="form-label">Year <span class="text-danger">*</span></label>
@@ -52,18 +53,9 @@
                         <label for="month" class="form-label">Month <span class="text-danger">*</span></label>
                         <select class="form-select" id="month" name="month" required>
                             <option value="">Select Month</option>
-                            <option value="January">January</option>
-                            <option value="February">February</option>
-                            <option value="March">March</option>
-                            <option value="April">April</option>
-                            <option value="May">May</option>
-                            <option value="June">June</option>
-                            <option value="July">July</option>
-                            <option value="August">August</option>
-                            <option value="September">September</option>
-                            <option value="October">October</option>
-                            <option value="November">November</option>
-                            <option value="December">December</option>
+                            {% for m in ['January','February','March','April','May','June','July','August','September','October','November','December'] %}
+                            <option value="{{ m }}">{{ m }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="col-md-4">
@@ -71,13 +63,13 @@
                         <input type="text" class="form-control" id="exam_name" name="exam_name" required>
                     </div>
                 </div>
-                
+
                 <div class="mb-4">
-                    <label for="file" class="form-label">Syllabus File (PDF/DOC/DOCX) <span class="text-danger">*</span></label>
+                    <label for="file" class="form-label">Syllabus File <span class="text-danger">*</span></label>
                     <input class="form-control" type="file" id="file" name="file" accept=".pdf,.doc,.docx" required>
                     <div class="form-text">Max file size: 5MB. Only PDF, DOC, and DOCX files are allowed.</div>
                 </div>
-                
+
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary btn-lg">
                         <i class="bi bi-upload"></i> Upload Syllabus
@@ -87,4 +79,54 @@
         </div>
     </div>
 </div>
+
+<!-- Bottom Menu -->
+<nav class="navbar navbar-expand fixed-bottom shadow-sm" id="bottomMenu">
+    <div class="container justify-content-around">
+        <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-speedometer2"></i><br>Dashboard
+        </a>
+        <a class="nav-link text-center" href="{{ url_for('upload_syllabus') }}">
+            <i class="bi bi-upload"></i><br>Upload
+        </a>
+        <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
+            <i class="bi bi-box-arrow-right"></i><br>Logout
+        </a>
+    </div>
+</nav>
+
+<style>
+    .nav-link {
+        font-size: 0.8rem;
+        color: var(--bs-body-color);
+    }
+
+    #bottomMenu {
+        background-color: var(--bs-body-bg);
+        border-top: 1px solid var(--bs-border-color);
+    }
+
+    body.dark-mode .card,
+    body.dark-mode .form-control,
+    body.dark-mode .form-select,
+    body.dark-mode .input-group-text {
+        background-color: #1f1f1f;
+        color: white;
+        border-color: #444;
+    }
+
+    body.dark-mode label,
+    body.dark-mode .form-text {
+        color: #ccc;
+    }
+
+    body.dark-mode .nav-link {
+        color: #eee;
+    }
+
+    body.dark-mode #bottomMenu {
+        background-color: #1a1a1a;
+        border-top: 1px solid #333;
+    }
+</style>
 {% endblock %}
