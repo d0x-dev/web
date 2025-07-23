@@ -405,6 +405,13 @@ def admin_dashboard():
     finally:
         conn.close()
 
+@app.route('/admin/approved-users')
+@admin_required
+def approved_users():
+    # Your logic to fetch and display approved users
+    approved = User.query.filter_by(status='approved').all()
+    return render_template('admin/approved_users.html', users=approved)
+
 @app.route('/admin/pending-users')
 @admin_required
 def pending_users():
