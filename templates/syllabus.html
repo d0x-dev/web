@@ -1,162 +1,136 @@
 {% extends "base.html" %}
 
-{% block title %}Syllabus - GOVT. BOYS HIGH SCHOOL PETH MAKHAMA{% endblock %}
+{% block title %}Syllabus – GOVT. BOYS HIGH SCHOOL PETH MAKHAMA{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-        <h1>School Syllabus</h1>
+<div class="container px-2 px-md-4 mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-semibold mb-0">School Syllabus</h4>
+    {% if session.get('admin_logged_in') %}
+    <a href="{{ url_for('upload_syllabus') }}" class="btn btn-sm btn-primary">
+      <i class="bi bi-upload"></i> Upload
+    </a>
+    {% endif %}
+  </div>
+
+  <div class="card shadow-sm border-0 mb-3">
+    <div class="card-header bg-primary text-white">
+      <h6 class="mb-0"><i class="bi bi-journal-bookmark"></i> Filter</h6>
+    </div>
+    <div class="card-body py-2">
+      <form class="row g-2">
+        <div class="col-6 col-md-3">
+          <select id="classFilter" class="form-select form-select-sm">
+            <option value="">Class</option>
+            {% for c in range(1,13) %}
+            <option>Class {{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <input id="subjectFilter" type="text" class="form-control form-control-sm" placeholder="Subject">
+        </div>
+        <div class="col-6 col-md-3">
+          <select id="yearFilter" class="form-select form-select-sm">
+            <option value="">Year</option>
+            {% for y in range(2020,2026) %}
+            <option>{{ y }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <button id="resetFilters" type="button" class="btn btn-outline-secondary btn-sm w-100">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white">
+      <h6 class="mb-0"><i class="bi bi-journal-text"></i> Available</h6>
+    </div>
+    <div class="card-body p-0">
+      {% if syllabus %}
+      <div class="table-responsive">
+        <table id="syllabusTable" class="table mb-0">
+          <thead class="table-light small">
+            <tr>
+              <th>Class</th><th>Subject</th><th>Exam</th><th>When</th><th>Date</th><th>⋯</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in syllabus %}
+            <tr>
+              <td class="p-1">{{ i.class_name }}</td>
+              <td class="p-1">{{ i.subject }}</td>
+              <td class="p-1">{{ i.exam_name }}</td>
+              <td class="p-1">{{ i.year }}/{{ i.month }}</td>
+              <td class="p-1">{{ i.upload_date.split()[0] }}</td>
+              <td class="p-1">
+                <a href="{{ url_for('download_file', filename=i.filename) }}"
+                   class="btn btn-sm btn-outline-primary py-0 px-1 me-1 mb-1">
+                  <i class="bi bi-download"></i>
+                </a>
+                {% if session.get('admin_logged_in') %}
+                <form method="POST" action="{{ url_for('delete_syllabus', id=i.id) }}"
+                      class="d-inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-1 mb-1"
+                          onclick="return confirm('Delete this syllabus?')">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center p-4 small text-muted">
+        <i class="bi bi-journal-x fs-2 mb-2"></i>
+        <p>No syllabus available</p>
         {% if session.get('admin_logged_in') %}
-        <a href="{{ url_for('upload_syllabus') }}" class="btn btn-primary mt-3 mt-md-0">
-            <i class="bi bi-upload"></i> Upload Syllabus
+        <a href="{{ url_for('upload_syllabus') }}" class="btn btn-sm btn-primary">
+          <i class="bi bi-upload"></i> Upload
         </a>
         {% endif %}
+      </div>
+      {% endif %}
     </div>
-
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0"><i class="bi bi-journal-bookmark"></i> Syllabus Filter</h3>
-        </div>
-        <div class="card-body">
-            <form class="row g-3">
-                <div class="col-md-3">
-                    <label for="classFilter" class="form-label">Class</label>
-                    <select class="form-select" id="classFilter">
-                        <option value="">All Classes</option>
-                        {% for class_num in range(1, 13) %}
-                        <option value="Class {{ class_num }}">Class {{ class_num }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="subjectFilter" class="form-label">Subject</label>
-                    <input type="text" class="form-control" id="subjectFilter" placeholder="Any subject">
-                </div>
-                <div class="col-md-3">
-                    <label for="yearFilter" class="form-label">Year</label>
-                    <select class="form-select" id="yearFilter">
-                        <option value="">All Years</option>
-                        {% for year in range(2020, 2026) %}
-                        <option value="{{ year }}">{{ year }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <button type="button" class="btn btn-outline-secondary w-100" id="resetFilters">
-                        <i class="bi bi-arrow-counterclockwise"></i> Reset
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0"><i class="bi bi-journal-text"></i> Available Syllabi</h3>
-        </div>
-        <div class="card-body p-0">
-            {% if syllabus %}
-            <div class="table-responsive">
-                <table class="table table-hover mb-0" id="syllabusTable">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Class</th>
-                            <th>Subject</th>
-                            <th>Exam</th>
-                            <th>Year/Month</th>
-                            <th>Upload Date</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in syllabus %}
-                        <tr>
-                            <td>{{ item['class_name'] }}</td>
-                            <td>{{ item['subject'] }}</td>
-                            <td>{{ item['exam_name'] }}</td>
-                            <td>{{ item['year'] }}/{{ item['month'] }}</td>
-                            <td>{{ item['upload_date'].split()[0] }}</td>
-                            <td>
-                                <a href="{{ url_for('download_file', filename=item['filename']) }}" 
-                                   class="btn btn-sm btn-primary">
-                                    <i class="bi bi-download"></i> Download
-                                </a>
-                                {% if session.get('admin_logged_in') %}
-                                <form method="POST" action="{{ url_for('delete_syllabus', id=item['id']) }}" style="display: inline;">
-                                    <button type="submit" class="btn btn-sm btn-danger ms-2" onclick="return confirm('Are you sure you want to delete this syllabus?')">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </form>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="text-center p-5">
-                <i class="bi bi-journal-x fs-1 text-muted mb-3"></i>
-                <h4>No syllabus available</h4>
-                <p class="text-muted">Please check back later or contact administration</p>
-                {% if session.get('admin_logged_in') %}
-                <a href="{{ url_for('upload_syllabus') }}" class="btn btn-primary mt-3">
-                    <i class="bi bi-upload"></i> Upload Syllabus
-                </a>
-                {% endif %}
-            </div>
-            {% endif %}
-        </div>
-    </div>
+  </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Filter functionality
-    const classFilter = document.getElementById('classFilter');
-    const subjectFilter = document.getElementById('subjectFilter');
-    const yearFilter = document.getElementById('yearFilter');
-    const resetBtn = document.getElementById('resetFilters');
-    const tableRows = document.querySelectorAll('#syllabusTable tbody tr');
-    
-    function filterSyllabus() {
-        const classValue = classFilter.value.toLowerCase();
-        const subjectValue = subjectFilter.value.toLowerCase();
-        const yearValue = yearFilter.value.toLowerCase();
-        
-        tableRows.forEach(row => {
-            const classText = row.cells[0].textContent.toLowerCase();
-            const subjectText = row.cells[1].textContent.toLowerCase();
-            const yearText = row.cells[3].textContent.toLowerCase();
-            
-            const classMatch = classValue === '' || classText.includes(classValue);
-            const subjectMatch = subjectValue === '' || subjectText.includes(subjectValue);
-            const yearMatch = yearValue === '' || yearText.includes(yearValue);
-            
-            if (classMatch && subjectMatch && yearMatch) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-    
-    classFilter.addEventListener('change', filterSyllabus);
-    subjectFilter.addEventListener('input', filterSyllabus);
-    yearFilter.addEventListener('change', filterSyllabus);
-    
-    resetBtn.addEventListener('click', function() {
-        classFilter.value = '';
-        subjectFilter.value = '';
-        yearFilter.value = '';
-        filterSyllabus();
-    });
+document.addEventListener('DOMContentLoaded', () => {
+  const rows = document.querySelectorAll('#syllabusTable tbody tr');
+  const fClass = document.getElementById('classFilter');
+  const fSubject = document.getElementById('subjectFilter');
+  const fYear = document.getElementById('yearFilter');
+  const btnReset = document.getElementById('resetFilters');
 
-    // Initialize tooltips
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
+  const doFilter = () => {
+    rows.forEach(r => {
+      const c = r.cells[0].textContent.toLowerCase();
+      const s = r.cells[1].textContent.toLowerCase();
+      const y = r.cells[3].textContent.toLowerCase();
+      r.style.display = (!fClass.value || c.includes(fClass.value.toLowerCase())) &&
+                        (!fSubject.value || s.includes(fSubject.value.toLowerCase())) &&
+                        (!fYear.value || y.includes(fYear.value.toLowerCase()))
+                        ? '' : 'none';
     });
+  };
+
+  [fClass, fYear].forEach(el => el.addEventListener('change', doFilter));
+  fSubject.addEventListener('input', doFilter);
+
+  btnReset.addEventListener('click', () => {
+    fClass.value = fYear.value = '';
+    fSubject.value = '';
+    doFilter();
+  });
 });
 </script>
 {% endblock %}
