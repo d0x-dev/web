@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import json
+from flask import jsonify
 from datetime import datetime
 import sqlite3
 from functools import wraps
