@@ -1,12 +1,15 @@
 {% extends "base.html" %}
+{% set hide_header = True %}
 
 {% block title %}Upload Document - Admin{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4 mb-5 pb-5">
+    <h2 class="mb-4 text-center">Upload Document</h2>
+
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-info text-white">
-            <h4 class="mb-0"><i class="bi bi-upload"></i> Upload Document</h4>
+            <h5 class="mb-0"><i class="bi bi-upload"></i> Upload Document</h5>
         </div>
         <div class="card-body">
             <form method="POST" action="{{ url_for('upload_document') }}" enctype="multipart/form-data">
@@ -21,16 +24,73 @@
                 <div class="mb-3">
                     <label for="file" class="form-label">Document File</label>
                     <input type="file" class="form-control" id="file" name="file" required>
-                    <div class="form-text">Allowed file types: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG</div>
+                    <div class="form-text">Allowed: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG</div>
                 </div>
-                <button type="submit" class="btn btn-info">
-                    <i class="bi bi-upload"></i> Upload Document
-                </button>
-                <a href="{{ url_for('documents') }}" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left"></i> Back to Documents
-                </a>
+
+                <div class="d-flex flex-column flex-md-row gap-2 justify-content-center mt-4">
+                    <button type="submit" class="btn btn-info w-100 w-md-auto">
+                        <i class="bi bi-upload"></i> Upload
+                    </button>
+                    <a href="{{ url_for('documents') }}" class="btn btn-secondary w-100 w-md-auto">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </a>
+                </div>
             </form>
         </div>
     </div>
 </div>
+
+<!-- Bottom Navigation -->
+<nav class="navbar navbar-expand fixed-bottom shadow-sm" id="bottomMenu">
+    <div class="container justify-content-around">
+        <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-speedometer2"></i><br>Dashboard
+        </a>
+        <a class="nav-link text-center" href="{{ url_for('admin_notifications') }}">
+            <i class="bi bi-megaphone"></i><br>Notify
+        </a>
+        <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
+            <i class="bi bi-box-arrow-right"></i><br>Logout
+        </a>
+    </div>
+</nav>
+
+<style>
+    .nav-link {
+        font-size: 0.8rem;
+        color: var(--bs-body-color);
+    }
+
+    #bottomMenu {
+        background-color: var(--bs-body-bg);
+        border-top: 1px solid var(--bs-border-color);
+    }
+
+    body.dark-mode .card,
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+        background-color: #1f1f1f;
+        color: white;
+    }
+
+    body.dark-mode label,
+    body.dark-mode .form-text {
+        color: #ccc;
+    }
+
+    body.dark-mode .nav-link {
+        color: #eee;
+    }
+
+    body.dark-mode #bottomMenu {
+        background-color: #1a1a1a;
+        border-top: 1px solid #333;
+    }
+
+    @media (max-width: 768px) {
+        .btn {
+            font-size: 0.9rem;
+        }
+    }
+</style>
 {% endblock %}
