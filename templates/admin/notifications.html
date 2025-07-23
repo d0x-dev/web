@@ -1,16 +1,13 @@
 {% extends "base.html" %}
+{% set hide_header = True %}
 
 {% block title %}Manage Notifications{% endblock %}
 
 {% block content %}
-<div class="container mt-3">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-        <h1 class="mb-3 mb-md-0">Manage Notifications</h1>
-        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Dashboard
-        </a>
-    </div>
+<div class="container mt-4 mb-5 pb-5">
+    <h2 class="mb-4 text-center">Manage Notifications</h2>
 
+    <!-- Add Notification -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Add New Notification</h5>
@@ -38,12 +35,11 @@
         </div>
     </div>
 
+    <!-- Notification List -->
     <div class="card border-0 shadow-sm">
-        <div class="card-header bg-secondary text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-megaphone"></i> Existing Notifications</h5>
-                <span class="badge bg-light text-dark">{{ notifications|length }} total</span>
-            </div>
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-megaphone"></i> Existing Notifications</h5>
+            <span class="badge bg-light text-dark">{{ notifications|length }} total</span>
         </div>
         <div class="card-body p-0">
             {% if notifications %}
@@ -53,7 +49,7 @@
                         <tr>
                             <th>Title</th>
                             <th>Content</th>
-                            <th>Date Posted</th>
+                            <th>Date</th>
                             <th>Pinned</th>
                             <th>Actions</th>
                         </tr>
@@ -72,7 +68,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="{{ url_for('delete_notification', id=notice['id']) }}" 
+                                <a href="{{ url_for('delete_notification', id=notice['id']) }}"
                                    class="btn btn-sm btn-outline-danger"
                                    onclick="return confirm('Are you sure you want to delete this notification?')">
                                     <i class="bi bi-trash"></i> Delete
@@ -93,4 +89,58 @@
         </div>
     </div>
 </div>
+
+<!-- Bottom Menu -->
+<nav class="navbar navbar-expand fixed-bottom shadow-sm" id="bottomMenu">
+    <div class="container justify-content-around">
+        <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-speedometer2"></i><br>Dashboard
+        </a>
+        <a class="nav-link text-center" href="{{ url_for('admin_notifications') }}">
+            <i class="bi bi-megaphone"></i><br>Notify
+        </a>
+        <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
+            <i class="bi bi-box-arrow-right"></i><br>Logout
+        </a>
+    </div>
+</nav>
+
+<style>
+    .nav-link {
+        font-size: 0.8rem;
+        color: var(--bs-body-color);
+    }
+
+    #bottomMenu {
+        background-color: var(--bs-body-bg);
+        border-top: 1px solid var(--bs-border-color);
+    }
+
+    body.dark-mode .card,
+    body.dark-mode .form-control,
+    body.dark-mode .form-select,
+    body.dark-mode .table {
+        background-color: #1f1f1f;
+        color: white;
+    }
+
+    body.dark-mode label,
+    body.dark-mode .form-text {
+        color: #ccc;
+    }
+
+    body.dark-mode .nav-link {
+        color: #eee;
+    }
+
+    body.dark-mode #bottomMenu {
+        background-color: #1a1a1a;
+        border-top: 1px solid #333;
+    }
+
+    body.dark-mode .table thead {
+        background-color: #2a2a2a;
+        color: #ddd;
+    }
+</style>
 {% endblock %}
