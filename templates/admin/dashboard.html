@@ -1,31 +1,31 @@
 {% extends "base.html" %}
+{% set hide_header = True %}
 
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
 <div class="container mt-3 mb-5">
-
     <h2 class="text-center mb-4">Admin Dashboard</h2>
 
-    <!-- Stats Grid (equal size) -->
-    <div class="row g-3 mb-3 text-center">
-        {% set box_class = "card p-3 h-100 shadow-sm text-decoration-none text-reset" %}
+    <!-- Summary Cards -->
+    <div class="row g-3 text-center">
+        {% set box = "card p-3 h-100 shadow-sm text-decoration-none text-reset" %}
         <div class="col-4">
-            <a href="{{ url_for('pending_users') }}" class="{{ box_class }}">
+            <a href="{{ url_for('pending_users') }}" class="{{ box }}">
                 <i class="bi bi-hourglass-split fs-2 text-warning"></i>
                 <div class="fw-semibold">Pending</div>
                 <strong>{{ pending_approvals }}</strong>
             </a>
         </div>
         <div class="col-4">
-            <div class="{{ box_class }}">
+            <div class="{{ box }}">
                 <i class="bi bi-person-check fs-2 text-success"></i>
                 <div class="fw-semibold">Approved</div>
                 <strong>{{ approved_users }}</strong>
             </div>
         </div>
         <div class="col-4">
-            <div class="{{ box_class }}">
+            <div class="{{ box }}">
                 <i class="bi bi-person-x fs-2 text-danger"></i>
                 <div class="fw-semibold">Declined</div>
                 <strong>{{ declined_users }}</strong>
@@ -33,8 +33,8 @@
         </div>
     </div>
 
-    <!-- Upload Actions Grid -->
-    <div class="row g-3 text-center">
+    <!-- Upload Sections -->
+    <div class="row g-3 mt-3 text-center">
         {% set card = "card p-3 shadow-sm text-decoration-none text-reset h-100" %}
         <div class="col-6">
             <a href="{{ url_for('admin_notifications') }}" class="{{ card }}">
@@ -80,7 +80,7 @@
         </div>
     </div>
 
-    <!-- Feedbacks -->
+    <!-- Recent Feedbacks -->
     <div class="mt-4">
         <h5 class="text-muted">Recent Feedbacks</h5>
         {% if feedbacks %}
@@ -105,26 +105,38 @@
         <p class="text-muted">No feedbacks yet.</p>
         {% endif %}
     </div>
-
 </div>
 
-<!-- Bottom Navigation -->
-<nav class="navbar navbar-dark bg-dark navbar-expand fixed-bottom shadow">
+<!-- Bottom Menu with Theme Support -->
+<nav class="navbar navbar-expand fixed-bottom shadow-sm" id="bottomMenu">
     <div class="container justify-content-around">
-        <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">
+        <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
             <i class="bi bi-speedometer2"></i><br>Dashboard
         </a>
-        <a class="nav-link text-white" href="{{ url_for('change_password') }}">
+        <a class="nav-link text-center" href="{{ url_for('change_password') }}">
             <i class="bi bi-key"></i><br>Password
         </a>
-        <a class="nav-link text-white" href="{{ url_for('admin_logout') }}">
+        <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
             <i class="bi bi-box-arrow-right"></i><br>Logout
         </a>
     </div>
 </nav>
 
-<!-- Theme Friendly Styling -->
 <style>
+    .nav-link {
+        font-size: 0.8rem;
+        color: var(--bs-body-color);
+    }
+
+    #bottomMenu {
+        background-color: var(--bs-body-bg);
+        border-top: 1px solid var(--bs-border-color);
+    }
+
+    .card:hover {
+        background-color: #f8f9fa;
+    }
+
     body.dark-mode {
         background-color: #121212;
         color: white;
@@ -136,17 +148,17 @@
         color: white;
     }
 
-    .nav-link {
-        font-size: 0.8rem;
-        text-align: center;
-    }
-
-    .card:hover {
-        background-color: #f9f9f9;
-    }
-
     body.dark-mode .card:hover {
         background-color: #2a2a2a;
+    }
+
+    body.dark-mode #bottomMenu {
+        background-color: #1a1a1a;
+        border-top: 1px solid #333;
+    }
+
+    body.dark-mode .nav-link {
+        color: #eee;
     }
 </style>
 {% endblock %}
