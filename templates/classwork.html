@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Class Work - GOVT. BOYS HIGH SCHOOL PETH MAKHAMA{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h1>Class Work</h1>
+        {% if session.get('admin_logged_in') %}
+        <a href="{{ url_for('upload_classwork') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Upload Class Work
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="row g-3">
+        {% if classwork %}
+            {% for work in classwork %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        {{ work.class_name }} - {{ work.subject }}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ work.title }}</h5>
+                        <p class="card-text">{{ work.description }}</p>
+                        <p class="text-muted small">Uploaded: {{ work.upload_date.split()[0] }}</p>
+                        {% if work.due_date %}
+                        <p class="text-muted small">Due: {{ work.due_date }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ url_for('download_file', filename=work.filename) }}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No class work available yet.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
