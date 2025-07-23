@@ -13,6 +13,7 @@
       --light: #f5f6fa;
       --accent: #fd79a8;
       --success: #00b894;
+      --admin: #00cec9;
     }
 
     * {
@@ -156,6 +157,25 @@
       overflow: hidden;
     }
 
+    .btn-admin {
+      width: 100%;
+      padding: 0.75rem;
+      background: transparent;
+      border: 2px solid var(--admin);
+      border-radius: 8px;
+      color: var(--admin);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-admin:hover {
+      background: rgba(0, 206, 201, 0.1);
+    }
+
     .btn-login::before {
       content: '';
       position: absolute;
@@ -194,6 +214,20 @@
 
     .login-footer a:hover {
       color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .admin-login-link {
+      display: block;
+      margin-top: 1rem;
+      color: var(--admin);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .admin-login-link:hover {
+      color: var(--light);
       text-decoration: underline;
     }
 
@@ -300,6 +334,9 @@
       <div class="login-footer">
         <a href="{{ url_for('signup') }}">Create account</a> • 
         <a href="{{ url_for('contact') }}">Need help?</a>
+        <a href="{{ url_for('admin_login') }}" class="admin-login-link">
+          <i class="bi bi-shield-lock"></i> Admin Login
+        </a>
       </div>
     </form>
   </div>
