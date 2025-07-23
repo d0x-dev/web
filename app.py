@@ -300,9 +300,7 @@ def documents():
 
 @app.route('/favicon.ico')
 def favicon():
-    print("Favicon route hit!")  # Check if this appears in your console
-    print("Static folder path:", os.path.join(app.root_path, 'static'))
-    print("Favicon exists:", os.path.exists(os.path.join(app.root_path, 'static', 'favicon.ico')))
+    # Return a transparent 1x1 pixel to prevent 404 errors
     return send_from_directory(os.path.join(app.root_path, 'static'),
                              'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
