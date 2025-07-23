@@ -87,13 +87,13 @@
       <div class="dashboard-card text-center bg-success">
         <h6>Pending Users</h6>
         <p class="fs-4">{{ pending_approvals }}</p>
-        <a href="{{ url_for('approve_users') }}" class="btn btn-light btn-sm">Manage</a>
+        <a href="{{ url_for('approved_users') }}" class="btn btn-light btn-sm">Manage</a>
       </div>
     </div>
     <div class="col-4">
       <div class="dashboard-card text-center bg-primary">
         <h6>Approved</h6>
-        <p class="fs-4">{{ approve_users }}</p>
+        <p class="fs-4">{{ approved_users }}</p>
       </div>
     </div>
     <div class="col-4">
