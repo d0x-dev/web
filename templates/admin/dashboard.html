@@ -1,129 +1,161 @@
 {% extends "base.html" %}
-{% set hide_header = True %}
 {% set hide_menu_button = True %}
-
+{% set hide_footer = True %}
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mt-3 mb-5 pb-5">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-        <h1 class="mb-3 mb-md-0">Admin Dashboard</h1>
-        <div class="d-flex gap-2">
-            <a href="{{ url_for('change_password') }}" class="btn btn-warning">
-                <i class="bi bi-key"></i> Change Password
-            </a>
-            <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
-        </div>
-    </div>
+<style>
+  .dashboard-card {
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+    background: linear-gradient(135deg, #3f51b5, #5c6bc0);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #222;
+    color: white;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    z-index: 999;
+    border-top: 1px solid #444;
+  }
+  .bottom-nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    text-align: center;
+  }
+  .bottom-nav i {
+    display: block;
+    font-size: 20px;
+  }
+</style>
 
-    <div class="row text-center mb-4">
-        <div class="col-6 col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5>{{ notifications_count }}</h5>
-                    <p class="mb-0">Notifications</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5>{{ syllabus_count }}</h5>
-                    <p class="mb-0">Syllabus</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5>{{ documents_count }}</h5>
-                    <p class="mb-0">Documents</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5>{{ feedbacks_count }}</h5>
-                    <p class="mb-0">Feedbacks</p>
-                </div>
-            </div>
-        </div>
+<div class="container mt-4 mb-5">
+  <div class="row g-3">
+    <div class="col-6 col-md-4">
+      <div class="dashboard-card text-center">
+        <h6>Notifications</h6>
+        <p class="fs-4">{{ notifications_count }}</p>
+        <a href="{{ url_for('admin_notifications') }}" class="btn btn-light btn-sm">View</a>
+      </div>
     </div>
+    <div class="col-6 col-md-4">
+      <div class="dashboard-card text-center">
+        <h6>Syllabus</h6>
+        <p class="fs-4">{{ syllabus_count }}</p>
+        <a href="{{ url_for('upload_syllabus') }}" class="btn btn-light btn-sm">Upload</a>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="dashboard-card text-center">
+        <h6>Documents</h6>
+        <p class="fs-4">{{ documents_count }}</p>
+        <a href="{{ url_for('upload_document') }}" class="btn btn-light btn-sm">Upload</a>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="dashboard-card text-center">
+        <h6>Classwork</h6>
+        <a href="{{ url_for('upload_classwork') }}" class="btn btn-light btn-sm mt-2">Upload</a>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="dashboard-card text-center">
+        <h6>Homework</h6>
+        <a href="{{ url_for('upload_homework') }}" class="btn btn-light btn-sm mt-2">Upload</a>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="dashboard-card text-center">
+        <h6>Books</h6>
+        <a href="{{ url_for('upload_books') }}" class="btn btn-light btn-sm mt-2">Upload</a>
+      </div>
+    </div>
+  </div>
 
-    <!-- Upload Buttons -->
-    <div class="mb-4 d-flex gap-3 flex-wrap">
-        <a href="{{ url_for('upload_syllabus') }}" class="btn btn-outline-primary rounded-pill">
-            <i class="bi bi-upload"></i> Upload Syllabus
-        </a>
-        <a href="{{ url_for('upload_document') }}" class="btn btn-outline-primary rounded-pill">
-            <i class="bi bi-upload"></i> Upload Document
-        </a>
-        <a href="{{ url_for('admin_notifications') }}" class="btn btn-outline-success rounded-pill">
-            <i class="bi bi-megaphone"></i> Add Notification
-        </a>
-    </div>
+  <hr class="my-4">
 
-    <!-- Pending/Approved/Declined Users Stats -->
-    <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h6>Pending Approvals</h6>
-                    <h3 class="text-warning">{{ pending_approvals }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h6>Approved Users</h6>
-                    <h3 class="text-success">{{ approved_users }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h6>Declined Users</h6>
-                    <h3 class="text-danger">{{ declined_users }}</h3>
-                </div>
-            </div>
-        </div>
+  <div class="row g-3">
+    <div class="col-4">
+      <div class="dashboard-card text-center bg-success">
+        <h6>Pending Users</h6>
+        <p class="fs-4">{{ pending_approvals }}</p>
+        <a href="{{ url_for('approve_users') }}" class="btn btn-light btn-sm">Manage</a>
+      </div>
     </div>
+    <div class="col-4">
+      <div class="dashboard-card text-center bg-primary">
+        <h6>Approved</h6>
+        <p class="fs-4">{{ approved_users }}</p>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="dashboard-card text-center bg-danger">
+        <h6>Declined</h6>
+        <p class="fs-4">{{ declined_users }}</p>
+      </div>
+    </div>
+  </div>
 
-    <!-- Recent Feedback -->
-    <h5 class="mt-4 mb-2">Recent Feedback</h5>
-    <div class="list-group">
-        {% for fb in feedbacks %}
-        <div class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1">{{ fb.name }}</h6>
-                <small>{{ fb.date }}</small>
-            </div>
-            <p class="mb-1">{{ fb.message }}</p>
+  <hr class="my-4">
+
+  <h5>Recent Feedback</h5>
+  {% if feedbacks %}
+    <ul class="list-group">
+      {% for f in feedbacks %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ f.name }}</strong> <br>
+          <small>{{ f.date }}</small><br>
+          {{ f.message[:50] }}...
         </div>
-        {% endfor %}
-    </div>
+        <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#feedbackModal{{ f.id }}">View</a>
+      </li>
+
+      <!-- Feedback Modal -->
+      <div class="modal fade" id="feedbackModal{{ f.id }}" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">{{ f.name }}</h5>
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <p><strong>Email:</strong> {{ f.email }}</p>
+              <p><strong>Date:</strong> {{ f.date }}</p>
+              <hr>
+              <p>{{ f.message }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No feedbacks yet.</p>
+  {% endif %}
 </div>
 
-<!-- Bottom Mobile Navigation (Android Style) -->
-<nav class="navbar fixed-bottom navbar-light bg-light border-top d-md-none">
-    <div class="container-fluid d-flex justify-content-around">
-        <a href="{{ url_for('admin_dashboard') }}" class="text-center text-dark">
-            <i class="bi bi-house fs-4"></i><br><small>Home</small>
-        </a>
-        <a href="{{ url_for('admin_notifications') }}" class="text-center text-dark">
-            <i class="bi bi-megaphone fs-4"></i><br><small>Notify</small>
-        </a>
-        <a href="{{ url_for('upload_document') }}" class="text-center text-dark">
-            <i class="bi bi-upload fs-4"></i><br><small>Upload</small>
-        </a>
-        <a href="{{ url_for('admin_logout') }}" class="text-center text-dark">
-            <i class="bi bi-box-arrow-right fs-4"></i><br><small>Logout</small>
-        </a>
-    </div>
-</nav>
+<!-- Bottom Nav -->
+<div class="bottom-nav d-md-none">
+  <a href="{{ url_for('admin_dashboard') }}">
+    <i class="bi bi-house-door-fill"></i> Home
+  </a>
+  <a href="{{ url_for('admin_notifications') }}">
+    <i class="bi bi-bell-fill"></i> Notify
+  </a>
+  <a href="{{ url_for('upload_document') }}">
+    <i class="bi bi-upload"></i> Upload
+  </a>
+  <a href="{{ url_for('logout') }}">
+    <i class="bi bi-box-arrow-right"></i> Logout
+  </a>
+</div>
 {% endblock %}
