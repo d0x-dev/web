@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% set hide_header = True %}
 
 {% block title %}Upload Book - Admin{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container mb-5 pb-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm">
@@ -46,4 +47,40 @@
         </div>
     </div>
 </div>
+
+<!-- Bottom Menu -->
+<nav class="navbar navbar-expand fixed-bottom shadow-sm" id="bottomMenu">
+    <div class="container justify-content-around">
+        <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-speedometer2"></i><br>Dashboard
+        </a>
+        <a class="nav-link text-center" href="{{ url_for('admin_notifications') }}">
+            <i class="bi bi-megaphone"></i><br>Notify
+        </a>
+        <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
+            <i class="bi bi-box-arrow-right"></i><br>Logout
+        </a>
+    </div>
+</nav>
+
+<style>
+    .nav-link {
+        font-size: 0.8rem;
+        color: var(--bs-body-color);
+    }
+
+    #bottomMenu {
+        background-color: var(--bs-body-bg);
+        border-top: 1px solid var(--bs-border-color);
+    }
+
+    body.dark-mode .nav-link {
+        color: #eee;
+    }
+
+    body.dark-mode #bottomMenu {
+        background-color: #1a1a1a;
+        border-top: 1px solid #333;
+    }
+</style>
 {% endblock %}
