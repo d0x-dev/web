@@ -769,6 +769,21 @@ def record_failed_attempt(username, ip_address):
     
     save_failed_attempts(attempts_data)
 
+@app.route('/check_username', methods=['POST'])
+def check_username():
+    data = request.get_json()
+    username = data.get('username')
+
+    with open('users.json', 'r') as f:
+        users = json.load(f)
+
+    for user in users:
+        if user['username'].lower() == username.lower():
+            return jsonify({'available': False})  # Username taken
+
+    return jsonify({'available': True})  # Username is available
+
+
 if __name__ == '__main__':
     # Create required files if they don't exist
     for file in [USERS_FILE, PENDING_FILE, DECLINED_FILE]:
