@@ -7,78 +7,80 @@
 
     <h2 class="text-center mb-4">Admin Dashboard</h2>
 
-    <!-- Stats Grid -->
+    <!-- Stats Grid (equal size) -->
     <div class="row g-3 mb-3 text-center">
+        {% set box_class = "card p-3 h-100 shadow-sm text-decoration-none text-reset" %}
         <div class="col-4">
-            <a href="{{ url_for('pending_users') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+            <a href="{{ url_for('pending_users') }}" class="{{ box_class }}">
                 <i class="bi bi-hourglass-split fs-2 text-warning"></i>
-                <div>Pending</div>
+                <div class="fw-semibold">Pending</div>
                 <strong>{{ pending_approvals }}</strong>
             </a>
         </div>
         <div class="col-4">
-            <a class="card p-3 shadow-sm text-decoration-none text-dark">
+            <div class="{{ box_class }}">
                 <i class="bi bi-person-check fs-2 text-success"></i>
-                <div>Approved</div>
+                <div class="fw-semibold">Approved</div>
                 <strong>{{ approved_users }}</strong>
-            </a>
+            </div>
         </div>
         <div class="col-4">
-            <a class="card p-3 shadow-sm text-decoration-none text-dark">
+            <div class="{{ box_class }}">
                 <i class="bi bi-person-x fs-2 text-danger"></i>
-                <div>Declined</div>
-                <strong>{{ decline_users }}</strong>
-            </a>
+                <div class="fw-semibold">Declined</div>
+                <strong>{{ declined_users }}</strong>
+            </div>
         </div>
     </div>
 
     <!-- Upload Actions Grid -->
     <div class="row g-3 text-center">
+        {% set card = "card p-3 shadow-sm text-decoration-none text-reset h-100" %}
         <div class="col-6">
-            <a href="{{ url_for('admin_notifications') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+            <a href="{{ url_for('admin_notifications') }}" class="{{ card }}">
                 <i class="bi bi-megaphone fs-2 text-primary"></i>
                 <div>Notifications</div>
                 <small>{{ notifications_count }} items</small>
             </a>
         </div>
         <div class="col-6">
-            <a href="{{ url_for('upload_syllabus') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+            <a href="{{ url_for('upload_syllabus') }}" class="{{ card }}">
                 <i class="bi bi-journal-text fs-2 text-success"></i>
                 <div>Syllabus</div>
                 <small>{{ syllabus_count }} files</small>
             </a>
         </div>
         <div class="col-6">
-            <a href="{{ url_for('upload_document') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+            <a href="{{ url_for('upload_document') }}" class="{{ card }}">
                 <i class="bi bi-file-earmark-text fs-2 text-info"></i>
                 <div>Documents</div>
                 <small>{{ documents_count }} files</small>
             </a>
         </div>
         <div class="col-6">
-            <a href="{{ url_for('upload_classwork') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+            <a href="{{ url_for('upload_classwork') }}" class="{{ card }}">
                 <i class="bi bi-journal-richtext fs-2 text-warning"></i>
                 <div>Classwork</div>
                 <small>{{ classwork_count }} files</small>
             </a>
         </div>
         <div class="col-6">
-            <a href="{{ url_for('upload_homework') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
+            <a href="{{ url_for('upload_homework') }}" class="{{ card }}">
                 <i class="bi bi-house-door fs-2 text-danger"></i>
                 <div>Homework</div>
                 <small>{{ homework_count }} files</small>
             </a>
         </div>
         <div class="col-6">
-            <a href="{{ url_for('upload_book') }}" class="card p-3 shadow-sm text-decoration-none text-dark">
-                <i class="bi bi-book fs-2 text-purple" style="color: #6f42c1;"></i>
+            <a href="{{ url_for('upload_book') }}" class="{{ card }}">
+                <i class="bi bi-book fs-2" style="color: #6f42c1;"></i>
                 <div>Books</div>
                 <small>{{ books_count }} files</small>
             </a>
         </div>
     </div>
 
-    <!-- Feedbacks (simple preview, optional) -->
+    <!-- Feedbacks -->
     <div class="mt-4">
         <h5 class="text-muted">Recent Feedbacks</h5>
         {% if feedbacks %}
@@ -121,13 +123,30 @@
     </div>
 </nav>
 
+<!-- Theme Friendly Styling -->
 <style>
+    body.dark-mode {
+        background-color: #121212;
+        color: white;
+    }
+
+    body.dark-mode .card,
+    body.dark-mode .list-group-item {
+        background-color: #1f1f1f;
+        color: white;
+    }
+
     .nav-link {
         font-size: 0.8rem;
         text-align: center;
     }
+
     .card:hover {
         background-color: #f9f9f9;
+    }
+
+    body.dark-mode .card:hover {
+        background-color: #2a2a2a;
     }
 </style>
 {% endblock %}
