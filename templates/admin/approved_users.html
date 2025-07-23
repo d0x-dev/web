@@ -30,10 +30,10 @@
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>ID</th>
+                            <th>Username</th>
                             <th>Name</th>
-                            <th>Email</th>
-                            <th>Registration Date</th>
+                            <th>Role</th>
+                            <th>Class</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -41,19 +41,25 @@
                     <tbody>
                         {% for user in users %}
                         <tr>
-                            <td>{{ user.id }}</td>
-                            <td>{{ user.name }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.registration_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>
+                                {% if user.first_name or user.last_name %}
+                                    {{ user.first_name }} {{ user.last_name }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ user.role|default('student') }}</td>
+                            <td>{{ user.class|default('-') }}</td>
                             <td>
                                 <span class="badge bg-success">Approved</span>
                             </td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#userModal{{ user.id }}">
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#userModal{{ loop.index }}">
                                         <i class="bi bi-eye"></i> View
-                                    </a>
-                                    <form method="POST" action="{{ url_for('revoke_approval', user_id=user.id) }}" class="d-inline">
+                                    </button>
+                                    <form method="POST" action="{{ url_for('revoke_approval', username=user.username) }}" class="d-inline">
                                         <button type="submit" class="btn btn-sm btn-outline-warning">
                                             <i class="bi bi-person-x"></i> Revoke
                                         </button>
@@ -61,42 +67,6 @@
                                 </div>
                             </td>
                         </tr>
-                        
-                        <!-- User Details Modal -->
-                        <div class="modal fade" id="userModal{{ user.id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">User Details</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <h6>Basic Information</h6>
-                                                <p><strong>Name:</strong> {{ user.name }}</p>
-                                                <p><strong>Email:</strong> {{ user.email }}</p>
-                                                <p><strong>User ID:</strong> {{ user.id }}</p>
-                                                <p><strong>Status:</strong> <span class="badge bg-success">Approved</span></p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <h6>Account Details</h6>
-                                                <p><strong>Registration Date:</strong> {{ user.registration_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                                                <p><strong>Last Login:</strong> {{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Never' }}</p>
-                                            </div>
-                                        </div>
-                                        {% if user.additional_info %}
-                                        <hr>
-                                        <h6>Additional Information</h6>
-                                        <p>{{ user.additional_info }}</p>
-                                        {% endif %}
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -110,50 +80,48 @@
             {% endif %}
         </div>
     </div>
-
-    <!-- Pagination -->
-    {% if pagination %}
-    <nav class="mt-4">
-        <ul class="pagination justify-content-center">
-            {% if pagination.has_prev %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for('approved_users', page=pagination.prev_num) }}">Previous</a>
-            </li>
-            {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">Previous</span>
-            </li>
-            {% endif %}
-            
-            {% for page_num in pagination.iter_pages() %}
-                {% if page_num %}
-                    {% if page_num == pagination.page %}
-                    <li class="page-item active">
-                        <span class="page-link">{{ page_num }}</span>
-                    </li>
-                    {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('approved_users', page=page_num) }}">{{ page_num }}</a>
-                    </li>
-                    {% endif %}
-                {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">...</span>
-                    </li>
-                {% endif %}
-            {% endfor %}
-            
-            {% if pagination.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for('approved_users', page=pagination.next_num) }}">Next</a>
-            </li>
-            {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">Next</span>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
 </div>
+
+<!-- Modals for each user -->
+{% for user in users %}
+<div class="modal fade" id="userModal{{ loop.index }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">User Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6>Basic Information</h6>
+                    <p><strong>Username:</strong> {{ user.username }}</p>
+                    <p><strong>Name:</strong> 
+                        {% if user.first_name or user.last_name %}
+                            {{ user.first_name }} {{ user.last_name }}
+                        {% else %}
+                            Not provided
+                        {% endif %}
+                    </p>
+                    <p><strong>Role:</strong> {{ user.role|default('student') }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Academic Information</h6>
+                    <p><strong>Class:</strong> {{ user.class|default('Not provided') }}</p>
+                    <p><strong>Roll Number:</strong> {{ user.roll_number|default('Not provided') }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Account Status</h6>
+                    <p><strong>Status:</strong> <span class="badge bg-success">Approved</span></p>
+                    <p><strong>Registration Date:</strong> {{ user.date|default('Not available') }}</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 {% endblock %}
