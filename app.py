@@ -445,17 +445,6 @@ def admin_dashboard():
     finally:
         conn.close()
 
-
-@app.route('/classwork')
-@login_required
-def classwork():
-    conn = get_db_connection()
-    try:
-        classwork = conn.execute('SELECT * FROM classwork ORDER BY upload_date DESC').fetchall()
-        return render_template('classwork.html', classwork=classwork)
-    finally:
-        conn.close()
-
 @app.route('/admin/upload_classwork', methods=['GET', 'POST'])
 @admin_required
 def upload_classwork():
@@ -498,13 +487,99 @@ def upload_classwork():
     return render_template('admin/upload_classwork.html')
 
 # Homework Routes
-@app.route('/homework')
+# Class Work Routes
+@app.route('/classwork', methods=['GET', 'POST'])
+@login_required
+def classwork():
+    conn = get_db_connection()
+    try:
+        if request.method == 'POST':
+            class_name = request.form.get('class_name')
+            subject = request.form.get('subject')
+            
+            query = 'SELECT * FROM classwork WHERE 1=1'
+            params = []
+            
+            if class_name and class_name != 'all':
+                query += ' AND class_name = ?'
+                params.append(class_name)
+            
+            if subject and subject != 'all':
+                query += ' AND subject = ?'
+                params.append(subject)
+            
+            query += ' ORDER BY upload_date DESC'
+            classwork = conn.execute(query, params).fetchall()
+            
+            # Get distinct classes and subjects for dropdowns
+            classes = conn.execute('SELECT DISTINCT class_name FROM classwork ORDER BY class_name').fetchall()
+            subjects = conn.execute('SELECT DISTINCT subject FROM classwork ORDER BY subject').fetchall()
+            
+            return render_template('classwork.html', 
+                                classwork=classwork,
+                                classes=classes,
+                                subjects=subjects,
+                                selected_class=class_name,
+                                selected_subject=subject)
+        
+        # Default GET request
+        classwork = conn.execute('SELECT * FROM classwork ORDER BY upload_date DESC LIMIT 10').fetchall()
+        classes = conn.execute('SELECT DISTINCT class_name FROM classwork ORDER BY class_name').fetchall()
+        subjects = conn.execute('SELECT DISTINCT subject FROM classwork ORDER BY subject').fetchall()
+        
+        return render_template('classwork.html',
+                            classwork=classwork,
+                            classes=classes,
+                            subjects=subjects,
+                            selected_class='all',
+                            selected_subject='all')
+    finally:
+        conn.close()
+
+# Homework Routes (similar structure)
+@app.route('/homework', methods=['GET', 'POST'])
 @login_required
 def homework():
     conn = get_db_connection()
     try:
-        homework = conn.execute('SELECT * FROM homework ORDER BY upload_date DESC').fetchall()
-        return render_template('homework.html', homework=homework)
+        if request.method == 'POST':
+            class_name = request.form.get('class_name')
+            subject = request.form.get('subject')
+            
+            query = 'SELECT * FROM homework WHERE 1=1'
+            params = []
+            
+            if class_name and class_name != 'all':
+                query += ' AND class_name = ?'
+                params.append(class_name)
+            
+            if subject and subject != 'all':
+                query += ' AND subject = ?'
+                params.append(subject)
+            
+            query += ' ORDER BY upload_date DESC'
+            homework = conn.execute(query, params).fetchall()
+            
+            classes = conn.execute('SELECT DISTINCT class_name FROM homework ORDER BY class_name').fetchall()
+            subjects = conn.execute('SELECT DISTINCT subject FROM homework ORDER BY subject').fetchall()
+            
+            return render_template('homework.html', 
+                                homework=homework,
+                                classes=classes,
+                                subjects=subjects,
+                                selected_class=class_name,
+                                selected_subject=subject)
+        
+        homework = conn.execute('SELECT * FROM homework ORDER BY upload_date DESC LIMIT 10').fetchall()
+        classes = conn.execute('SELECT DISTINCT class_name FROM homework ORDER BY class_name').fetchall()
+        subjects = conn.execute('SELECT DISTINCT subject FROM homework ORDER BY subject').fetchall()
+        
+        return render_template('homework.html',
+                            homework=homework,
+                            classes=classes,
+                            subjects=subjects,
+                            selected_class='all',
+                            selected_subject='all')
     finally:
         conn.close()
 
