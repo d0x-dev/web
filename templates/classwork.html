@@ -13,6 +13,42 @@
         {% endif %}
     </div>
 
+    <!-- Filter Form -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <form method="POST" class="row g-3">
+                <div class="col-md-5">
+                    <label for="class_name" class="form-label">Class</label>
+                    <select class="form-select" id="class_name" name="class_name">
+                        <option value="all" {% if selected_class == 'all' %}selected{% endif %}>All Classes</option>
+                        {% for class_item in classes %}
+                        <option value="{{ class_item.class_name }}" {% if selected_class == class_item.class_name %}selected{% endif %}>
+                            {{ class_item.class_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label for="subject" class="form-label">Subject</label>
+                    <select class="form-select" id="subject" name="subject">
+                        <option value="all" {% if selected_subject == 'all' %}selected{% endif %}>All Subjects</option>
+                        {% for subject_item in subjects %}
+                        <option value="{{ subject_item.subject }}" {% if selected_subject == subject_item.subject %}selected{% endif %}>
+                            {{ subject_item.subject }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-filter"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Class Work List -->
     <div class="row g-3">
         {% if classwork %}
             {% for work in classwork %}
@@ -40,7 +76,7 @@
         {% else %}
             <div class="col-12">
                 <div class="alert alert-info">
-                    No class work available yet.
+                    No class work found for the selected filters.
                 </div>
             </div>
         {% endif %}
