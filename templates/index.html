@@ -104,6 +104,48 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Class Work -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-3">
+                    <div class="icon-circle bg-info text-white mb-3 mx-auto">
+                        <i class="bi bi-journal-text fs-3"></i>
+                    </div>
+                    <h5 class="card-title">Class Work</h5>
+                    <p class="card-text text-muted small">View today's class work</p>
+                    <a href="{{ url_for('classwork') }}" class="btn btn-outline-info btn-sm stretched-link">View Class Work</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Homework -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-3">
+                    <div class="icon-circle bg-warning text-white mb-3 mx-auto">
+                        <i class="bi bi-house-door fs-3"></i>
+                    </div>
+                    <h5 class="card-title">Homework</h5>
+                    <p class="card-text text-muted small">View assigned homework</p>
+                    <a href="{{ url_for('homework') }}" class="btn btn-outline-warning btn-sm stretched-link">View Homework</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Books -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-3">
+                    <div class="icon-circle bg-danger text-white mb-3 mx-auto">
+                        <i class="bi bi-book fs-3"></i>
+                    </div>
+                    <h5 class="card-title">Books</h5>
+                    <p class="card-text text-muted small">View school books</p>
+                    <a href="{{ url_for('books') }}" class="btn btn-outline-danger btn-sm stretched-link">View Books</a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
