@@ -1,330 +1,104 @@
 {% extends "base.html" %}
-
 {% block title %}Admin Dashboard{% endblock %}
+{% set hide_header = True %}
 
 {% block content %}
-<div class="container mt-3">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-        <h1 class="mb-3 mb-md-0">Admin Dashboard</h1>
-        <div class="d-flex gap-2">
-            <a href="{{ url_for('change_password') }}" class="btn btn-warning">
-                <i class="bi bi-key"></i> Change Password
-            </a>
-            <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
-        </div>
+<div class="container-fluid px-3 py-4" style="background-color: #f3f4f6; min-height: 100vh;">
+    <div class="mb-4 text-center">
+        <h2 class="fw-bold">Admin Dashboard</h2>
+        <p class="text-muted">Manage School Portal Settings</p>
     </div>
 
-    <!-- Quick Stats -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Pending Approvals</h6>
-                            <h3 class="mb-0">{{ pending_approvals }}</h3>
-                        </div>
-                        <div class="icon-circle bg-warning text-white">
-                            <i class="bi bi-person-plus"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <a href="{{ url_for('pending_users') }}" class="btn btn-sm btn-outline-warning w-100">
-                            Review Applications
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Approved Users</h6>
-                            <h3 class="mb-0">{{ approved_users }}</h3>
-                        </div>
-                        <div class="icon-circle bg-success text-white">
-                            <i class="bi bi-person-check"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <a href="#" class="btn btn-sm btn-outline-success w-100">
-                            View Users
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Declined Users</h6>
-                            <h3 class="mb-0">{{ declined_users }}</h3>
-                        </div>
-                        <div class="icon-circle bg-danger text-white">
-                            <i class="bi bi-person-x"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <a href="#" class="btn btn-sm btn-outline-danger w-100">
-                            View Declined
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Feedbacks</h6>
-                            <h3 class="mb-0">{{ feedbacks_count }}</h3>
-                        </div>
-                        <div class="icon-circle bg-info text-white">
-                            <i class="bi bi-chat-left-text"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <a href="#feedbacks" class="btn btn-sm btn-outline-info w-100">
-                            View Feedbacks
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Feedbacks -->
-    <div class="card border-0 shadow-sm mb-4" id="feedbacks">
-        <div class="card-header bg-secondary text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-chat-left-text"></i> Recent Student Feedbacks</h5>
-                <span class="badge bg-light text-dark">{{ feedbacks|length }} of {{ feedbacks_count }} total</span>
-            </div>
-        </div>
-        <div class="card-body p-0">
-            {% if feedbacks %}
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Subject</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for feedback in feedbacks %}
-                        <tr>
-                            <td>{{ feedback.name }}</td>
-                            <td><a href="mailto:{{ feedback.email }}">{{ feedback.email }}</a></td>
-                            <td>{{ feedback.subject }}</td>
-                            <td>
-                                <span class="badge bg-{{ 'success' if feedback.status == 'resolved' else 'warning' }}">
-                                    {{ feedback.status }}
-                                </span>
-                            </td>
-                            <td>{{ feedback.date.split()[0] }}</td>
-                            <td>
-                                {% if feedback.status != 'resolved' %}
-                                <form method="POST" action="{{ url_for('resolve_feedback', id=feedback.id) }}" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-success">
-                                        <i class="bi bi-check-lg"></i> Resolve
-                                    </button>
-                                </form>
-                                {% endif %}
-                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#feedbackModal{{ feedback.id }}">
-                                    <i class="bi bi-eye"></i> View
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Feedback Modal -->
-                        <div class="modal fade" id="feedbackModal{{ feedback.id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Feedback Details</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p><strong>From:</strong> {{ feedback.name }} &lt;{{ feedback.email }}&gt;</p>
-                                        <p><strong>Date:</strong> {{ feedback.date }}</p>
-                                        <hr>
-                                        <h6>{{ feedback.subject }}</h6>
-                                        <p>{{ feedback.message }}</p>
-                                        {% if feedback.admin_notes %}
-                                        <hr>
-                                        <h6>Admin Notes:</h6>
-                                        <p>{{ feedback.admin_notes }}</p>
-                                        {% endif %}
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="text-center p-5">
-                <i class="bi bi-chat-square-text fs-1 text-muted mb-3"></i>
-                <h4>No feedbacks yet</h4>
-                <p class="text-muted">Student feedbacks will appear here</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- System Management Cards -->
     <div class="row g-3">
-        <!-- Notifications Card -->
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-megaphone"></i> Notifications</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <h3 class="mb-0">{{ notifications_count }}</h3>
-                            <small class="text-muted">Total Notifications</small>
-                        </div>
-                        <a href="{{ url_for('admin_notifications') }}" class="btn btn-primary">
-                            <i class="bi bi-plus-lg"></i> Add New
-                        </a>
+        <!-- Change Password -->
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm rounded-3 h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">Change Password</h5>
+                        <p class="text-muted mb-0">Update admin login credentials</p>
                     </div>
-                    <p class="text-muted">Manage all system notifications and announcements</p>
+                    <a href="{{ url_for('change_password') }}" class="btn btn-outline-primary rounded-pill">
+                        <i class="bi bi-key"></i>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Syllabus Card -->
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="bi bi-journal-bookmark"></i> Syllabus</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <h3 class="mb-0">{{ syllabus_count }}</h3>
-                            <small class="text-muted">Syllabus Files</small>
-                        </div>
-                        <a href="{{ url_for('upload_syllabus') }}" class="btn btn-success">
-                            <i class="bi bi-upload"></i> Upload
-                        </a>
+        <!-- Add Notifications -->
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm rounded-3 h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">Add Notification</h5>
+                        <p class="text-muted mb-0">Publish updates or alerts</p>
                     </div>
-                    <p class="text-muted">Manage all class syllabus and exam schedules</p>
+                    <a href="{{ url_for('add_notification') }}" class="btn btn-outline-success rounded-pill">
+                        <i class="bi bi-plus-circle"></i>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Documents Card -->
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Documents</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <h3 class="mb-0">{{ documents_count }}</h3>
-                            <small class="text-muted">Document Files</small>
-                        </div>
-                        <a href="{{ url_for('upload_document') }}" class="btn btn-info">
-                            <i class="bi bi-upload"></i> Manage
-                        </a>
+        <!-- View Students -->
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm rounded-3 h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">View Students</h5>
+                        <p class="text-muted mb-0">All registered user details</p>
                     </div>
-                    <p class="text-muted">Manage all school documents and files</p>
+                    <a href="{{ url_for('student_details') }}" class="btn btn-outline-info rounded-pill">
+                        <i class="bi bi-people"></i>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Class Work Card -->
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-warning text-white">
-                    <h5 class="mb-0"><i class="bi bi-journal-text"></i> Class Work</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <h3 class="mb-0">{{ classwork_count }}</h3>
-                            <small class="text-muted">Class Work Files</small>
-                        </div>
-                        <a href="{{ url_for('upload_classwork') }}" class="btn btn-warning">
-                            <i class="bi bi-upload"></i> Upload
-                        </a>
+        <!-- View Contact Messages -->
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm rounded-3 h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">Contact Messages</h5>
+                        <p class="text-muted mb-0">Read feedback & queries</p>
                     </div>
-                    <p class="text-muted">Manage today's class assignments</p>
+                    <a href="{{ url_for('view_contact_messages') }}" class="btn btn-outline-dark rounded-pill">
+                        <i class="bi bi-chat-left-text"></i>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Homework Card -->
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0"><i class="bi bi-house-door"></i> Homework</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <h3 class="mb-0">{{ homework_count }}</h3>
-                            <small class="text-muted">Homework Files</small>
-                        </div>
-                        <a href="{{ url_for('upload_homework') }}" class="btn btn-danger">
-                            <i class="bi bi-upload"></i> Upload
-                        </a>
+        <!-- Upload Syllabus -->
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm rounded-3 h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">Upload Syllabus</h5>
+                        <p class="text-muted mb-0">Add or update syllabus</p>
                     </div>
-                    <p class="text-muted">Manage assigned homework</p>
+                    <a href="{{ url_for('upload_syllabus') }}" class="btn btn-outline-warning rounded-pill">
+                        <i class="bi bi-upload"></i>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Books Card -->
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-purple text-white" style="background-color: #6f42c1;">
-                    <h5 class="mb-0"><i class="bi bi-book"></i> Books</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <h3 class="mb-0">{{ books_count }}</h3>
-                            <small class="text-muted">Book Files</small>
-                        </div>
-                        <a href="{{ url_for('upload_book') }}" class="btn btn-purple" style="background-color: #6f42c1; border-color: #6f42c1;">
-                            <i class="bi bi-upload"></i> Upload
-                        </a>
+        <!-- Logout -->
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm rounded-3 h-100 bg-light border-0">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">Logout</h5>
+                        <p class="text-muted mb-0">End admin session</p>
                     </div>
-                    <p class="text-muted">Manage school books and resources</p>
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger rounded-pill">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .btn-purple {
-        color: white;
-    }
-    .btn-purple:hover {
-        background-color: #5a32a8;
-        border-color: #5a32a8;
-        color: white;
-    }
-</style>
 {% endblock %}
