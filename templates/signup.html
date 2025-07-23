@@ -56,9 +56,11 @@
       background-color: #f1f1f1;
     }
 
-    .alert {
-      position: relative;
-      z-index: 999;
+    .toast-container {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1055;
     }
 
     @media (max-height: 680px) {
@@ -71,18 +73,24 @@
 </head>
 <body>
 
-  <!-- Flash Messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show w-100" role="alert">
-          <i class="bi bi-{{ 'check-circle-fill' if category == 'success' else 'exclamation-triangle-fill' }} me-2"></i>
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+  <!-- Flash Message Toasts -->
+  <div class="toast-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="toast align-items-center text-white bg-{{ 'success' if category == 'success' else 'danger' }} border-0 show" role="alert">
+            <div class="d-flex">
+              <div class="toast-body">
+                <i class="bi bi-{{ 'check-circle-fill' if category == 'success' else 'exclamation-triangle-fill' }} me-2"></i>
+                {{ message }}
+              </div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
 
   <div class="card shadow-lg">
     <div class="card-header bg-primary text-white text-center py-3">
