@@ -425,23 +425,25 @@ def admin_dashboard():
         # Get recent feedbacks
         feedbacks = conn.execute('SELECT * FROM feedback ORDER BY date DESC LIMIT 5').fetchall()
         
-        # Get pending users count
+        # Load user approval stats
         pending_users = load_json(PENDING_FILE)
+        approved_users = load_json(USERS_FILE)
+        declined_users = load_json(DECLINED_FILE)
+
         pending_approvals = len(pending_users)
-        
-        # Get system stats
-        approved_users = len(load_json(USERS_FILE))
-        declined_users = len(load_json(DECLINED_FILE))
+        approved_count = len(approved_users)
+        declined_count = len(declined_users)
         
         return render_template('admin/dashboard.html',
-                           notifications_count=notifications_count,
-                           syllabus_count=syllabus_count,
-                           documents_count=documents_count,
-                           feedbacks_count=feedbacks_count,
-                           feedbacks=feedbacks,
-                           pending_approvals=pending_approvals,
-                           approved_users=approved_users,
-                           declined_users=declined_users)
+                               notifications_count=notifications_count,
+                               syllabus_count=syllabus_count,
+                               documents_count=documents_count,
+                               feedbacks_count=feedbacks_count,
+                               feedbacks=feedbacks,
+                               pending_approvals=pending_approvals,
+                               approved_users=approved_count,
+                               declined_users=declined_count,
+                               hide_header=True)
     finally:
         conn.close()
 
