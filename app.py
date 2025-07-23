@@ -105,6 +105,41 @@ def init_db():
                 admin_notes TEXT
             )
         ''')
+        conn.execute('''
+    CREATE TABLE IF NOT EXISTS classwork (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        class_name TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        filename TEXT NOT NULL,
+        upload_date TEXT NOT NULL,
+        due_date TEXT
+            )
+        ''')
+        conn.execute('''
+    CREATE TABLE IF NOT EXISTS homework (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        class_name TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        filename TEXT NOT NULL,
+        upload_date TEXT NOT NULL,
+        due_date TEXT
+    )
+''')
+        conn.execute('''
+    CREATE TABLE IF NOT EXISTS books (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        author TEXT,
+        subject TEXT,
+        class_name TEXT,
+        filename TEXT NOT NULL,
+        upload_date TEXT NOT NULL
+    )
+''')
         
         # Create default admin if not exists
         admin = conn.execute('SELECT * FROM admin WHERE username = ?', ('admin',)).fetchone()
@@ -300,7 +335,6 @@ def documents():
 
 @app.route('/favicon.ico')
 def favicon():
-    # Return a transparent 1x1 pixel to prevent 404 errors
     return send_from_directory(os.path.join(app.root_path, 'static'),
                              'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
@@ -410,6 +444,160 @@ def admin_dashboard():
                            declined_users=declined_users)
     finally:
         conn.close()
+
+
+@app.route('/classwork')
+@login_required
+def classwork():
+    conn = get_db_connection()
+    try:
+        classwork = conn.execute('SELECT * FROM classwork ORDER BY upload_date DESC').fetchall()
+        return render_template('classwork.html', classwork=classwork)
+    finally:
+        conn.close()
+
+@app.route('/admin/upload_classwork', methods=['GET', 'POST'])
+@admin_required
+def upload_classwork():
+    if request.method == 'POST':
+        try:
+            class_name = request.form.get('class_name')
+            subject = request.form.get('subject')
+            title = request.form.get('title')
+            description = request.form.get('description')
+            due_date = request.form.get('due_date')
+            file = request.files['file']
+
+            if not all([class_name, subject, title, file]):
+                flash('Please fill all required fields', 'danger')
+                return redirect(url_for('upload_classwork'))
+
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                conn = get_db_connection()
+                conn.execute(
+                    '''INSERT INTO classwork 
+                    (class_name, subject, title, description, filename, upload_date, due_date)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                    (class_name, subject, title, description, filename, 
+                     datetime.now().strftime('%Y-%m-%d %H:%M:%S'), due_date)
+                )
+                conn.commit()
+                conn.close()
+
+                flash('Class work uploaded successfully!', 'success')
+                return redirect(url_for('classwork'))
+            else:
+                flash('Invalid file type', 'danger')
+        except Exception as e:
+            print(f"Error uploading class work: {e}")
+            flash('An error occurred while uploading class work', 'danger')
+
+    return render_template('admin/upload_classwork.html')
+
+# Homework Routes
+@app.route('/homework')
+@login_required
+def homework():
+    conn = get_db_connection()
+    try:
+        homework = conn.execute('SELECT * FROM homework ORDER BY upload_date DESC').fetchall()
+        return render_template('homework.html', homework=homework)
+    finally:
+        conn.close()
+
+@app.route('/admin/upload_homework', methods=['GET', 'POST'])
+@admin_required
+def upload_homework():
+    if request.method == 'POST':
+        try:
+            class_name = request.form.get('class_name')
+            subject = request.form.get('subject')
+            title = request.form.get('title')
+            description = request.form.get('description')
+            due_date = request.form.get('due_date')
+            file = request.files['file']
+
+            if not all([class_name, subject, title, due_date, file]):
+                flash('Please fill all required fields', 'danger')
+                return redirect(url_for('upload_homework'))
+
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                conn = get_db_connection()
+                conn.execute(
+                    '''INSERT INTO homework 
+                    (class_name, subject, title, description, filename, upload_date, due_date)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                    (class_name, subject, title, description, filename, 
+                     datetime.now().strftime('%Y-%m-%d %H:%M:%S'), due_date)
+                )
+                conn.commit()
+                conn.close()
+
+                flash('Homework uploaded successfully!', 'success')
+                return redirect(url_for('homework'))
+            else:
+                flash('Invalid file type', 'danger')
+        except Exception as e:
+            print(f"Error uploading homework: {e}")
+            flash('An error occurred while uploading homework', 'danger')
+
+    return render_template('admin/upload_homework.html')
+
+# Books Routes
+@app.route('/books')
+@login_required
+def books():
+    conn = get_db_connection()
+    try:
+        books = conn.execute('SELECT * FROM books ORDER BY upload_date DESC').fetchall()
+        return render_template('books.html', books=books)
+    finally:
+        conn.close()
+
+@app.route('/admin/upload_book', methods=['GET', 'POST'])
+@admin_required
+def upload_book():
+    if request.method == 'POST':
+        try:
+            title = request.form.get('title')
+            author = request.form.get('author')
+            subject = request.form.get('subject')
+            class_name = request.form.get('class_name')
+            file = request.files['file']
+
+            if not all([title, file]):
+                flash('Please fill all required fields', 'danger')
+                return redirect(url_for('upload_book'))
+
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                conn = get_db_connection()
+                conn.execute(
+                    '''INSERT INTO books 
+                    (title, author, subject, class_name, filename, upload_date)
+                    VALUES (?, ?, ?, ?, ?, ?)''',
+                    (title, author, subject, class_name, filename, 
+                     datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                conn.commit()
+                conn.close()
+
+                flash('Book uploaded successfully!', 'success')
+                return redirect(url_for('books'))
+            else:
+                flash('Invalid file type', 'danger')
+        except Exception as e:
+            print(f"Error uploading book: {e}")
+            flash('An error occurred while uploading book', 'danger')
+
+    return render_template('admin/upload_book.html')
 
 @app.route('/admin/approved-users')
 @admin_required
