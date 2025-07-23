@@ -41,6 +41,10 @@
       background-color: #f1f1f1;
       color: #495057;
     }
+    .form-control::placeholder {
+      color: #6c757d;
+      opacity: 0.7;
+    }
   </style>
 </head>
 <body>
@@ -70,14 +74,16 @@
                 <label for="username" class="form-label">Username</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                  <input type="text" class="form-control" id="username" name="username" required autocomplete="username">
+                  <input type="text" class="form-control" id="username" name="username" 
+                         placeholder="Enter your username" required autocomplete="username">
                 </div>
               </div>
               <div class="mb-4">
                 <label for="password" class="form-label">Password</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                  <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
+                  <input type="password" class="form-control" id="password" name="password" 
+                         placeholder="Enter your password" required autocomplete="current-password">
                 </div>
               </div>
               <div class="d-grid mb-3">
