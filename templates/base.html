@@ -177,30 +177,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
                     </li>
-                    {% if session.get('admin_logged_in') %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Admin
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('upload_classwork') }}">Upload Class Work</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('upload_homework') }}">Upload Homework</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('upload_book') }}">Upload Books</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('upload_syllabus') }}">Upload Syllabus</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('upload_document') }}">Upload Documents</a></li>
-                        </ul>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link admin-link" href="{{ url_for('admin_login') }}">Admin Login</a>
-                    </li>
-                    {% endif %}
-                    {% if session.get('logged_in') %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-                    </li>
                     {% endif %}
                 </ul>
             </div>
