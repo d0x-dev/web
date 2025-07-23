@@ -20,7 +20,7 @@
 
         body {
             font-family: 'Segoe UI', Roboto, sans-serif;
-            padding-bottom: 70px; /* Space for bottom nav */
+            padding-bottom: 70px;
             background-color: #f2f2f2;
         }
 
@@ -110,7 +110,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body class="d-flex flex-column min-vh-100">
-    
+
     <!-- Fixed Top Header -->
     <div class="app-header">
         <span>School Portal</span>
@@ -126,12 +126,12 @@
         </div>
     </div>
 
-    <!-- Flash Messages -->
-    <div class="container mt-2">
+    <!-- Flash Messages (Fixed & below header) -->
+    <div class="position-fixed" style="top: 70px; right: 1rem; z-index: 1080;">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show mt-2">
+                    <div class="alert alert-{{ category }} alert-dismissible fade show mt-2 shadow-sm" role="alert">
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
