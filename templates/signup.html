@@ -15,6 +15,7 @@
       background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
       background-size: cover;
       font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
     }
 
     body {
@@ -25,8 +26,8 @@
     }
 
     .card {
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(7px);
+      background-color: rgba(255, 255, 255, 0.87);
       border-radius: 10px;
       border: 1px solid rgba(0, 0, 0, 0.1);
       width: 100%;
@@ -74,6 +75,7 @@
   </style>
 </head>
 <body>
+
   <!-- Flash Messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -108,6 +110,7 @@
               <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
               <input type="text" class="form-control" id="username" name="username" placeholder="Choose username" required />
             </div>
+            <small id="username-feedback" class="text-muted mt-1 d-block"></small>
           </div>
           <div class="col-12">
             <label for="password" class="form-label">Password</label>
@@ -156,6 +159,40 @@
           const bsAlert = new bootstrap.Alert(alert);
           bsAlert.close();
         }, 5000);
+      });
+
+      const usernameInput = document.getElementById('username');
+      const feedback = document.getElementById('username-feedback');
+
+      usernameInput.addEventListener('input', function () {
+        const username = this.value.trim();
+
+        if (username.length < 3) {
+          feedback.textContent = '';
+          return;
+        }
+
+        fetch('/check_username', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.available) {
+            feedback.textContent = '✅ Username available';
+            feedback.style.color = 'green';
+          } else {
+            feedback.textContent = '❌ Username already taken';
+            feedback.style.color = 'red';
+          }
+        })
+        .catch(() => {
+          feedback.textContent = '⚠️ Error checking username';
+          feedback.style.color = 'orange';
+        });
       });
     });
   </script>
