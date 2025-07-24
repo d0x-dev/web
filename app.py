@@ -677,47 +677,6 @@ def admin_dashboard():
     finally:
         conn.close()
 
-@app.route('/admin/upload_classwork', methods=['GET', 'POST'])
-@admin_required
-def upload_classwork():
-    if request.method == 'POST':
-        try:
-            class_name = request.form.get('class_name')
-            subject = request.form.get('subject')
-            title = request.form.get('title')
-            description = request.form.get('description')
-            due_date = request.form.get('due_date')
-            file = request.files['file']
-
-            if not all([class_name, subject, title, file]):
-                flash('Please fill all required fields', 'danger')
-                return redirect(url_for('upload_classwork'))
-
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-                conn = get_db_connection()
-                conn.execute(
-                    '''INSERT INTO classwork 
-                    (class_name, subject, title, description, filename, upload_date, due_date)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)''',
-                    (class_name, subject, title, description, filename, 
-                     datetime.now().strftime('%Y-%m-%d %H:%M:%S'), due_date)
-                )
-                conn.commit()
-                conn.close()
-
-                flash('Class work uploaded successfully!', 'success')
-                return redirect(url_for('classwork'))
-            else:
-                flash('Invalid file type', 'danger')
-        except Exception as e:
-            print(f"Error uploading class work: {e}")
-            flash('An error occurred while uploading class work', 'danger')
-
-    return render_template('admin/upload_classwork.html')
-
 # Homework Routes
 # Class Work Routes
 @app.route('/classwork', methods=['GET', 'POST'])
@@ -815,6 +774,51 @@ def homework():
     finally:
         conn.close()
 
+@app.route('/admin/upload_classwork', methods=['GET', 'POST'])
+@admin_required
+def upload_classwork():
+    if request.method == 'POST':
+        try:
+            class_name = request.form.get('class_name')
+            subject = request.form.get('subject')
+            title = request.form.get('title')
+            description = request.form.get('description')
+            due_date = request.form.get('due_date')
+            file = request.files['file']
+
+            if not all([class_name, subject, title, file]):
+                flash('Please fill all required fields', 'danger')
+                return redirect(url_for('upload_classwork'))
+
+            if file and allowed_file(file.filename):
+                filename = secure_filename(f"{class_name}_{subject}_{title}_{file.filename}")
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+
+                conn = get_db_connection()
+                conn.execute(
+                    '''INSERT INTO classwork 
+                    (class_name, subject, title, description, filename, upload_date, due_date)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                    (class_name, subject, title, description, filename, 
+                     datetime.now().strftime('%Y-%m-%d %H:%M:%S'), due_date)
+                )
+                conn.commit()
+                conn.close()
+
+                flash('Class work uploaded successfully!', 'success')
+                return redirect(url_for('upload_classwork'))  # Stay on same page after success
+            else:
+                flash('Invalid file type. Allowed formats: PDF, DOC, DOCX, PPT, PPTX', 'danger')
+                return redirect(url_for('upload_classwork'))
+        except Exception as e:
+            print(f"Error uploading class work: {e}")
+            flash(f'An error occurred while uploading class work: {str(e)}', 'danger')
+            return redirect(url_for('upload_classwork'))
+
+    return render_template('admin/upload_classwork.html')
+
+
 @app.route('/admin/upload_homework', methods=['GET', 'POST'])
 @admin_required
 def upload_homework():
@@ -832,8 +836,9 @@ def upload_homework():
                 return redirect(url_for('upload_homework'))
 
             if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                filename = secure_filename(f"{class_name}_{subject}_{title}_{file.filename}")
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
 
                 conn = get_db_connection()
                 conn.execute(
@@ -847,12 +852,14 @@ def upload_homework():
                 conn.close()
 
                 flash('Homework uploaded successfully!', 'success')
-                return redirect(url_for('homework'))
+                return redirect(url_for('upload_homework'))  # Stay on same page after success
             else:
-                flash('Invalid file type', 'danger')
+                flash('Invalid file type. Allowed formats: PDF, DOC, DOCX', 'danger')
+                return redirect(url_for('upload_homework'))
         except Exception as e:
             print(f"Error uploading homework: {e}")
-            flash('An error occurred while uploading homework', 'danger')
+            flash(f'An error occurred while uploading homework: {str(e)}', 'danger')
+            return redirect(url_for('upload_homework'))
 
     return render_template('admin/upload_homework.html')
 
