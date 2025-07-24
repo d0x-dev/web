@@ -507,6 +507,11 @@ def syllabus():
     finally:
         conn.close()
 
+@app.route('/account')
+@login_required
+def account():
+    return render_template('account.html', username=session.get('username'))
+
 @app.route('/notifications')
 @login_required
 def notifications():
