@@ -1,12 +1,12 @@
 [
-    {
-        "username": "student",
-        "password": "student123",
-        "role": "student"
-    },
-    {
-        "username": "admin",
-        "password": "admin123",
-        "role": "admin"
-    }
+  {
+    "first_name": "dark",
+    "last_name": "boy",
+    "username": "admin",
+    "password": "admin123",
+    "class": "11",
+    "roll_number": "10",
+    "status": "pending",
+    "date": "2025-07-24 17:42:45"
+  }
 ]
