@@ -226,52 +226,7 @@ def login():
             flash('Invalid username or password', 'danger')
 
     return render_template('login.html')
-
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        try:
-            first_name = request.form.get('first_name')
-            last_name = request.form.get('last_name')
-            username = request.form.get('username')
-            password = request.form.get('password')
-            class_name = request.form.get('class')
-            roll_number = request.form.get('roll_number')
-            
-            if not all([first_name, last_name, username, password, class_name, roll_number]):
-                flash('Please fill all required fields', 'danger')
-                return redirect(url_for('signup'))
-            
-            # Check if username exists in any files
-            all_users = load_json(USERS_FILE) + load_json(PENDING_FILE) + load_json(DECLINED_FILE)
-            if any(u['username'] == username for u in all_users):
-                flash('Username already exists', 'danger')
-                return redirect(url_for('signup'))
-            
-            new_user = {
-                'first_name': first_name,
-                'last_name': last_name,
-                'username': username,
-                'password': password,
-                'class': class_name,
-                'roll_number': roll_number,
-                'status': 'pending',
-                'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            }
-            
-            # Save to pending users
-            pending_users = load_json(PENDING_FILE)
-            pending_users.append(new_user)
-            save_json(pending_users, PENDING_FILE)
-            
-            flash('Your application has been submitted for admin approval', 'success')
-            return redirect(url_for('login'))
-        except Exception as e:
-            print(f"Error during signup: {e}")
-            flash('An error occurred during registration', 'danger')
     
-    return render_template('signup.html')
-
 @app.route('/about')
 @login_required
 def about():
