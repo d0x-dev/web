@@ -3,235 +3,268 @@
 {% block title %}About - GOVT. BOYS HIGH SCHOOL PETH MAKHAMA{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row mb-5">
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-primary text-white">
-                    <h3><i class="bi bi-building"></i> Our History</h3>
-                </div>
-                <div class="card-body">
-                    <p class="lead">Established in 1950, GOVT. BOYS HIGH SCHOOL PETH MAKHAMA has been a cornerstone of education in the region for over 70 years.</p>
-                    <p>We began as a small village school and have grown into one of the most respected government schools in Jammu and Kashmir. Our alumni include prominent civil servants, doctors, engineers, and leaders who have made significant contributions to society.</p>
-                    <div class="text-center mt-4">
-                        <img src="{{ url_for('static', filename='images/school-old.jpg') }}" alt="School in early days" class="img-fluid rounded">
-                        <p class="text-muted small mt-2">Our school in the early days</p>
+<style>
+    .android-card {
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 16px;
+        overflow: hidden;
+        background: white;
+    }
+    .android-header {
+        padding: 16px;
+        background-color: #1a73e8;
+        color: white;
+        font-weight: 500;
+    }
+    .android-body {
+        padding: 16px;
+    }
+    .android-list-item {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f1f1f1;
+        display: flex;
+        align-items: center;
+    }
+    .android-list-item:last-child {
+        border-bottom: none;
+    }
+    .material-icon {
+        margin-right: 16px;
+        color: #5f6368;
+    }
+    .staff-card {
+        display: flex;
+        padding: 12px;
+        align-items: center;
+        border-bottom: 1px solid #f1f1f1;
+    }
+    .staff-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 28px;
+        background-color: #e0e0e0;
+        margin-right: 16px;
+        overflow: hidden;
+    }
+    .staff-details {
+        flex: 1;
+    }
+    .staff-name {
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+    .staff-position {
+        color: #5f6368;
+        font-size: 0.875rem;
+    }
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 500;
+        margin: 24px 0 16px 16px;
+        color: #202124;
+    }
+    .achievement-card {
+        text-align: center;
+        padding: 16px;
+    }
+    .achievement-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 24px;
+        background-color: #e8f0fe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        color: #1a73e8;
+    }
+</style>
+
+<div class="container" style="max-width: 800px; margin: 0 auto; padding: 0 16px;">
+    <!-- School History Card -->
+    <div class="android-card">
+        <div class="android-header">
+            <i class="bi bi-building me-2"></i> Our History
+        </div>
+        <div class="android-body">
+            <p style="margin-bottom: 16px; color: #202124;">Established in 1950, GOVT. BOYS HIGH SCHOOL PETH MAKHAMA has been a cornerstone of education in the region for over 70 years.</p>
+            <p style="color: #5f6368;">We began as a small village school and have grown into one of the most respected government schools in Jammu and Kashmir. Our alumni include prominent civil servants, doctors, engineers, and leaders who have made significant contributions to society.</p>
+            <div style="margin-top: 16px; text-align: center;">
+                <img src="{{ url_for('static', filename='images/school-old.jpg') }}" alt="School in early days" style="width: 100%; border-radius: 8px;">
+                <p style="color: #9aa0a6; font-size: 0.75rem; margin-top: 8px;">Our school in the early days</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission & Vision Card -->
+    <div class="android-card">
+        <div class="android-header" style="background-color: #0b8043;">
+            <i class="bi bi-bullseye me-2"></i> Our Mission & Vision
+        </div>
+        <div class="android-body">
+            <div style="margin-bottom: 16px;">
+                <h5 style="color: #1a73e8; margin-bottom: 8px;">Mission:</h5>
+                <p style="color: #202124;">To provide quality education that empowers students from all backgrounds to achieve their full potential and become responsible citizens.</p>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <h5 style="color: #1a73e8; margin-bottom: 8px;">Vision:</h5>
+                <p style="color: #202124;">To be a center of excellence that nurtures intellectual curiosity, creativity, and character development.</p>
+            </div>
+            
+            <div>
+                <h5 style="color: #1a73e8; margin-bottom: 8px;">We strive to:</h5>
+                <div style="background: #f8f9fa; border-radius: 8px; overflow: hidden;">
+                    <div class="android-list-item">
+                        <i class="bi bi-check-circle material-icon" style="color: #0b8043;"></i>
+                        Deliver excellent academic instruction
+                    </div>
+                    <div class="android-list-item">
+                        <i class="bi bi-check-circle material-icon" style="color: #0b8043;"></i>
+                        Foster critical thinking and creativity
+                    </div>
+                    <div class="android-list-item">
+                        <i class="bi bi-check-circle material-icon" style="color: #0b8043;"></i>
+                        Promote values of integrity and service
+                    </div>
+                    <div class="android-list-item">
+                        <i class="bi bi-check-circle material-icon" style="color: #0b8043;"></i>
+                        Develop well-rounded individuals
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Section -->
+    <h3 class="section-title">
+        <i class="bi bi-award me-2"></i> Our Achievements
+    </h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div class="android-card">
+            <div class="achievement-card">
+                <div class="achievement-icon">
+                    <i class="bi bi-trophy" style="font-size: 1.5rem;"></i>
+                </div>
+                <h5 style="margin-bottom: 8px; color: #202124;">Academic Excellence</h5>
+                <p style="color: #5f6368; font-size: 0.875rem;">Consistently high pass percentages in board examinations with several state rank holders</p>
             </div>
         </div>
         
-        <div class="col-lg-6 mt-4 mt-lg-0">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-success text-white">
-                    <h3><i class="bi bi-bullseye"></i> Our Mission & Vision</h3>
+        <div class="android-card">
+            <div class="achievement-card">
+                <div class="achievement-icon">
+                    <i class="bi bi-people" style="font-size: 1.5rem;"></i>
                 </div>
-                <div class="card-body">
-                    <h5 class="text-primary">Mission:</h5>
-                    <p>To provide quality education that empowers students from all backgrounds to achieve their full potential and become responsible citizens.</p>
-                    
-                    <h5 class="text-primary mt-4">Vision:</h5>
-                    <p>To be a center of excellence that nurtures intellectual curiosity, creativity, and character development.</p>
-                    
-                    <div class="mt-4">
-                        <h5 class="text-primary">We strive to:</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle text-success me-2"></i> Deliver excellent academic instruction</li>
-                            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle text-success me-2"></i> Foster critical thinking and creativity</li>
-                            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle text-success me-2"></i> Promote values of integrity and service</li>
-                            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle text-success me-2"></i> Develop well-rounded individuals</li>
-                        </ul>
-                    </div>
+                <h5 style="margin-bottom: 8px; color: #202124;">Sports</h5>
+                <p style="color: #5f6368; font-size: 0.875rem;">Multiple district and state level championships in cricket, football, and athletics</p>
+            </div>
+        </div>
+        
+        <div class="android-card">
+            <div class="achievement-card">
+                <div class="achievement-icon">
+                    <i class="bi bi-building" style="font-size: 1.5rem;"></i>
                 </div>
+                <h5 style="margin-bottom: 8px; color: #202124;">Facilities</h5>
+                <p style="color: #5f6368; font-size: 0.875rem;">Well-equipped labs, library with 10,000+ books, and modern sports facilities</p>
             </div>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm mb-5">
-        <div class="card-header bg-info text-white">
-            <h3><i class="bi bi-award"></i> Our Achievements</h3>
-        </div>
-        <div class="card-body">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="text-center p-3">
-                        <div class="icon-circle bg-info text-white mb-3 mx-auto">
-                            <i class="bi bi-trophy fs-3"></i>
-                        </div>
-                        <h5>Academic Excellence</h5>
-                        <p class="text-muted">Consistently high pass percentages in board examinations with several state rank holders</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="text-center p-3">
-                        <div class="icon-circle bg-info text-white mb-3 mx-auto">
-                            <i class="bi bi-people fs-3"></i>
-                        </div>
-                        <h5>Sports</h5>
-                        <p class="text-muted">Multiple district and state level championships in cricket, football, and athletics</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="text-center p-3">
-                        <div class="icon-circle bg-info text-white mb-3 mx-auto">
-                            <i class="bi bi-building fs-3"></i>
-                        </div>
-                        <h5>Facilities</h5>
-                        <p class="text-muted">Well-equipped labs, library with 10,000+ books, and modern sports facilities</p>
-                    </div>
-                </div>
+    <!-- Staff Section -->
+    <h3 class="section-title">
+        <i class="bi bi-person-video3 me-2"></i> Our Staff
+    </h3>
+    
+    <div class="android-card">
+        <!-- Principal -->
+        <div class="staff-card">
+            <div class="staff-avatar">
+                <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
+                     style="width: 100%; height: 100%; object-fit: cover;"
+                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+            </div>
+            <div class="staff-details">
+                <div class="staff-name">Mr. Yousuf</div>
+                <div class="staff-position">Principal</div>
+                <div style="color: #5f6368; font-size: 0.75rem;">M.Ed, Ph.D in Education • 28+ years</div>
             </div>
         </div>
-    </div>
-
-    <!-- Staff Section (Unchanged) -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-warning text-dark">
-            <h3><i class="bi bi-person-video3"></i> Our Staff</h3>
+        
+        <!-- Vice Principal -->
+        <div class="staff-card">
+            <div class="staff-avatar">
+                <img src="{{ url_for('static', filename='images/staff/vice-principal.png') }}" 
+                     style="width: 100%; height: 100%; object-fit: cover;"
+                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+            </div>
+            <div class="staff-details">
+                <div class="staff-name">Mr. Altaf</div>
+                <div class="staff-position">Vice Principal</div>
+                <div style="color: #5f6368; font-size: 0.75rem;">M.Sc, B.Ed • 22+ years</div>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="row g-4">
-                <!-- Principal -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="staff-profile">
-                        <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
-                                 class="staff-image" 
-                                 alt="Principal Yousuf"
-                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-                        </div>
-                        <div class="staff-details">
-                            <h5>Mr. Yousuf</h5>
-                            <p class="position">Principal</p>
-                            <p class="qualifications">M.Ed, Ph.D in Education<br>28+ years experience</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Vice Principal -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="staff-profile">
-                        <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
-                                 class="staff-image" 
-                                 alt="Vice Principal Altaf"
-                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-                        </div>
-                        <div class="staff-details">
-                            <h5>Mr. Altaf</h5>
-                            <p class="position">Vice Principal</p>
-                            <p class="qualifications">M.Sc, B.Ed<br>22+ years experience</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Staff Member 1 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="staff-profile">
-                        <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
-                                 class="staff-image" 
-                                 alt="Muzaffar Sir"
-                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-                        </div>
-                        <div class="staff-details">
-                            <h5>Mr. Muzaffar</h5>
-                            <p class="position">Senior Teacher</p>
-                            <p class="qualifications">M.A (English), B.Ed<br>18+ years experience</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Staff Member 2 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="staff-profile">
-                        <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
-                                 class="staff-image" 
-                                 alt="Muzaffar"
-                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-                        </div>
-                        <div class="staff-details">
-                            <h5>Mr. Muzaffar</h5>
-                            <p class="position">Mathematics Teacher</p>
-                            <p class="qualifications">M.Sc (Maths), B.Ed<br>15+ years experience</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Staff Member 3 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="staff-profile">
-                        <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
-                                 class="staff-image" 
-                                 alt="Waseem Abdullah"
-                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-                        </div>
-                        <div class="staff-details">
-                            <h5>Mr. Waseem Abdullah</h5>
-                            <p class="position">Science Teacher</p>
-                            <p class="qualifications">M.Sc (Physics), B.Ed<br>12+ years experience</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Staff Member 4 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="staff-profile">
-                        <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
-                                 class="staff-image" 
-                                 alt="Tasleem"
-                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-                        </div>
-                        <div class="staff-details">
-                            <h5>Mr. Tasleem</h5>
-                            <p class="position">Social Studies Teacher</p>
-                            <p class="qualifications">M.A (History), B.Ed<br>10+ years experience</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Staff Member 5 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="staff-profile">
-                        <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
-                                 class="staff-image" 
-                                 alt="Tahir Sir"
-                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-                        </div>
-                        <div class="staff-details">
-                            <h5>Mr. Tahir</h5>
-                            <p class="position">Urdu Teacher</p>
-                            <p class="qualifications">M.A (Urdu), B.Ed<br>14+ years experience</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Staff Member 6 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="staff-profile">
-                        <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
-                                 class="staff-image" 
-                                 alt="Physical Education Teacher"
-                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-                        </div>
-                        <div class="staff-details">
-                            <h5>Mr. Vijay Singh</h5>
-                            <p class="position">Physical Education</p>
-                            <p class="qualifications">M.P.Ed<br>State level athlete</p>
-                        </div>
-                    </div>
-                </div>
+        
+        <!-- Staff Members -->
+        <div class="staff-card">
+            <div class="staff-avatar">
+                <img src="{{ url_for('static', filename='images/staff/teacher1.png') }}" 
+                     style="width: 100%; height: 100%; object-fit: cover;"
+                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
             </div>
-            <div class="text-center mt-4">
-                <a href="{{ url_for('contact') }}" class="btn btn-primary">
-                    <i class="bi bi-envelope"></i> Contact Our Staff
-                </a>
+            <div class="staff-details">
+                <div class="staff-name">Mr. Muzaffar</div>
+                <div class="staff-position">Senior Teacher (English)</div>
+                <div style="color: #5f6368; font-size: 0.75rem;">M.A (English), B.Ed • 18+ years</div>
             </div>
+        </div>
+        
+        <div class="staff-card">
+            <div class="staff-avatar">
+                <img src="{{ url_for('static', filename='images/staff/teacher2.png') }}" 
+                     style="width: 100%; height: 100%; object-fit: cover;"
+                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+            </div>
+            <div class="staff-details">
+                <div class="staff-name">Mr. Muzaffar</div>
+                <div class="staff-position">Mathematics Teacher</div>
+                <div style="color: #5f6368; font-size: 0.75rem;">M.Sc (Maths), B.Ed • 15+ years</div>
+            </div>
+        </div>
+        
+        <div class="staff-card">
+            <div class="staff-avatar">
+                <img src="{{ url_for('static', filename='images/staff/teacher3.png') }}" 
+                     style="width: 100%; height: 100%; object-fit: cover;"
+                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+            </div>
+            <div class="staff-details">
+                <div class="staff-name">Mr. Waseem Abdullah</div>
+                <div class="staff-position">Science Teacher</div>
+                <div style="color: #5f6368; font-size: 0.75rem;">M.Sc (Physics), B.Ed • 12+ years</div>
+            </div>
+        </div>
+        
+        <div class="staff-card">
+            <div class="staff-avatar">
+                <img src="{{ url_for('static', filename='images/staff/teacher4.png') }}" 
+                     style="width: 100%; height: 100%; object-fit: cover;"
+                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+            </div>
+            <div class="staff-details">
+                <div class="staff-name">Mr. Tasleem</div>
+                <div class="staff-position">Social Studies Teacher</div>
+                <div style="color: #5f6368; font-size: 0.75rem;">M.A (History), B.Ed • 10+ years</div>
+            </div>
+        </div>
+        
+        <div style="padding: 16px; text-align: center;">
+            <a href="{{ url_for('contact') }}" style="display: inline-block; background-color: #1a73e8; color: white; padding: 10px 24px; border-radius: 20px; text-decoration: none; font-weight: 500;">
+                <i class="bi bi-envelope me-2"></i> Contact Our Staff
+            </a>
         </div>
     </div>
 </div>
