@@ -74,6 +74,38 @@
   place-items: center;
 }
 
+/* ---------- QUICK LINKS GRID FIXES ---------- */
+.quick-link-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.quick-link-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+.quick-link-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.quick-link-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.quick-link-btn {
+  margin-top: auto;
+  align-self: center;
+  width: 100%;
+  max-width: 100px;
+}
+
 /* ---------- HORIZONTAL CHIPS ---------- */
 .chips {
   display: flex;
@@ -187,98 +219,126 @@
   <div class="row g-3">
     <!-- Syllabus -->
     <div class="col-6 col-lg-3">
-      <div class="card card-android h-100">
-        <div class="card-body text-center p-3">
-          <div class="icon-circle bg-primary text-white mb-2 mx-auto">
-            <i class="bi bi-journal-bookmark fs-3"></i>
+      <div class="card card-android quick-link-card">
+        <div class="quick-link-body">
+          <div class="quick-link-content">
+            <div class="icon-circle bg-primary text-white mb-3">
+              <i class="bi bi-journal-bookmark fs-3"></i>
+            </div>
+            <div class="quick-link-text">
+              <h6 class="mb-1">Syllabus</h6>
+              <p class="text-muted small text-ellipsis-2 mb-3">View and download class syllabi</p>
+            </div>
+            <a href="{{ url_for('syllabus') }}" class="btn btn-outline-primary btn-sm quick-link-btn">Open</a>
           </div>
-          <h6 class="mb-1">Syllabus</h6>
-          <p class="text-muted small text-ellipsis-2 mb-2">View and download class syllabi</p>
-          <a href="{{ url_for('syllabus') }}" class="btn btn-outline-primary btn-sm stretched-link">Open</a>
         </div>
       </div>
     </div>
 
     <!-- Notifications -->
     <div class="col-6 col-lg-3">
-      <div class="card card-android h-100">
-        <div class="card-body text-center p-3">
-          <div class="icon-circle bg-danger text-white mb-2 mx-auto">
-            <i class="bi bi-megaphone fs-3"></i>
+      <div class="card card-android quick-link-card">
+        <div class="quick-link-body">
+          <div class="quick-link-content">
+            <div class="icon-circle bg-danger text-white mb-3">
+              <i class="bi bi-megaphone fs-3"></i>
+            </div>
+            <div class="quick-link-text">
+              <h6 class="mb-1">Notifications</h6>
+              <p class="text-muted small text-ellipsis-2 mb-3">Latest school announcements</p>
+            </div>
+            <a href="{{ url_for('notifications') }}" class="btn btn-outline-danger btn-sm quick-link-btn">Open</a>
           </div>
-          <h6 class="mb-1">Notifications</h6>
-          <p class="text-muted small text-ellipsis-2 mb-2">Latest school announcements</p>
-          <a href="{{ url_for('notifications') }}" class="btn btn-outline-danger btn-sm stretched-link">Open</a>
         </div>
       </div>
     </div>
 
     <!-- Academic Calendar -->
     <div class="col-6 col-lg-3">
-      <div class="card card-android h-100">
-        <div class="card-body text-center p-3">
-          <div class="icon-circle bg-success text-white mb-2 mx-auto">
-            <i class="bi bi-calendar-event fs-3"></i>
+      <div class="card card-android quick-link-card">
+        <div class="quick-link-body">
+          <div class="quick-link-content">
+            <div class="icon-circle bg-success text-white mb-3">
+              <i class="bi bi-calendar-event fs-3"></i>
+            </div>
+            <div class="quick-link-text">
+              <h6 class="mb-1">Academic Calendar</h6>
+              <p class="text-muted small text-ellipsis-2 mb-3">Important dates and events</p>
+            </div>
+            <a href="#" class="btn btn-outline-success btn-sm quick-link-btn">Open</a>
           </div>
-          <h6 class="mb-1">Academic Calendar</h6>
-          <p class="text-muted small text-ellipsis-2 mb-2">Important dates and events</p>
-          <a href="#" class="btn btn-outline-success btn-sm stretched-link">Open</a>
         </div>
       </div>
     </div>
 
     <!-- Contact -->
     <div class="col-6 col-lg-3">
-      <div class="card card-android h-100">
-        <div class="card-body text-center p-3">
-          <div class="icon-circle bg-secondary text-white mb-2 mx-auto">
-            <i class="bi bi-telephone fs-3"></i>
+      <div class="card card-android quick-link-card">
+        <div class="quick-link-body">
+          <div class="quick-link-content">
+            <div class="icon-circle bg-secondary text-white mb-3">
+              <i class="bi bi-telephone fs-3"></i>
+            </div>
+            <div class="quick-link-text">
+              <h6 class="mb-1">Contact Us</h6>
+              <p class="text-muted small text-ellipsis-2 mb-3">Get in touch with school</p>
+            </div>
+            <a href="{{ url_for('contact') }}" class="btn btn-outline-secondary btn-sm quick-link-btn">Open</a>
           </div>
-          <h6 class="mb-1">Contact Us</h6>
-          <p class="text-muted small text-ellipsis-2 mb-2">Get in touch with school</p>
-          <a href="{{ url_for('contact') }}" class="btn btn-outline-secondary btn-sm stretched-link">Open</a>
         </div>
       </div>
     </div>
 
     <!-- Class Work -->
     <div class="col-6 col-lg-3">
-      <div class="card card-android h-100">
-        <div class="card-body text-center p-3">
-          <div class="icon-circle bg-info text-white mb-2 mx-auto">
-            <i class="bi bi-journal-text fs-3"></i>
+      <div class="card card-android quick-link-card">
+        <div class="quick-link-body">
+          <div class="quick-link-content">
+            <div class="icon-circle bg-info text-white mb-3">
+              <i class="bi bi-journal-text fs-3"></i>
+            </div>
+            <div class="quick-link-text">
+              <h6 class="mb-1">Class Work</h6>
+              <p class="text-muted small text-ellipsis-2 mb-3">View today's class work</p>
+            </div>
+            <a href="{{ url_for('classwork') }}" class="btn btn-outline-info btn-sm quick-link-btn">Open</a>
           </div>
-          <h6 class="mb-1">Class Work</h6>
-          <p class="text-muted small text-ellipsis-2 mb-2">View today's class work</p>
-          <a href="{{ url_for('classwork') }}" class="btn btn-outline-info btn-sm stretched-link">Open</a>
         </div>
       </div>
     </div>
 
     <!-- Homework -->
     <div class="col-6 col-lg-3">
-      <div class="card card-android h-100">
-        <div class="card-body text-center p-3">
-          <div class="icon-circle bg-warning text-white mb-2 mx-auto">
-            <i class="bi bi-house-door fs-3"></i>
+      <div class="card card-android quick-link-card">
+        <div class="quick-link-body">
+          <div class="quick-link-content">
+            <div class="icon-circle bg-warning text-white mb-3">
+              <i class="bi bi-house-door fs-3"></i>
+            </div>
+            <div class="quick-link-text">
+              <h6 class="mb-1">Homework</h6>
+              <p class="text-muted small text-ellipsis-2 mb-3">View assigned homework</p>
+            </div>
+            <a href="{{ url_for('homework') }}" class="btn btn-outline-warning btn-sm quick-link-btn">Open</a>
           </div>
-          <h6 class="mb-1">Homework</h6>
-          <p class="text-muted small text-ellipsis-2 mb-2">View assigned homework</p>
-          <a href="{{ url_for('homework') }}" class="btn btn-outline-warning btn-sm stretched-link">Open</a>
         </div>
       </div>
     </div>
 
     <!-- Books -->
     <div class="col-6 col-lg-3">
-      <div class="card card-android h-100">
-        <div class="card-body text-center p-3">
-          <div class="icon-circle bg-dark text-white mb-2 mx-auto">
-            <i class="bi bi-book fs-3"></i>
+      <div class="card card-android quick-link-card">
+        <div class="quick-link-body">
+          <div class="quick-link-content">
+            <div class="icon-circle bg-dark text-white mb-3">
+              <i class="bi bi-book fs-3"></i>
+            </div>
+            <div class="quick-link-text">
+              <h6 class="mb-1">Books</h6>
+              <p class="text-muted small text-ellipsis-2 mb-3">View school books</p>
+            </div>
+            <a href="{{ url_for('books') }}" class="btn btn-outline-dark btn-sm quick-link-btn">Open</a>
           </div>
-          <h6 class="mb-1">Books</h6>
-          <p class="text-muted small text-ellipsis-2 mb-2">View school books</p>
-          <a href="{{ url_for('books') }}" class="btn btn-outline-dark btn-sm stretched-link">Open</a>
         </div>
       </div>
     </div>
