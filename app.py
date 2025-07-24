@@ -1076,8 +1076,10 @@ def upload_syllabus():
                 return redirect(url_for('upload_syllabus'))
             
             file = request.files['file']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
+            if file and allowed_file(file.filename, allowed_extensions=['pdf', 'doc', 'docx']):
+                filename = secure_filename(
+                    f"syllabus_{request.form['class_name']}_{request.form['subject']}_{request.form['exam_name']}_{file.filename}"
+                )
                 upload_folder = app.config['UPLOAD_FOLDER']
                 
                 os.makedirs(upload_folder, exist_ok=True)
@@ -1103,12 +1105,14 @@ def upload_syllabus():
                 conn.close()
                 
                 flash('Syllabus uploaded successfully!', 'success')
-                return redirect(url_for('syllabus'))
+                return redirect(url_for('upload_syllabus'))  # Stay on same page
             else:
-                flash('Invalid file type. Allowed formats: PDF, DOC, DOCX', 'danger')
+                flash('Invalid file type. Only PDF, DOC, and DOCX files are allowed.', 'danger')
+                return redirect(url_for('upload_syllabus'))
         except Exception as e:
             print(f"Error uploading syllabus: {str(e)}")
-            flash('An error occurred while uploading syllabus', 'danger')
+            flash(f'An error occurred while uploading syllabus: {str(e)}', 'danger')
+            return redirect(url_for('upload_syllabus'))
     
     return render_template('admin/upload_syllabus.html')
 
