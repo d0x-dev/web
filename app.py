@@ -1145,33 +1145,46 @@ def delete_syllabus(id):
 @admin_required
 def upload_document():
     if request.method == 'POST':
-        if 'file' not in request.files:
-            flash('No file part', 'danger')
-            return redirect(request.url)
-        
-        file = request.files['file']
-        if file.filename == '':
-            flash('No selected file', 'danger')
-            return redirect(request.url)
-        
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        try:
+            if 'file' not in request.files:
+                flash('No file selected', 'danger')
+                return redirect(url_for('upload_document'))
             
+            file = request.files['file']
             name = request.form.get('name')
             category = request.form.get('category')
             
-            conn = get_db_connection()
-            conn.execute(
-                'INSERT INTO documents (name, category, filename, upload_date) VALUES (?, ?, ?, ?)',
-                (name, category, filename, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-            conn.commit()
-            conn.close()
+            if not all([name, category, file]):
+                flash('Please fill all required fields', 'danger')
+                return redirect(url_for('upload_document'))
             
-            flash('Document uploaded successfully', 'success')
-            return redirect(url_for('documents'))
-        else:
-            flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif', 'danger')
+            if file.filename == '':
+                flash('No selected file', 'danger')
+                return redirect(url_for('upload_document'))
+            
+            allowed_extensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png']
+            if file and allowed_file(file.filename, allowed_extensions=allowed_extensions):
+                filename = secure_filename(f"doc_{category.replace(' ', '_')}_{name.replace(' ', '_')}_{file.filename}")
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                
+                conn = get_db_connection()
+                conn.execute(
+                    'INSERT INTO documents (name, category, filename, upload_date) VALUES (?, ?, ?, ?)',
+                    (name, category, filename, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                )
+                conn.commit()
+                conn.close()
+                
+                flash('Document uploaded successfully', 'success')
+                return redirect(url_for('upload_document'))  # Stay on same page
+            else:
+                flash('Allowed file types are PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG', 'danger')
+                return redirect(url_for('upload_document'))
+        except Exception as e:
+            print(f"Error uploading document: {str(e)}")
+            flash(f'An error occurred while uploading document: {str(e)}', 'danger')
+            return redirect(url_for('upload_document'))
     
     return render_template('admin/upload_document.html')
 
