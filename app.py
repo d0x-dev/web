@@ -19,6 +19,7 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
     PERMANENT_SESSION_LIFETIME=timedelta(days=30)  # Sessions last 30 days
+)
 
 # Login attempt limits
 MAX_LOGIN_ATTEMPTS = 4
