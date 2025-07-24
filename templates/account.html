@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Account - BHS MAKHAMA{% endblock %}
+
+{% block content %}
+<style>
+  .account-wrapper{
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .account-hero{
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color:#fff;
+    padding: 1.25rem 1rem 1.5rem;
+    box-shadow: var(--shadow-strong);
+    display:flex;
+    align-items:center;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    animation: fadeSlide 0.4s ease;
+  }
+  .account-hero img{
+    width:72px;height:72px;border-radius:50%;border:3px solid rgba(255,255,255,.25);
+    object-fit: cover;
+  }
+  .account-hero h4{ margin:0; font-weight:700; }
+
+  /* List of cards stacked vertically */
+  .account-list{
+    display: flex;
+    flex-direction: column;
+    gap: .85rem;
+  }
+  .account-card{
+    border:0;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    background: var(--surface);
+    padding: 1rem 1rem;
+    display:flex;
+    align-items:center;
+    gap:.85rem;
+    text-decoration:none;
+    color: inherit;
+    transition: transform .2s ease, box-shadow .2s ease;
+    opacity:0; transform: translateY(20px);
+  }
+  .account-card.show {
+    opacity: 1; transform: translateY(0);
+  }
+  .account-card:hover{
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-strong);
+  }
+  .account-icon{
+    width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    font-size:1.35rem;color:#fff;
+  }
+  .account-title{
+    margin:0;font-weight:600;
+  }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<div class="account-wrapper">
+  <!-- header -->
+  <div class="account-hero">
+    <img src="{{ url_for('static', filename='images/staff/default_staff.png') }}" alt="profile">
+    <div>
+      <h4>{{ username }}</h4>
+      <small class="opacity-75">Welcome to your account hub</small>
+    </div>
+  </div>
+
+  <!-- list -->
+  <div class="account-list">
+    <a href="{{ url_for('profile') }}" class="account-card">
+      <span class="account-icon bg-primary"><i class="bi bi-person"></i></span>
+      <div>
+        <p class="account-title mb-0">My Profile</p>
+        <small class="text-muted">View & edit profile</small>
+      </div>
+    </a>
+
+    <a href="{{ url_for('developer') }}" class="account-card">
+      <span class="account-icon bg-success"><i class="bi bi-code-slash"></i></span>
+      <div>
+        <p class="account-title mb-0">Developers</p>
+        <small class="text-muted">Know the team</small>
+      </div>
+    </a>
+
+    <a href="{{ url_for('about_app') }}" class="account-card">
+      <span class="account-icon bg-info"><i class="bi bi-info-circle"></i></span>
+      <div>
+        <p class="account-title mb-0">About App</p>
+        <small class="text-muted">Version & features</small>
+      </div>
+    </a>
+
+    <a href="{{ url_for('logout') }}" class="account-card">
+      <span class="account-icon bg-danger"><i class="bi bi-box-arrow-right"></i></span>
+      <div>
+        <p class="account-title mb-0 text-danger">Logout</p>
+        <small class="text-muted">Sign out of your account</small>
+      </div>
+    </a>
+  </div>
+</div>
+
+<script>
+  // Animation for card reveal (staggered)
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.account-card').forEach((el, i) => {
+      setTimeout(() => el.classList.add('show'), i * 120);
+    });
+  });
+</script>
+{% endblock %}
