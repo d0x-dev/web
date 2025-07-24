@@ -190,12 +190,21 @@ def login():
         password = request.form.get('password')
         ip_address = request.remote_addr
 
-        # ✅ 1. Check if user/IP is blocked
+        # First check if it's an admin login
+        conn = get_db_connection()
+        admin = conn.execute('SELECT * FROM admin WHERE username = ?', (username,)).fetchone()
+        conn.close()
+        
+        if admin and check_password_hash(admin['password'], password):
+            session['admin_logged_in'] = True
+            session['admin_username'] = username
+            return redirect(url_for('admin_dashboard'))
+        
+        # If not admin, proceed with regular user login
         if is_blocked(username, ip_address):
             flash('Too many failed attempts. Please try again after 24 hours.', 'danger')
             return redirect(url_for('login'))
 
-        # ✅ 2. Check if user is in declined_users.json
         declined_users = load_json('declined_users.json')
         declined_user = next((u for u in declined_users if u['username'] == username), None)
         if declined_user:
@@ -203,12 +212,10 @@ def login():
             flash(f'You are Declined. Reason: {reason}', 'danger')
             return redirect(url_for('login'))
 
-        # ✅ 3. Validate against regular users
         users = load_json(USERS_FILE)
         user = next((u for u in users if u['username'] == username), None)
 
         if user and user['password'] == password:
-            # ✅ Successful login - reset attempts
             attempts_data = load_failed_attempts()
             if username in attempts_data:
                 attempts_data[username]['attempts'] = 0
@@ -221,7 +228,6 @@ def login():
             session['role'] = user.get('role', 'student')
             return redirect(url_for('home'))
         else:
-            # ❌ Failed login - record attempt
             record_failed_attempt(username, ip_address)
             flash('Invalid username or password', 'danger')
 
