@@ -9,33 +9,33 @@
 
     <!-- Summary Cards -->
     <div class="row g-3 text-center">
-        {% set box = "card p-3 h-100 shadow-sm text-decoration-none text-reset" %}
+        {% set box = "card p-2 h-100 shadow-sm text-decoration-none text-reset d-flex flex-column align-items-center justify-content-center" %}
         <div class="col-3">
             <a href="{{ url_for('pending_users') }}" class="{{ box }}">
-                <i class="bi bi-hourglass-split fs-2 text-warning"></i>
-                <div class="fw-semibold">Pending</div>
-                <strong>{{ pending_approvals }}</strong>
+                <i class="bi bi-hourglass-split fs-2 text-warning mb-1"></i>
+                <div class="fw-semibold small">Pending</div>
+                <strong class="fs-6">{{ pending_approvals }}</strong>
             </a>
         </div>
         <div class="col-3">
             <div class="{{ box }}">
-                <i class="bi bi-person-check fs-2 text-success"></i>
-                <div class="fw-semibold">Approved</div>
-                <strong>{{ approved_users }}</strong>
+                <i class="bi bi-person-check fs-2 text-success mb-1"></i>
+                <div class="fw-semibold small">Approved</div>
+                <strong class="fs-6">{{ approved_users }}</strong>
             </div>
         </div>
         <div class="col-3">
             <div class="{{ box }}">
-                <i class="bi bi-person-x fs-2 text-danger"></i>
-                <div class="fw-semibold">Declined</div>
-                <strong>{{ declined_users }}</strong>
+                <i class="bi bi-person-x fs-2 text-danger mb-1"></i>
+                <div class="fw-semibold small">Declined</div>
+                <strong class="fs-6">{{ declined_users }}</strong>
             </div>
         </div>
         <div class="col-3">
             <a href="{{ url_for('blocked_ips') }}" class="{{ box }}">
-                <i class="bi bi-shield-lock fs-2 text-secondary"></i>
-                <div class="fw-semibold">Blocked IPs</div>
-                <strong>{{ blocked_ips_count }}</strong>
+                <i class="bi bi-shield-lock fs-2 text-secondary mb-1"></i>
+                <div class="fw-semibold small">Blocked IPs</div>
+                <strong class="fs-6">{{ blocked_ips_count }}</strong>
             </a>
         </div>
     </div>
@@ -142,6 +142,10 @@
 
     .card:hover {
         background-color: #f8f9fa;
+    }
+
+    .fw-semibold.small {
+        font-size: 0.85rem;
     }
 
     body.dark-mode {
