@@ -1,119 +1,381 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
   <title>Admin Login</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
   <style>
-    body {
-      background-color: #f8f9fa;
-      height: 100vh;
+    :root{
+      --glass-bg: rgba(255,255,255,.18);
+      --glass-border: rgba(255,255,255,.22);
+      --soft-shadow: 0 18px 40px rgba(0,0,0,.18);
+      --toast-z: 3000;
+    }
+    [data-bs-theme="dark"]{
+      --glass-bg: rgba(33,33,33,.40);
+      --glass-border: rgba(255,255,255,.06);
+    }
+
+    html, body{
+      height: 100%;
+      overscroll-behavior: none;  /* Prevent bounce on mobile */
+      overflow: hidden;           /* LOCK SCROLL */
+      touch-action: manipulation; /* Reduce double-tap zoom glitches */
+      -ms-touch-action: manipulation;
+    }
+
+    body{
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at 0% 0%, #0d6efd 0%, #6610f2 100%);
+      position: relative;
+    }
+
+    /* Animated blobs */
+    .blob{
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: .55;
+      animation: float 20s ease-in-out infinite;
+      mix-blend-mode: screen;
+      z-index: 1;
+    }
+    .blob1{ width: 420px; height: 420px; background:#0d6efd; top:-120px; left:-140px; animation-delay: 0s; }
+    .blob2{ width: 460px; height: 460px; background:#6610f2; bottom:-160px; right:-140px; animation-delay: 4s; }
+    .blob3{ width: 380px; height: 380px; background:#ff4d6d; top:45%; left:-170px; animation-delay: 8s; }
+
+    @keyframes float{
+      0%,100%{ transform: translate(0,0) scale(1); }
+      50%{ transform: translate(40px, -30px) scale(1.05); }
+    }
+
+    /* Wrapper */
+    .login-wrapper{
+      min-height: 100%;
       display: flex;
       align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 2;
     }
-    .card {
-      border-radius: 10px;
+
+    /* Glass card */
+    .card-glass{
+      width: 100%;
+      max-width: 420px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      box-shadow: var(--soft-shadow);
       overflow: hidden;
-      border: 1px solid rgba(0, 0, 0, 0.125);
+      transform: translateY(8px) scale(.98);
+      opacity: 0;
+      animation: popIn .6s cubic-bezier(.2,.8,.2,1) forwards .15s;
     }
-    .card-header {
-      padding: 1.5rem;
-      background-color: #0d6efd;
-      color: white;
+    @keyframes popIn{
+      to{
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
     }
-    .form-control:focus {
-      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-      border-color: #0d6efd;
+
+    .card-header{
+      background: transparent;
+      border: 0;
+      padding: 1.6rem 1.6rem .8rem 1.6rem;
+      text-align: center;
+      color: #fff;
     }
-    .btn-primary {
-      background-color: #0d6efd;
-      border-color: #0d6efd;
+    .brand-circle{
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.22);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 1rem;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
-    .btn-primary:hover {
-      background-color: #0b5ed7;
-      border-color: #0a58ca;
+    .brand-circle i{ font-size: 2rem; color:#fff; }
+    .card-title{ font-weight: 700; letter-spacing: .2px; }
+    .card-subtitle{ color: rgba(255,255,255,.85); font-size: .9rem; }
+
+    .card-body{ padding: 1.6rem; }
+    label.form-label{ font-weight: 600; font-size: .9rem; }
+
+    .input-group-text{
+      background: rgba(255,255,255,.12);
+      border: 0;
     }
-    .input-group-text {
-      background-color: #f1f1f1;
-      color: #495057;
+    .form-control{
+      background: rgba(255,255,255,.75);
+      border: 0;
     }
-    .form-control::placeholder {
-      color: #6c757d;
-      opacity: 0.7;
+    .form-control:focus{
+      background: rgba(255,255,255,.92);
+      box-shadow: none;
+    }
+
+    [data-bs-theme="dark"] .form-control{
+      background: rgba(255,255,255,.06);
+      color: #fff;
+    }
+    [data-bs-theme="dark"] .form-control:focus{
+      background: rgba(255,255,255,.10);
+      color: #fff;
+    }
+
+    .btn-primary{
+      border-radius: 999px;
+      font-weight: 600;
+      box-shadow: 0 6px 16px rgba(13,110,253,.35);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .btn-primary:active{
+      transform: scale(.98);
+      box-shadow: 0 2px 8px rgba(13,110,253,.2);
+    }
+
+    .divider{
+      height: 1px;
+      background: rgba(255,255,255,.15);
+      margin: 1.25rem 0;
+    }
+
+    .toggle-password{
+      cursor: pointer;
+    }
+
+    .footer-note{
+      text-align: center;
+      color: rgba(255,255,255,.7);
+      margin: .25rem 0 1.1rem;
+      font-size: .8rem;
+    }
+
+    /* Flash messages */
+    .flash-messages{
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: var(--toast-z);
+      width: calc(100% - 32px);
+      max-width: 360px;
+    }
+    .flash-messages .alert{
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(255,255,255,.90);
+      border: 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,.12);
+      animation: slideIn .35s ease;
+    }
+    [data-bs-theme="dark"] .flash-messages .alert{
+      background: rgba(33,33,33,.90);
+      color: #fff;
+    }
+    @keyframes slideIn{
+      from{ opacity: 0; transform: translateX(100%); }
+      to  { opacity: 1; transform: translateX(0);     }
+    }
+
+    /* Theme toggle (FAB) */
+    .theme-toggle{
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 0;
+      background: rgba(255,255,255,.22);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: var(--toast-z);
+    }
+    [data-bs-theme="dark"] .theme-toggle{
+      background: rgba(33,33,33,.50);
+      color: #ffc107;
+    }
+
+    .back-link a{
+      text-decoration: none;
+      color: #ffc107;
+      font-weight: 500;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6 col-xl-5">
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="alert alert-{{ category }} alert-dismissible fade show mb-4" role="alert">
-                <i class="bi bi-{{ 'check-circle-fill' if category == 'success' else 'exclamation-triangle-fill' }} me-2"></i>
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
 
-        <div class="card shadow-sm">
-          <div class="card-header text-center py-3">
-            <h4 class="mb-0"><i class="bi bi-shield-lock"></i> Admin Login</h4>
+  <!-- Animated blobs -->
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+
+  <!-- Theme toggle -->
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
+    <i id="themeIcon" class="bi bi-moon-fill"></i>
+  </button>
+
+  <!-- Flash Messages -->
+  <div class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show d-flex align-items-center mb-2" role="alert">
+            <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
+            <div class="flex-grow-1">{{ message }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
-          <div class="card-body p-4">
-            <form method="POST" action="{{ url_for('admin_login') }}">
-              <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                  <input type="text" class="form-control" id="username" name="username" 
-                         placeholder="Enter your username" required autocomplete="username">
-                </div>
-              </div>
-              <div class="mb-4">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                  <input type="password" class="form-control" id="password" name="password" 
-                         placeholder="Enter your password" required autocomplete="current-password">
-                </div>
-              </div>
-              <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-primary btn-lg">
-                  <i class="bi bi-box-arrow-in-right"></i> Login
-                </button>
-              </div>
-              <div class="text-center small text-muted">
-                For authorized personnel only. Unauthorized access is prohibited.
-              </div>
-            </form>
-          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Wrapper -->
+  <div class="login-wrapper">
+    <div class="card-glass">
+
+      <!-- Header -->
+      <div class="card-header">
+        <div class="brand-circle">
+          <i class="bi bi-shield-lock-fill"></i>
         </div>
+        <h3 class="card-title mb-0">Admin Login</h3>
+        <p class="card-subtitle mb-3">Authorized personnel only</p>
+      </div>
+
+      <!-- Body -->
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('admin_login') }}">
+          <!-- Username -->
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+              <input type="text"
+                     class="form-control"
+                     id="username"
+                     name="username"
+                     placeholder="Enter your username"
+                     required
+                     autocomplete="username">
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-4">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+              <input type="password"
+                     class="form-control"
+                     id="password"
+                     name="password"
+                     placeholder="Enter your password"
+                     required
+                     autocomplete="current-password">
+              <span class="input-group-text toggle-password" id="togglePassword" title="Show / Hide Password">
+                <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
+              </span>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="d-grid mb-2">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="bi bi-box-arrow-in-right"></i> Login
+            </button>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Back to user login -->
+          <div class="text-center back-link mb-2">
+            <a href="{{ url_for('login') }}"><i class="bi bi-arrow-left-circle me-1"></i> User Login</a>
+          </div>
+        </form>
+      </div>
+
+      <div class="footer-note">
+        © {{ current_year or '2025' }} GOVT. BOYS HIGH SCHOOL PETH MAKHAMA
       </div>
     </div>
   </div>
 
-  <!-- Bootstrap JS Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Auto-dismiss alerts after 5 seconds
-      const alerts = document.querySelectorAll('.alert');
+    // Auto close flashes
+    document.addEventListener('DOMContentLoaded', function () {
+      const alerts = document.querySelectorAll('.flash-messages .alert');
       alerts.forEach(alert => {
         setTimeout(() => {
-          const bsAlert = new bootstrap.Alert(alert);
+          const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
           bsAlert.close();
         }, 5000);
       });
     });
+
+    // Show / hide password
+    (function(){
+      const toggle = document.getElementById('togglePassword');
+      const icon = document.getElementById('togglePasswordIcon');
+      const input = document.getElementById('password');
+
+      if(toggle && icon && input){
+        toggle.addEventListener('click', () => {
+          const isPwd = input.getAttribute('type') === 'password';
+          input.setAttribute('type', isPwd ? 'text' : 'password');
+          icon.classList.toggle('bi-eye');
+          icon.classList.toggle('bi-eye-slash');
+        });
+      }
+    })();
+
+    // Theme toggle (persisted)
+    (function(){
+      const html = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const icon = document.getElementById('themeIcon');
+
+      const saved = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+      applyTheme(saved);
+
+      btn.addEventListener('click', () => {
+        const current = html.getAttribute('data-bs-theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        localStorage.setItem('theme', next);
+      });
+
+      function applyTheme(mode){
+        html.setAttribute('data-bs-theme', mode);
+        if(mode === 'dark'){
+          icon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+        }else{
+          icon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+        }
+      }
+    })();
   </script>
 </body>
 </html>
