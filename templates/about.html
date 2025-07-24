@@ -10,12 +10,6 @@
         margin-bottom: 16px;
         overflow: hidden;
         background-color: var(--bs-card-bg);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .about-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
     }
     
     .about-header {
@@ -23,8 +17,6 @@
         background-color: var(--bs-primary);
         color: white;
         font-weight: 500;
-        display: flex;
-        align-items: center;
     }
     
     .about-body {
@@ -37,11 +29,6 @@
         border-bottom: 1px solid var(--bs-border-color);
         display: flex;
         align-items: center;
-        transition: background-color 0.2s ease;
-    }
-    
-    .about-list-item:hover {
-        background-color: var(--bs-tertiary-bg);
     }
     
     .about-list-item:last-child {
@@ -54,154 +41,81 @@
     }
     
     .section-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin: 32px 0 20px 0;
+        font-size: 1.25rem;
+        font-weight: 500;
+        margin: 24px 0 16px 16px;
         color: var(--bs-heading-color);
-        position: relative;
-        padding-left: 16px;
-    }
-    
-    .section-title::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 4px;
-        background-color: var(--bs-primary);
-        border-radius: 2px;
     }
     
     .achievement-card {
         text-align: center;
         padding: 16px;
-        height: 100%;
     }
     
     .achievement-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 30px;
+        width: 48px;
+        height: 48px;
+        border-radius: 24px;
         background-color: var(--bs-primary-bg-subtle);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 16px;
+        margin: 0 auto 12px;
         color: var(--bs-primary);
-        font-size: 1.75rem;
     }
     
     /* Staff Section Styles */
     .staff-profile {
         margin-bottom: 20px;
-        transition: transform 0.3s ease;
-    }
-    
-    .staff-profile:hover {
-        transform: scale(1.03);
     }
     
     .staff-image-container {
-        width: 120px;
-        height: 120px;
+        width: 100px;
+        height: 100px;
         margin: 0 auto;
         border-radius: 50%;
         overflow: hidden;
-        border: 3px solid var(--bs-primary);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border: 3px solid var(--bs-border-color);
     }
     
     .staff-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-    
-    .staff-image-container:hover .staff-image {
-        transform: scale(1.1);
     }
     
     .staff-details {
         text-align: center;
-        margin-top: 16px;
+        margin-top: 10px;
     }
     
     .position {
         color: var(--bs-secondary-color);
         font-style: italic;
-        font-size: 0.9rem;
     }
     
     .qualifications {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         color: var(--bs-secondary-color);
-        margin-top: 4px;
-    }
-    
-    /* History Image */
-    .history-image {
-        width: 100%;
-        border-radius: 8px;
-        margin: 16px 0;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
-    }
-    
-    .history-image:hover {
-        transform: scale(1.02);
     }
     
     /* Custom dark mode adjustments */
     [data-bs-theme="dark"] .about-card {
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-    
-    [data-bs-theme="dark"] .about-card:hover {
-        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
     
     [data-bs-theme="dark"] .staff-image-container {
-        border-color: var(--bs-primary);
+        border-color: var(--bs-border-color);
     }
 
     /* Fix for bottom menu overlap */
     .about-page-wrapper {
-        padding-bottom: 100px;
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .section-title {
-            font-size: 1.3rem;
-        }
-        
-        .staff-image-container {
-            width: 100px;
-            height: 100px;
-        }
-    }
-    
-    @media (max-width: 576px) {
-        .section-title {
-            font-size: 1.2rem;
-            margin: 24px 0 16px 0;
-        }
-        
-        .about-header {
-            padding: 12px;
-            font-size: 1rem;
-        }
-        
-        .about-body {
-            padding: 12px;
-        }
+        padding-bottom: 100px; /* Extra bottom space for fixed menu */
     }
 </style>
 
 <div class="about-page-wrapper">
-<div class="container" style="max-width: 1000px; margin: 0 auto; padding: 0 16px;">
+<div class="container" style="max-width: 800px; margin: 0 auto; padding: 0 16px;">
     <!-- School History Card -->
     <div class="about-card">
         <div class="about-header">
@@ -211,7 +125,7 @@
             <p style="margin-bottom: 16px;">Established in 1950, GOVT. BOYS HIGH SCHOOL PETH MAKHAMA has been a cornerstone of education in the region for over 70 years.</p>
             <p>We began as a small village school and have grown into one of the most respected government schools in Jammu and Kashmir. Our alumni include prominent civil servants, doctors, engineers, and leaders who have made significant contributions to society.</p>
             <div style="margin-top: 16px; text-align: center;">
-                <img src="{{ url_for('static', filename='images/school-old.jpg') }}" alt="School in early days" class="history-image">
+                <img src="{{ url_for('static', filename='images/school-old.jpg') }}" alt="School in early days" style="width: 100%; border-radius: 8px;">
                 <p style="color: var(--bs-secondary-color); font-size: 0.75rem; margin-top: 8px;">Our school in the early days</p>
             </div>
         </div>
@@ -266,7 +180,7 @@
         <div class="about-card">
             <div class="achievement-card">
                 <div class="achievement-icon">
-                    <i class="bi bi-trophy"></i>
+                    <i class="bi bi-trophy" style="font-size: 1.5rem;"></i>
                 </div>
                 <h5 style="margin-bottom: 8px;">Academic Excellence</h5>
                 <p style="color: var(--bs-secondary-color); font-size: 0.875rem;">Consistently high pass percentages in board examinations with several state rank holders</p>
@@ -276,7 +190,7 @@
         <div class="about-card">
             <div class="achievement-card">
                 <div class="achievement-icon">
-                    <i class="bi bi-people"></i>
+                    <i class="bi bi-people" style="font-size: 1.5rem;"></i>
                 </div>
                 <h5 style="margin-bottom: 8px;">Sports</h5>
                 <p style="color: var(--bs-secondary-color); font-size: 0.875rem;">Multiple district and state level championships in cricket, football, and athletics</p>
@@ -286,20 +200,10 @@
         <div class="about-card">
             <div class="achievement-card">
                 <div class="achievement-icon">
-                    <i class="bi bi-building"></i>
+                    <i class="bi bi-building" style="font-size: 1.5rem;"></i>
                 </div>
                 <h5 style="margin-bottom: 8px;">Facilities</h5>
                 <p style="color: var(--bs-secondary-color); font-size: 0.875rem;">Well-equipped labs, library with 10,000+ books, and modern sports facilities</p>
-            </div>
-        </div>
-        
-        <div class="about-card">
-            <div class="achievement-card">
-                <div class="achievement-icon">
-                    <i class="bi bi-music-note"></i>
-                </div>
-                <h5 style="margin-bottom: 8px;">Cultural</h5>
-                <p style="color: var(--bs-secondary-color); font-size: 0.875rem;">Recognition in district-level cultural competitions and events</p>
             </div>
         </div>
     </div>
@@ -307,13 +211,9 @@
     <!-- Staff Section -->
     <div class="about-card">
         <div class="about-header" style="background-color: var(--bs-warning); color: var(--bs-dark);">
-            <i class="bi bi-person-video3 me-2"></i> Our Dedicated Staff
+            <i class="bi bi-person-video3 me-2"></i> Our Staff
         </div>
         <div class="about-body">
-            <p style="margin-bottom: 20px; text-align: center; font-style: italic; color: var(--bs-secondary-color);">
-                Our experienced and passionate faculty members are committed to nurturing the potential of every student.
-            </p>
-            
             <div class="row g-4">
                 <!-- Principal -->
                 <div class="col-md-6 col-lg-3">
@@ -336,7 +236,7 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="staff-profile">
                         <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/vice_principal.png') }}" 
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
                                  class="staff-image" 
                                  alt="Vice Principal Altaf"
                                  onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
@@ -353,14 +253,14 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="staff-profile">
                         <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/english_teacher.png') }}" 
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
                                  class="staff-image" 
                                  alt="Muzaffar Sir"
                                  onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
                         </div>
                         <div class="staff-details">
                             <h5>Mr. Muzaffar Ali</h5>
-                            <p class="position">Senior Teacher (English)</p>
+                            <p class="position">Senior Teacher</p>
                             <p class="qualifications">M.A (English), B.Ed<br>18+ years experience</p>
                         </div>
                     </div>
@@ -370,9 +270,9 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="staff-profile">
                         <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/math_teacher.png') }}" 
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
                                  class="staff-image" 
-                                 alt="Mohd Ali Bhat"
+                                 alt="Muzaffar"
                                  onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
                         </div>
                         <div class="staff-details">
@@ -387,7 +287,7 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="staff-profile">
                         <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/science_teacher.png') }}" 
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
                                  class="staff-image" 
                                  alt="Waseem Abdullah"
                                  onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
@@ -404,9 +304,9 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="staff-profile">
                         <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/history_teacher.png') }}" 
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
                                  class="staff-image" 
-                                 alt="Tasleem Parry"
+                                 alt="Tasleem"
                                  onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
                         </div>
                         <div class="staff-details">
@@ -421,9 +321,9 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="staff-profile">
                         <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/urdu_teacher.png') }}" 
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
                                  class="staff-image" 
-                                 alt="Tahir Mir"
+                                 alt="Tahir Sir"
                                  onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
                         </div>
                         <div class="staff-details">
@@ -438,91 +338,109 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="staff-profile">
                         <div class="staff-image-container">
-                            <img src="{{ url_for('static', filename='images/staff/pe_teacher.png') }}" 
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
                                  class="staff-image" 
-                                 alt="Ab Rashid Dar"
+                                 alt="Physical Education Teacher"
                                  onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
                         </div>
                         <div class="staff-details">
                             <h5>Mr. Ab Rashid Dar</h5>
-                            <p class="position">Physical Education</p>
-                            <p class="qualifications">M.P.Ed<br>15+ years experience</p>
+                            <p class="position">Mathematics Teacher</p>
+                            <p class="qualifications">M.Sc (Maths), B.Ed<br>15+ years experience</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- NEW STAFF: Tabasum Tafazzul -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/default_staff.png') }}" 
+                                 class="staff-image" 
+                                 alt="Tabasum Tafazzul"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Ms. Tabasum Tafazzul</h5>
+                            <p class="position">English Teacher</p>
+                            <p class="qualifications">M.A (English), B.Ed<br>8+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW STAFF: Rehana Sadiq -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/default_staff.png') }}" 
+                                 class="staff-image" 
+                                 alt="Rehana Sadiq"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Ms. Rehana Sadiq</h5>
+                            <p class="position">English Teacher</p>
+                            <p class="qualifications">M.A (English), B.Ed<br>10+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW STAFF: Sabica Mosvi -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/default_staff.png') }}" 
+                                 class="staff-image" 
+                                 alt="Sabica Mosvi"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Ms. Sabica Mosvi</h5>
+                            <p class="position">Vocational Teacher</p>
+                            <p class="qualifications">MBA (Vocational Education), B.Ed<br>6+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW STAFF: Gazanfar Ali -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/default_staff.png') }}" 
+                                 class="staff-image" 
+                                 alt="Gazanfar Ali"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Gazanfar Ali</h5>
+                            <p class="position">Vocational Teacher</p>
+                            <p class="qualifications">M.Com, B.Ed<br>7+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW STAFF: Rezia Raashid -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/default_staff.png') }}" 
+                                 class="staff-image" 
+                                 alt="Rezia Raashid"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Ms. Rezia Raashid</h5>
+                            <p class="position">Mathematics Teacher</p>
+                            <p class="qualifications">M.Sc (Maths), B.Ed<br>9+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <div class="text-center mt-4">
                 <a href="{{ url_for('contact') }}" class="btn btn-primary">
-                    <i class="bi bi-envelope me-2"></i> Contact Our Staff
+                    <i class="bi bi-envelope"></i> Contact Our Staff
                 </a>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Alumni Success Section -->
-    <h3 class="section-title">
-        <i class="bi bi-people-fill me-2"></i> Notable Alumni
-    </h3>
-    
-    <div class="about-card">
-        <div class="about-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="d-flex align-items-start mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="achievement-icon" style="width: 50px; height: 50px;">
-                                <i class="bi bi-briefcase"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5>Dr. Farooq Ahmad</h5>
-                            <p class="text-muted mb-1">Class of 1972</p>
-                            <p>Renowned Cardiac Surgeon at AIIMS Delhi</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-start mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="achievement-icon" style="width: 50px; height: 50px;">
-                                <i class="bi bi-building"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5>Mr. Javid Iqbal</h5>
-                            <p class="text-muted mb-1">Class of 1985</p>
-                            <p>IAS Officer, Jammu & Kashmir Cadre</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-start mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="achievement-icon" style="width: 50px; height: 50px;">
-                                <i class="bi bi-laptop"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5>Mr. Arshid Khan</h5>
-                            <p class="text-muted mb-1">Class of 1998</p>
-                            <p>Senior Engineer at Google, California</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-start mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="achievement-icon" style="width: 50px; height: 50px;">
-                                <i class="bi bi-book"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5>Prof. Naseer Shah</h5>
-                            <p class="text-muted mb-1">Class of 1978</p>
-                            <p>Professor of History at University of Kashmir</p>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
