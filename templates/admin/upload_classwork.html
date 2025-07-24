@@ -1,41 +1,135 @@
-from flask import redirect, url_for, flash
+{% extends "base.html" %}
+{% set hide_header = True %}
 
-@app.route('/admin/upload-classwork', methods=['GET', 'POST'])
-@admin_required
-def upload_classwork():
-    if request.method == 'POST':
-        # Get form data
-        class_name = request.form.get('class_name')
-        subject = request.form.get('subject')
-        title = request.form.get('title')
-        description = request.form.get('description')
-        due_date = request.form.get('due_date')
-        file = request.files.get('file')
+{% block title %}Upload Class Work - Admin{% endblock %}
 
-        # Validate required fields
-        if not all([class_name, subject, title, file]):
-            flash('Please fill all required fields', 'danger')
-            return redirect(url_for('upload_classwork'))
+{% block content %}
+<div class="container mt-4" style="padding-bottom: 100px;">
+    <h2 class="mb-4 text-center">Upload Class Work</h2>
 
-        # Validate file type
-        allowed_extensions = ['pdf', 'doc', 'docx', 'ppt', 'pptx']
-        if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
-            flash('Invalid file type. Allowed formats: PDF, DOC, DOCX, PPT, PPTX', 'danger')
-            return redirect(url_for('upload_classwork'))
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-        try:
-            # Save the file (implement your file saving logic here)
-            # Example:
-            # filename = secure_filename(file.filename)
-            # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            
-            # Save to database (implement your database logic here)
-            
-            flash('Class work uploaded successfully!', 'success')
-            return redirect(url_for('upload_classwork'))  # Stay on same page after upload
-            
-        except Exception as e:
-            flash(f'Error uploading file: {str(e)}', 'danger')
-            return redirect(url_for('upload_classwork'))
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-upload"></i> New Class Work</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_classwork') }}">
+                <div class="mb-3">
+                    <label for="class_name" class="form-label">Class</label>
+                    <select class="form-select" id="class_name" name="class_name" required>
+                        <option value="">Select Class</option>
+                        <option value="9th">9th</option>
+                        <option value="10th">10th</option>
+                        <option value="11th">11th</option>
+                        <option value="12th">12th</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="subject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="subject" name="subject" required>
+                </div>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="due_date" class="form-label">Due Date (optional)</label>
+                    <input type="date" class="form-control" id="due_date" name="due_date">
+                </div>
+                <div class="mb-4">
+                    <label for="file" class="form-label">File</label>
+                    <input class="form-control" type="file" id="file" name="file" accept=".pdf,.doc,.docx,.ppt,.pptx" required>
+                    <div class="form-text">Allowed formats: PDF, DOC, DOCX, PPT, PPTX</div>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-upload"></i> Upload Class Work
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-    return render_template('upload_classwork.html')
+<!-- Bottom Menu -->
+<nav class="navbar navbar-expand fixed-bottom bg-light shadow-sm">
+    <div class="container justify-content-around">
+        <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-speedometer2"></i><br>Dashboard
+        </a>
+        <a class="nav-link text-center active" href="{{ url_for('upload_classwork') }}">
+            <i class="bi bi-upload"></i><br>Class Work
+        </a>
+        <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
+            <i class="bi bi-box-arrow-right"></i><br>Logout
+        </a>
+    </div>
+</nav>
+
+<style>
+    .navbar.fixed-bottom {
+        z-index: 1030;
+        border-top: 1px solid rgba(0,0,0,.1);
+        padding: 0.5rem 0;
+        background-color: #f8f9fa;
+    }
+    
+    .nav-link {
+        font-size: 0.8rem;
+        color: #495057;
+        padding: 0.5rem;
+        transition: all 0.2s ease;
+    }
+    
+    .nav-link.active {
+        color: #0d6efd;
+        font-weight: 500;
+    }
+    
+    .nav-link:hover {
+        color: #0d6efd;
+    }
+    
+    /* Dark mode styles */
+    body.dark-mode .navbar.fixed-bottom {
+        background-color: #1a1a1a !important;
+        border-top: 1px solid #333;
+    }
+    
+    body.dark-mode .nav-link {
+        color: #eee;
+    }
+    
+    body.dark-mode .nav-link.active {
+        color: #3d8bfd;
+    }
+    
+    body.dark-mode .card,
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+        background-color: #1f1f1f;
+        color: white;
+        border-color: #444;
+    }
+    
+    body.dark-mode label,
+    body.dark-mode .form-text {
+        color: #ccc;
+    }
+</style>
+{% endblock %}
