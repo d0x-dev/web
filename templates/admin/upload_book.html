@@ -4,21 +4,21 @@
 {% block title %}Upload Book - Admin{% endblock %}
 
 {% block content %}
-<div class="container mb-5 pb-5">
-    <!-- Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
+<div class="container mb-4" style="padding-bottom: 100px;">
     <div class="row justify-content-center">
         <div class="col-lg-8">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-info text-white">
                     <h4 class="mb-0"><i class="bi bi-book"></i> Upload Book</h4>
@@ -65,7 +65,7 @@
 </div>
 
 <!-- Bottom Menu -->
-<nav class="navbar navbar-expand fixed-bottom shadow-sm" id="bottomMenu">
+<nav class="navbar navbar-expand fixed-bottom bg-light shadow-sm">
     <div class="container justify-content-around">
         <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
             <i class="bi bi-speedometer2"></i><br>Dashboard
@@ -80,28 +80,43 @@
 </nav>
 
 <style>
+    .navbar.fixed-bottom {
+        z-index: 1030;
+        border-top: 1px solid rgba(0,0,0,.1);
+        padding: 0.5rem 0;
+        background-color: #f8f9fa;
+    }
+    
     .nav-link {
         font-size: 0.8rem;
-        color: var(--bs-body-color);
+        color: #495057;
+        padding: 0.5rem;
         transition: all 0.2s ease;
     }
-
+    
     .nav-link.active {
-        color: var(--bs-info);
+        color: #0dcaf0;
         font-weight: 500;
     }
-
+    
     .nav-link:hover {
-        color: var(--bs-info);
+        color: #0dcaf0;
     }
-
-    #bottomMenu {
-        background-color: var(--bs-body-bg);
-        border-top: 1px solid var(--bs-border-color);
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
+    
+    /* Dark mode */
+    body.dark-mode .navbar.fixed-bottom {
+        background-color: #1a1a1a !important;
+        border-top: 1px solid #333;
     }
-
+    
+    body.dark-mode .nav-link {
+        color: #eee;
+    }
+    
+    body.dark-mode .nav-link.active {
+        color: #0dcaf0;
+    }
+    
     body.dark-mode .card,
     body.dark-mode .form-control,
     body.dark-mode .form-select {
@@ -109,28 +124,10 @@
         color: white;
         border-color: #444;
     }
-
+    
     body.dark-mode label,
     body.dark-mode .form-text {
         color: #ccc;
-    }
-
-    body.dark-mode .nav-link {
-        color: #eee;
-    }
-
-    body.dark-mode .nav-link.active {
-        color: var(--bs-info);
-    }
-
-    body.dark-mode #bottomMenu {
-        background-color: #1a1a1a;
-        border-top: 1px solid #333;
-    }
-
-    /* Make sure content doesn't hide behind bottom menu */
-    .container {
-        padding-bottom: 80px;
     }
 </style>
 {% endblock %}
