@@ -161,11 +161,16 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('logged_in'):
+            print(f"Access denied to {request.path} - not logged in")  # Debug print
+            print(f"Current session: {session}")  # Debug print
             flash('Please log in to access this page', 'danger')
-            return redirect(url_for('login', next=request.url))
+            
+            # Store the original URL to redirect back after login
+            session['next_url'] = request.url
+            return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
-
+    
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -190,8 +195,8 @@ def login():
         password = request.form.get('password')
         ip_address = request.remote_addr
 
-        # Debug: Print received credentials
-        print(f"Login attempt - Username: {username}, Password: {password}")
+        # Debug print
+        print(f"Login attempt for username: {username}")
 
         # 1. Check if user/IP is blocked
         if is_blocked(username, ip_address):
@@ -208,12 +213,12 @@ def login():
 
         # 3. Validate against regular users
         users = load_json(USERS_FILE)
-        print(f"Loaded users: {users}")  # Debug: Print loaded users
+        print(f"Loaded users: {users}")  # Debug print
         
         user = next((u for u in users if u['username'] == username), None)
         
         if user:
-            print(f"Found user: {user}")  # Debug: Print found user
+            print(f"Found user: {user}")  # Debug print
             if user['password'] == password:
                 # Successful login
                 attempts_data = load_failed_attempts()
@@ -223,9 +228,13 @@ def login():
                     attempts_data[ip_address]['attempts'] = 0
                 save_failed_attempts(attempts_data)
 
+                # Set session variables
                 session['logged_in'] = True
                 session['username'] = username
                 session['role'] = user.get('role', 'student')
+                session.permanent = True  # Make session persistent
+                
+                print(f"Session after login: {session}")  # Debug print
                 flash('Login successful!', 'success')
                 return redirect(url_for('home'))
             else:
