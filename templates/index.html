@@ -67,6 +67,7 @@
   align-items: center;
   min-height: 170px;
   padding: 1rem;
+  height: 100%;
 }
 .link-card:hover {
   transform: translateY(-2px);
@@ -86,6 +87,12 @@
 .link-card h6 {
   margin: .25rem 0 .15rem;
   font-weight: 600;
+  text-align: center;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 .link-card p {
   margin: 0;
@@ -170,6 +177,11 @@
 .dark-mode .badge-soft {
   background: rgba(255,255,255,.08);
 }
+
+/* Ensure equal height for all cards */
+.quick-links-row .col {
+  display: flex;
+}
 </style>
 
 <!-- ===================== HERO ===================== -->
@@ -207,7 +219,7 @@
 <!-- ===================== QUICK LINKS (GRID) ===================== -->
 <section class="mb-4 reveal">
   <h2 class="section-title-big">Quick Links</h2>
-  <div class="row g-3">
+  <div class="row quick-links-row g-3">
     <!-- Syllabus -->
     <div class="col-6 col-lg-3">
       <a href="{{ url_for('syllabus') }}" class="link-card">
@@ -227,17 +239,6 @@
         </div>
         <h6>Notifications</h6>
         <p>Latest school announcements</p>
-      </a>
-    </div>
-
-    <!-- Academic Calendar -->
-    <div class="col-6 col-lg-3">
-      <a href="#" class="link-card">
-        <div class="icon-circle bg-success text-white">
-          <i class="bi bi-calendar-event fs-3"></i>
-        </div>
-        <h6>Academic Calendar</h6>
-        <p>Important dates and events</p>
       </a>
     </div>
 
@@ -282,6 +283,28 @@
         </div>
         <h6>Books</h6>
         <p>View school books</p>
+      </a>
+    </div>
+    
+    <!-- Documents -->
+    <div class="col-6 col-lg-3">
+      <a href="{{ url_for('documents') }}" class="link-card">
+        <div class="icon-circle bg-success text-white">
+          <i class="bi bi-file-earmark-text fs-3"></i>
+        </div>
+        <h6>Documents</h6>
+        <p>Important school documents</p>
+      </a>
+    </div>
+    
+    <!-- About -->
+    <div class="col-6 col-lg-3">
+      <a href="{{ url_for('about') }}" class="link-card">
+        <div class="icon-circle bg-purple text-white">
+          <i class="bi bi-info-circle fs-3"></i>
+        </div>
+        <h6>About School</h6>
+        <p>Learn about our institution</p>
       </a>
     </div>
   </div>
