@@ -889,9 +889,10 @@ def upload_book():
                 flash('Please fill all required fields', 'danger')
                 return redirect(url_for('upload_book'))
 
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            if file and allowed_file(file.filename, allowed_extensions=['pdf']):
+                filename = secure_filename(f"{title.replace(' ', '_')}_{file.filename}")
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
 
                 conn = get_db_connection()
                 conn.execute(
@@ -899,17 +900,20 @@ def upload_book():
                     (title, author, subject, class_name, filename, upload_date)
                     VALUES (?, ?, ?, ?, ?, ?)''',
                     (title, author, subject, class_name, filename, 
-                     datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                     datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                )
                 conn.commit()
                 conn.close()
 
                 flash('Book uploaded successfully!', 'success')
-                return redirect(url_for('books'))
+                return redirect(url_for('upload_book'))  # Stay on same page after success
             else:
-                flash('Invalid file type', 'danger')
+                flash('Invalid file type. Only PDF files are allowed.', 'danger')
+                return redirect(url_for('upload_book'))
         except Exception as e:
             print(f"Error uploading book: {e}")
-            flash('An error occurred while uploading book', 'danger')
+            flash(f'An error occurred while uploading book: {str(e)}', 'danger')
+            return redirect(url_for('upload_book'))
 
     return render_template('admin/upload_book.html')
 
