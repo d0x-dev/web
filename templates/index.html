@@ -92,16 +92,6 @@
   margin: 0;
 }
 
-/* Color classes for icons */
-.bg-primary { background-color: #0d6efd !important; }
-.bg-danger { background-color: #dc3545 !important; }
-.bg-secondary { background-color: #6c757d !important; }
-.bg-info { background-color: #0dcaf0 !important; }
-.bg-warning { background-color: #ffc107 !important; color: #000 !important; }
-.bg-dark { background-color: #212529 !important; }
-.bg-success { background-color: #198754 !important; }
-.bg-purple { background-color: #6f42c1 !important; }
-
 /* ---------- HORIZONTAL CHIPS ---------- */
 .chips {
   display: flex;
@@ -183,7 +173,9 @@
     <span class="badge badge-soft mb-2 px-2 py-1">Welcome</span>
     <h1 class="title mb-2">GOVT. BOYS HIGH SCHOOL<br/>PETH MAKHAMA</h1>
     <p class="lead mb-3">A premier institution dedicated to excellence in education</p>
-    <a href="{{ url_for('about') }}" class="btn btn-light hero-btn">Learn More</a>
+    <a href="{{ url_for('about') }}" class="btn btn-light hero-btn">
+      <i class="bi bi-info-circle-fill me-1"></i> Learn More
+    </a>
   </div>
 
   <!-- soft animated wave -->
@@ -199,7 +191,7 @@
   </svg>
 </section>
 
-<!-- ===================== QUICK CHIPS (OPTIONAL SHORTCUTS) ===================== -->
+<!-- ===================== QUICK CHIPS ===================== -->
 <div class="chips mb-3 reveal">
   <a href="{{ url_for('syllabus') }}" class="chip"><i class="bi bi-journal-bookmark me-1"></i> Syllabus</a>
   <a href="{{ url_for('notifications') }}" class="chip"><i class="bi bi-bell me-1"></i> Notifications</a>
@@ -209,11 +201,10 @@
   <a href="{{ url_for('classwork') }}" class="chip"><i class="bi bi-journal-text me-1"></i> Class Work</a>
 </div>
 
-<!-- ===================== SIMPLIFIED QUICK LINKS ===================== -->
+<!-- ===================== QUICK LINKS ===================== -->
 <section class="mb-4 reveal">
   <h2 class="section-title-big">Quick Links</h2>
   <div class="quick-links-grid">
-    <!-- Syllabus -->
     <a href="{{ url_for('syllabus') }}" class="quick-link">
       <div class="quick-link-icon bg-primary text-white">
         <i class="bi bi-journal-bookmark"></i>
@@ -221,7 +212,6 @@
       <p class="quick-link-name">Syllabus</p>
     </a>
 
-    <!-- Notifications -->
     <a href="{{ url_for('notifications') }}" class="quick-link">
       <div class="quick-link-icon bg-danger text-white">
         <i class="bi bi-megaphone"></i>
@@ -229,7 +219,6 @@
       <p class="quick-link-name">Notifications</p>
     </a>
 
-    <!-- Contact -->
     <a href="{{ url_for('contact') }}" class="quick-link">
       <div class="quick-link-icon bg-secondary text-white">
         <i class="bi bi-telephone"></i>
@@ -237,7 +226,6 @@
       <p class="quick-link-name">Contact</p>
     </a>
 
-    <!-- Class Work -->
     <a href="{{ url_for('classwork') }}" class="quick-link">
       <div class="quick-link-icon bg-info text-white">
         <i class="bi bi-journal-text"></i>
@@ -245,15 +233,13 @@
       <p class="quick-link-name">Class Work</p>
     </a>
 
-    <!-- Homework -->
     <a href="{{ url_for('homework') }}" class="quick-link">
-      <div class="quick-link-icon bg-warning">
+      <div class="quick-link-icon bg-warning text-white">
         <i class="bi bi-house-door"></i>
       </div>
       <p class="quick-link-name">Homework</p>
     </a>
 
-    <!-- Books -->
     <a href="{{ url_for('books') }}" class="quick-link">
       <div class="quick-link-icon bg-dark text-white">
         <i class="bi bi-book"></i>
@@ -261,7 +247,6 @@
       <p class="quick-link-name">Books</p>
     </a>
     
-    <!-- Documents -->
     <a href="{{ url_for('documents') }}" class="quick-link">
       <div class="quick-link-icon bg-success text-white">
         <i class="bi bi-file-earmark-text"></i>
@@ -269,103 +254,12 @@
       <p class="quick-link-name">Documents</p>
     </a>
     
-    <!-- About -->
+    <!-- FIXED ABOUT LINK -->
     <a href="{{ url_for('about') }}" class="quick-link">
-      <div class="quick-link-icon bg-purple text-white">
-        <i class="bi bi-building"></i>
+      <div class="quick-link-icon" style="background: #6f42c1; color: #fff;">
+        <i class="bi bi-info-circle-fill"></i>
       </div>
       <p class="quick-link-name">About</p>
     </a>
   </div>
 </section>
-
-<!-- ===================== LATEST NOTIFICATIONS (H-SCROLL) ===================== -->
-<section class="mb-4 reveal">
-  <div class="d-flex justify-content-between align-items-center">
-    <h2 class="section-title">Latest Notifications</h2>
-    <a href="{{ url_for('notifications') }}" class="btn btn-link btn-sm text-decoration-none">
-      View All <i class="bi bi-arrow-right"></i>
-    </a>
-  </div>
-
-  <div class="h-scroll">
-    {% for notice in pinned_notices %}
-    <div class="card card-android">
-      <div class="card-header d-flex justify-content-between align-items-center py-2 {% if notice['is_pinned'] %}bg-warning text-dark{% else %}bg-light{% endif %}">
-        <span class="small d-flex align-items-center">
-          {% if notice['is_pinned'] %}<i class="bi bi-pin-angle-fill me-2"></i>{% endif %}
-          {{ notice['title'] }}
-        </span>
-        <small class="text-muted">{{ notice['date_posted'].split()[0] }}</small>
-      </div>
-      <div class="card-body">
-        <p class="small mb-0">{{ notice['content'] }}</p>
-      </div>
-    </div>
-    {% else %}
-    <div class="card card-android w-100">
-      <div class="card-body">
-        <div class="alert alert-info mb-0 py-2">
-          No notifications available at this time.
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-
-<!-- ===================== RECENT SYLLABUS (H-SCROLL) ===================== -->
-<section class="mb-5 reveal">
-  <div class="d-flex justify-content-between align-items-center">
-    <h2 class="section-title">Recent Syllabus</h2>
-    <a href="{{ url_for('syllabus') }}" class="btn btn-link btn-sm text-decoration-none">
-      View All <i class="bi bi-arrow-right"></i>
-    </a>
-  </div>
-
-  <div class="h-scroll">
-    {% for syllabus in recent_syllabus %}
-    <div class="card card-android">
-      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
-        <span class="small">{{ syllabus['class_name'] }} - {{ syllabus['subject'] }}</span>
-        <small>{{ syllabus['upload_date'].split()[0] }}</small>
-      </div>
-      <div class="card-body">
-        <p class="small mb-2">
-          <strong>Exam:</strong> {{ syllabus['exam_name'] }}<br>
-          <strong>Year/Month:</strong> {{ syllabus['year'] }}/{{ syllabus['month'] }}
-        </p>
-        <a href="{{ url_for('download_file', filename=syllabus['filename']) }}" class="btn btn-primary btn-sm">
-          <i class="bi bi-download"></i> Download
-        </a>
-      </div>
-    </div>
-    {% else %}
-    <div class="card card-android w-100">
-      <div class="card-body">
-        <div class="alert alert-info mb-0 py-2">
-          No syllabus available yet. Please check back later.
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-
-<script>
-/* Simple reveal-on-scroll without extra libs */
-document.addEventListener('DOMContentLoaded', () => {
-  const els = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('show');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.08 });
-
-  els.forEach(el => observer.observe(el));
-});
-</script>
-{% endblock %}
