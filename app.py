@@ -779,6 +779,45 @@ def homework():
     finally:
         conn.close()
 
+# Add this to your existing routes
+@app.route('/admin/blocked-ips')
+@admin_required
+def blocked_ips():
+    try:
+        with open('failed_attempts.json', 'r') as f:
+            blocked = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        blocked = {}
+    
+    # Count IPs with 3+ attempts
+    blocked_count = sum(1 for data in blocked.values() if data.get('attempts', 0) >= 3)
+    
+    return render_template('admin/blocked_ips.html', 
+                         blocked_ips=blocked,
+                         blocked_ips_count=blocked_count)
+
+@app.route('/admin/unblock-ip/<ip>')
+@admin_required
+def unblock_ip(ip):
+    try:
+        with open('failed_attempts.json', 'r') as f:
+            blocked = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        blocked = {}
+    
+    if ip in blocked:
+        blocked.pop(ip)
+        try:
+            with open('failed_attempts.json', 'w') as f:
+                json.dump(blocked, f)
+            flash(f'Successfully unblocked {ip}', 'success')
+        except Exception as e:
+            flash(f'Error saving changes: {str(e)}', 'danger')
+    else:
+        flash('IP/username not found in blocked list', 'warning')
+    
+    return redirect(url_for('blocked_ips'))
+
 @app.route('/admin/upload_classwork', methods=['GET', 'POST'])
 @admin_required
 def upload_classwork():
