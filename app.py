@@ -190,12 +190,15 @@ def login():
         password = request.form.get('password')
         ip_address = request.remote_addr
 
-        # ✅ 1. Check if user/IP is blocked
+        # Debug: Print received credentials
+        print(f"Login attempt - Username: {username}, Password: {password}")
+
+        # 1. Check if user/IP is blocked
         if is_blocked(username, ip_address):
             flash('Too many failed attempts. Please try again after 24 hours.', 'danger')
             return redirect(url_for('login'))
 
-        # ✅ 2. Check if user is in declined_users.json
+        # 2. Check if user is declined
         declined_users = load_json('declined_users.json')
         declined_user = next((u for u in declined_users if u['username'] == username), None)
         if declined_user:
@@ -203,27 +206,37 @@ def login():
             flash(f'You are Declined. Reason: {reason}', 'danger')
             return redirect(url_for('login'))
 
-        # ✅ 3. Validate against regular users
+        # 3. Validate against regular users
         users = load_json(USERS_FILE)
+        print(f"Loaded users: {users}")  # Debug: Print loaded users
+        
         user = next((u for u in users if u['username'] == username), None)
+        
+        if user:
+            print(f"Found user: {user}")  # Debug: Print found user
+            if user['password'] == password:
+                # Successful login
+                attempts_data = load_failed_attempts()
+                if username in attempts_data:
+                    attempts_data[username]['attempts'] = 0
+                if ip_address in attempts_data:
+                    attempts_data[ip_address]['attempts'] = 0
+                save_failed_attempts(attempts_data)
 
-        if user and user['password'] == password:
-            # ✅ Successful login - reset attempts
-            attempts_data = load_failed_attempts()
-            if username in attempts_data:
-                attempts_data[username]['attempts'] = 0
-            if ip_address in attempts_data:
-                attempts_data[ip_address]['attempts'] = 0
-            save_failed_attempts(attempts_data)
-
-            session['logged_in'] = True
-            session['username'] = username
-            session['role'] = user.get('role', 'student')
-            return redirect(url_for('home'))
+                session['logged_in'] = True
+                session['username'] = username
+                session['role'] = user.get('role', 'student')
+                flash('Login successful!', 'success')
+                return redirect(url_for('home'))
+            else:
+                # Password mismatch
+                record_failed_attempt(username, ip_address)
+                flash('Invalid password', 'danger')
         else:
-            # ❌ Failed login - record attempt
+            # User not found
             record_failed_attempt(username, ip_address)
-            flash('Invalid username or password', 'danger')
+            flash('User not found. Please sign up first.', 'danger')
+            return redirect(url_for('signup'))
 
     return render_template('login.html')
 
