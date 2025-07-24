@@ -1,29 +1,147 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card shadow-sm">
-  <div class="card-body">
-    <h4 class="card-title mb-4">About App</h4>
-    
-    <div class="card mb-3">
-      <div class="card-body">
-        <h5 class="card-title">School Management System</h5>
-        <p class="card-text">Version 1.0.0</p>
-        <p class="card-text">Developed by Dar Furkan & Ubaid Bilal</p>
-      </div>
-    </div>
-    
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Features</h5>
-        <ul>
-          <li>Student Dashboard</li>
-          <li>Classwork and Homework Management</li>
-          <li>Document Sharing</li>
-          <li>Notification System</li>
-        </ul>
-      </div>
-    </div>
+<style>
+  :root {
+    --aa-radius: 18px;
+    --aa-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+
+  .about-wrapper {
+    max-width: 780px;
+    margin: 0 auto;
+    padding-bottom: calc(var(--bottom-h) + 32px);
+  }
+
+  .about-card {
+    border: none;
+    border-radius: var(--aa-radius);
+    background: var(--surface);
+    box-shadow: var(--aa-shadow);
+    padding: 1.5rem 1.5rem 1.8rem;
+    margin-bottom: 1.2rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .about-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  }
+
+  .about-card h4,
+  .about-card h5 {
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.8rem;
+  }
+
+  .about-card p {
+    margin-bottom: 0.4rem;
+    color: var(--muted);
+  }
+
+  .feature-list li {
+    padding: 0.3rem 0;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+  .feature-list li i {
+    color: var(--primary);
+    margin-right: 0.5rem;
+  }
+
+  /* App Info Table */
+  .app-info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.6rem;
+  }
+  .app-info-table th,
+  .app-info-table td {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  [data-bs-theme="dark"] .app-info-table th,
+  [data-bs-theme="dark"] .app-info-table td {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .app-info-table th {
+    text-align: left;
+    color: var(--primary);
+    width: 40%;
+  }
+
+  /* Reveal Animation */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .reveal.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<div class="about-wrapper">
+  <div class="about-card reveal">
+    <h4 class="mb-3"><i class="bi bi-info-circle me-2"></i>About App</h4>
+    <p>Welcome to <strong>School Management System</strong>, a modern Android-inspired platform designed to make learning and administration smooth and efficient for students, teachers, and staff.</p>
+  </div>
+
+  <div class="about-card reveal">
+    <h5><i class="bi bi-box-seam me-2"></i>Application Info</h5>
+    <table class="app-info-table">
+      <tr>
+        <th>App Name</th>
+        <td>School Management System</td>
+      </tr>
+      <tr>
+        <th>Version</th>
+        <td>1.0.0</td>
+      </tr>
+      <tr>
+        <th>SDK</th>
+        <td>Android SDK 34 (API Level 34)</td>
+      </tr>
+      <tr>
+        <th>Build</th>
+        <td>2025.07.24-release</td>
+      </tr>
+      <tr>
+        <th>Developers</th>
+        <td>Dar Furkan &amp; Ubaid Bilal</td>
+      </tr>
+      <tr>
+        <th>Website</th>
+        <td><a href="#" class="text-decoration-none">www.bhspethmakhama.edu</a></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="about-card reveal">
+    <h5><i class="bi bi-star-fill me-2"></i>Features</h5>
+    <ul class="feature-list list-unstyled mb-0">
+      <li><i class="bi bi-house-door"></i> Personalized Student Dashboard</li>
+      <li><i class="bi bi-journal-check"></i> Classwork & Homework Management</li>
+      <li><i class="bi bi-file-earmark-text"></i> Document & Book Sharing</li>
+      <li><i class="bi bi-bell"></i> Real-time Notification Alerts</li>
+      <li><i class="bi bi-journal-bookmark"></i> Syllabus & Curriculum Updates</li>
+      <li><i class="bi bi-moon-stars"></i> Light & Dark Theme Support</li>
+    </ul>
+  </div>
+
+  <div class="about-card reveal">
+    <h5><i class="bi bi-people-fill me-2"></i>Our Mission</h5>
+    <p>We aim to digitalize our school management system, giving students and staff easy access to all academic resources, notifications, and updates with a single click.</p>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      setTimeout(() => el.classList.add('show'), i * 150);
+    });
+  });
+</script>
 {% endblock %}
