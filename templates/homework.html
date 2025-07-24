@@ -1,68 +1,135 @@
 {% extends "base.html" %}
+{% set hide_header = True %}
 
-{% block title %}Homework - GOVT. BOYS HIGH SCHOOL PETH MAKHAMA{% endblock %}
+{% block title %}Upload Homework - Admin{% endblock %}
 
 {% block content %}
-<div class="container py-3">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
-        <h1 class="fs-4">📘 Homework</h1>
-        {% if session.get('admin_logged_in') %}
-        <a href="{{ url_for('upload_homework') }}" class="btn btn-primary mt-2 mt-md-0">
-            <i class="bi bi-plus-circle"></i> Upload Homework
-        </a>
-        {% endif %}
-    </div>
+<div class="container mt-4" style="padding-bottom: 100px;">
+    <h2 class="mb-4 text-center">Upload Homework</h2>
 
-    <!-- Filter Section -->
-    <form method="GET" action="{{ url_for('homework') }}" class="row g-2 mb-4">
-        <div class="col-6 col-md-3">
-            <select name="class" class="form-select" onchange="this.form.submit()">
-                <option value="">All Classes</option>
-                {% for c in classes %}
-                <option value="{{ c }}" {% if c == selected_class %}selected{% endif %}>Class {{ c }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-6 col-md-3">
-            <select name="subject" class="form-select" onchange="this.form.submit()">
-                <option value="">All Subjects</option>
-                {% for s in subjects %}
-                <option value="{{ s }}" {% if s == selected_subject %}selected{% endif %}>{{ s }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </form>
-
-    <!-- Homework Cards -->
-    <div class="row g-3">
-        {% if homework %}
-        {% for work in homework %}
-        <div class="col-12 col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="card-title mb-1">{{ work.title }}</h5>
-                    <p class="text-muted small mb-2">{{ work.class_name }} - {{ work.subject }}</p>
-                    <p class="card-text">{{ work.description }}</p>
-                    <p class="text-muted small mb-1">Uploaded: {{ work.upload_date.split()[0] }}</p>
-                    {% if work.due_date %}
-                    <p class="text-muted small">Due: {{ work.due_date }}</p>
-                    {% endif %}
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <div class="card-footer bg-transparent border-0">
-                    <a href="{{ url_for('download_file', filename=work.filename) }}" class="btn btn-sm btn-outline-success">
-                        <i class="bi bi-download"></i> Download
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-        {% else %}
-        <div class="col-12">
-            <div class="alert alert-info text-center">
-                No homework assigned.
-            </div>
-        </div>
+            {% endfor %}
         {% endif %}
+    {% endwith %}
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-pencil-square"></i> New Homework</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_homework') }}">
+                <div class="mb-3">
+                    <label for="class_name" class="form-label">Class</label>
+                    <select class="form-select" id="class_name" name="class_name" required>
+                        <option value="">Select Class</option>
+                        <option value="9th">9th</option>
+                        <option value="10th">10th</option>
+                        <option value="11th">11th</option>
+                        <option value="12th">12th</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="subject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="subject" name="subject" required>
+                </div>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="due_date" class="form-label">Due Date</label>
+                    <input type="date" class="form-control" id="due_date" name="due_date" required>
+                </div>
+                <div class="mb-4">
+                    <label for="file" class="form-label">File</label>
+                    <input class="form-control" type="file" id="file" name="file" accept=".pdf,.doc,.docx" required>
+                    <div class="form-text">Allowed formats: PDF, DOC, DOCX</div>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-upload"></i> Upload Homework
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<!-- Bottom Menu -->
+<nav class="navbar navbar-expand fixed-bottom bg-light shadow-sm">
+    <div class="container justify-content-around">
+        <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-speedometer2"></i><br>Dashboard
+        </a>
+        <a class="nav-link text-center active" href="{{ url_for('upload_homework') }}">
+            <i class="bi bi-pencil-square"></i><br>Homework
+        </a>
+        <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
+            <i class="bi bi-box-arrow-right"></i><br>Logout
+        </a>
+    </div>
+</nav>
+
+<style>
+    .navbar.fixed-bottom {
+        z-index: 1030;
+        border-top: 1px solid rgba(0,0,0,.1);
+        padding: 0.5rem 0;
+        background-color: #f8f9fa;
+    }
+    
+    .nav-link {
+        font-size: 0.8rem;
+        color: #495057;
+        padding: 0.5rem;
+        transition: all 0.2s ease;
+    }
+    
+    .nav-link.active {
+        color: #198754;
+        font-weight: 500;
+    }
+    
+    .nav-link:hover {
+        color: #198754;
+    }
+    
+    /* Dark mode */
+    body.dark-mode .navbar.fixed-bottom {
+        background-color: #1a1a1a !important;
+        border-top: 1px solid #333;
+    }
+    
+    body.dark-mode .nav-link {
+        color: #eee;
+    }
+    
+    body.dark-mode .nav-link.active {
+        color: #20c997;
+    }
+    
+    body.dark-mode .card,
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+        background-color: #1f1f1f;
+        color: white;
+        border-color: #444;
+    }
+    
+    body.dark-mode label,
+    body.dark-mode .form-text {
+        color: #ccc;
+    }
+</style>
 {% endblock %}
