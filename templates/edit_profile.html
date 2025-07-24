@@ -1,13 +1,97 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card shadow-sm">
-  <div class="card-body">
-    <h4 class="card-title mb-4">Edit Profile</h4>
+<style>
+  :root {
+    --ep-radius: 18px;
+    --ep-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    --ep-spacing: 1rem;
+  }
+
+  .ep-wrapper {
+    padding-bottom: calc(var(--bottom-h) + 32px);
+    padding-top: 0.5rem;
+  }
+
+  .ep-card {
+    border: none;
+    border-radius: var(--ep-radius);
+    background: var(--surface);
+    box-shadow: var(--ep-shadow);
+    padding: 1.8rem 1.5rem;
+    margin: auto;
+    max-width: 720px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .ep-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  }
+
+  .ep-card h4 {
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1.2rem;
+    font-size: 1.4rem;
+  }
+
+  /* Field Group */
+  .form-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+  }
+  .form-control {
+    border-radius: 12px;
+    padding: 0.6rem 0.9rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+  }
+  .form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.2);
+    transform: scale(1.02);
+  }
+  [data-bs-theme="dark"] .form-control {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: #f1f1f1;
+  }
+
+  /* Buttons */
+  .btn {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.55rem 1.2rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border: none;
+  }
+  .btn:active {
+    transform: scale(0.96);
+  }
+
+  /* Animation Reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .reveal.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<div class="ep-wrapper">
+  <div class="ep-card reveal">
+    <h4 class="mb-4"><i class="bi bi-pencil-square me-2"></i>Edit Profile</h4>
     
-    <form method="POST">
+    <form method="POST" class="needs-validation" novalidate>
       <div class="row mb-3">
-        <div class="col-md-6">
+        <div class="col-md-6 mb-3 mb-md-0">
           <label for="first_name" class="form-label">First Name</label>
           <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}" required>
         </div>
@@ -17,8 +101,8 @@
         </div>
       </div>
       
-      <div class="row mb-3">
-        <div class="col-md-6">
+      <div class="row mb-4">
+        <div class="col-md-6 mb-3 mb-md-0">
           <label for="class" class="form-label">Class</label>
           <input type="text" class="form-control" id="class" name="class" value="{{ user.class }}" required>
         </div>
@@ -30,9 +114,17 @@
       
       <div class="d-flex justify-content-end">
         <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary me-2">Cancel</a>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="submit" class="btn btn-primary shadow-sm">Save Changes</button>
       </div>
     </form>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      setTimeout(() => el.classList.add('show'), i * 150);
+    });
+  });
+</script>
 {% endblock %}
