@@ -1,131 +1,436 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>School Portal - Login</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>School Portal – Login</title>
+
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
   <style>
-    body {
-      background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', sans-serif;
+    :root{
+      --grad-1: linear-gradient(135deg, #0d6efd 0%, #5b8cff 100%);
+      --grad-2: linear-gradient(135deg, #6610f2 0%, #b37aff 100%);
+      --glass-bg: rgba(255, 255, 255, 0.18);
+      --glass-border: rgba(255, 255, 255, 0.25);
+      --soft-shadow: 0 16px 32px rgba(0,0,0,.15);
+      --toast-z: 2000;
     }
 
-    .card {
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.85);
+    [data-bs-theme="dark"]{
+      --glass-bg: rgba(33, 33, 33, 0.35);
+      --glass-border: rgba(255, 255, 255, 0.08);
     }
 
-    .form-control::placeholder {
-      color: #aaa;
+    html, body{
+      height: 100%;
     }
 
-    .flash-messages {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1050;
-      width: 90%;
-      max-width: 400px;
+    body{
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at 10% 20%, #0d6efd 0%, #6610f2 100%);
+      overflow-x: hidden;
+      position: relative;
+      color: #212529;
     }
 
-    .alert {
-      animation: fadeSlide 0.6s ease-out;
+    [data-bs-theme="dark"] body{
+      color: #e9ecef;
     }
 
-    @keyframes fadeSlide {
-      from {
-        opacity: 0;
-        transform: translateX(100%);
-      }
-      to {
+    /* Animated blobs background */
+    .blob{
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: .55;
+      animation: float 18s ease-in-out infinite;
+      mix-blend-mode: screen;
+    }
+    .blob.blob1{ background: #0d6efd; width: 400px; height: 400px; top: -100px; left: -120px; animation-delay: 0s; }
+    .blob.blob2{ background: #6610f2; width: 420px; height: 420px; bottom: -130px; right: -110px; animation-delay: 3s; }
+    .blob.blob3{ background: #ff4d6d; width: 360px; height: 360px; top: 40%; left: -140px; animation-delay: 6s; }
+
+    @keyframes float{
+      0%, 100%{ transform: translate(0,0) scale(1); }
+      50%{ transform: translate(40px, -30px) scale(1.05); }
+    }
+
+    /* Center wrapper */
+    .login-wrapper{
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Glass card */
+    .card-glass{
+      width: 100%;
+      max-width: 420px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      box-shadow: var(--soft-shadow);
+      overflow: hidden;
+      transform: translateY(6px);
+      opacity: 0;
+      animation: popIn .6s cubic-bezier(.2,.8,.2,1) forwards .2s;
+    }
+
+    @keyframes popIn{
+      to{
+        transform: translateY(0);
         opacity: 1;
-        transform: translateX(0);
       }
+    }
+
+    .card-header{
+      background: transparent;
+      border: 0;
+      padding: 1.5rem 1.5rem 0 1.5rem;
+      text-align: center;
+    }
+
+    .brand-circle{
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 1rem;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .brand-circle i{
+      font-size: 2rem;
+      color: #fff;
+    }
+
+    .card-title{
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: .2px;
+    }
+
+    .card-subtitle{
+      color: rgba(255,255,255,.85);
+      font-size: .9rem;
+    }
+
+    .card-body{
+      padding: 1.5rem;
+    }
+
+    label.form-label{
+      font-weight: 600;
+      font-size: .9rem;
+    }
+
+    .input-group-text{
+      background: rgba(255,255,255,.08);
+      border: 0;
+      color: #6c757d;
+    }
+
+    .form-control{
+      background: rgba(255,255,255,.65);
+      border: 0;
+      box-shadow: none !important;
+      transition: background .2s ease;
+    }
+
+    .form-control:focus{
+      background: rgba(255,255,255,.85);
+    }
+
+    [data-bs-theme="dark"] .form-control{
+      background: rgba(255,255,255,.06);
+      color: #fff;
+    }
+    [data-bs-theme="dark"] .form-control:focus{
+      background: rgba(255,255,255,.10);
+      color: #fff;
+    }
+
+    .btn-primary{
+      border-radius: 999px;
+      font-weight: 600;
+      box-shadow: 0 6px 16px rgba(13,110,253,.35);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .btn-primary:active{
+      transform: scale(.98);
+      box-shadow: 0 2px 8px rgba(13,110,253,.2);
+    }
+
+    .divider{
+      height: 1px;
+      background: rgba(255,255,255,.15);
+      margin: 1.25rem 0;
+    }
+
+    .text-muted a{
+      text-decoration: none;
+    }
+
+    .admin-link a{
+      text-decoration: none;
+    }
+
+    /* Flash messages as toasts (top-right) */
+    .flash-messages{
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: var(--toast-z);
+      width: calc(100% - 32px);
+      max-width: 360px;
+    }
+    .flash-messages .alert{
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(255,255,255,.85);
+      border: 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,.12);
+      animation: slideIn .35s ease;
+    }
+    [data-bs-theme="dark"] .flash-messages .alert{
+      background: rgba(33,33,33,.85);
+      color: #fff;
+    }
+
+    @keyframes slideIn{
+      from{ opacity: 0; transform: translateX(100%); }
+      to  { opacity: 1; transform: translateX(0);     }
+    }
+
+    /* Show/hide password toggle icon */
+    .toggle-password{
+      cursor: pointer;
+      color: #6c757d;
+    }
+
+    [data-bs-theme="dark"] .toggle-password{
+      color: #ced4da;
+    }
+
+    /* Theme toggle mini button (optional) */
+    .theme-toggle{
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 0;
+      background: rgba(255,255,255,.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      z-index: var(--toast-z);
+    }
+    [data-bs-theme="dark"] .theme-toggle{
+      background: rgba(33,33,33,.5);
+      color: #ffc107;
+    }
+
+    .small-links{
+      font-size: .85rem;
+      color: rgba(255,255,255,.9);
+    }
+    .small-links a{
+      color: #ffc107;
+      text-decoration: none;
+    }
+
+    /* Footer note */
+    .footer-note{
+      text-align: center;
+      color: rgba(255,255,255,.7);
+      margin-top: 1.25rem;
+      font-size: .8rem;
     }
   </style>
 </head>
 <body>
+
+  <!-- Animated gradient blobs -->
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+
+  <!-- Optional theme toggle for login page -->
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
+    <i id="themeIcon" class="bi bi-moon-fill"></i>
+  </button>
 
   <!-- Flash Messages -->
   <div class="flash-messages">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} d-flex align-items-center" role="alert">
+          <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show d-flex align-items-center mb-2" role="alert">
             <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
-            {{ message }}
+            <div class="flex-grow-1">{{ message }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
         {% endfor %}
       {% endif %}
     {% endwith %}
   </div>
 
-  <!-- Login Form -->
-  <div class="container">
-    <div class="row justify-content-center mt-5">
-      <div class="col-md-8 col-lg-6 col-xl-5">
-        <div class="card shadow-lg border-0">
-          <div class="card-header bg-primary text-white text-center py-3">
-            <h4 class="mb-0"><i class="bi bi-person-check-fill"></i> User Login</h4>
-          </div>
-          <div class="card-body p-4">
-            <form method="POST" action="{{ url_for('login') }}">
-              <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                  <input type="text" class="form-control" id="username" name="username" required autocomplete="username" placeholder="Enter your username">
-                </div>
-              </div>
+  <!-- Login Wrapper -->
+  <div class="login-wrapper">
+    <div class="card-glass">
 
-              <div class="mb-4">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                  <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
-                </div>
-              </div>
-
-              <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-primary btn-lg">
-                  <i class="bi bi-box-arrow-in-right"></i> Login
-                </button>
-              </div>
-
-              <div class="text-center small text-muted">
-                New here? <a href="{{ url_for('signup') }}">Create account</a><br>
-                <a href="{{ url_for('contact') }}">Need help?</a>
-              </div>
-
-              <div class="text-center mt-3">
-                <a href="{{ url_for('admin_login') }}" class="btn btn-outline-secondary btn-sm">
-                  <i class="bi bi-shield-lock"></i> Admin Login
-                </a>
-              </div>
-            </form>
-          </div>
+      <!-- Header -->
+      <div class="card-header">
+        <div class="brand-circle">
+          <i class="bi bi-mortarboard-fill"></i>
         </div>
+        <h3 class="card-title mb-0">School Portal</h3>
+        <p class="card-subtitle mb-3">Secure access to your account</p>
+      </div>
+
+      <!-- Body / Form -->
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('login') }}">
+          <!-- Username -->
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                name="username"
+                required
+                autocomplete="username"
+                placeholder="Enter your username">
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-4">
+          <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                required
+                autocomplete="current-password"
+                placeholder="Enter your password">
+              <span class="input-group-text toggle-password" id="togglePassword" title="Show/Hide Password">
+                <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
+              </span>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="d-grid mb-2">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="bi bi-box-arrow-in-right"></i> Login
+            </button>
+          </div>
+
+          <!-- Links -->
+          <div class="text-center small text-muted">
+            New here?
+            <a href="{{ url_for('signup') }}">Create account</a>
+            <br>
+            <a href="{{ url_for('contact') }}">Need help?</a>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="text-center admin-link">
+            <a href="{{ url_for('admin_login') }}" class="btn btn-outline-light btn-sm px-3">
+              <i class="bi bi-shield-lock"></i> Admin Login
+            </a>
+          </div>
+        </form>
+      </div>
+
+      <div class="footer-note pb-3">
+        © {{ current_year or '2025' }} GOVT. BOYS HIGH SCHOOL PETH MAKHAMA
       </div>
     </div>
   </div>
 
-  <!-- Bootstrap JS (Optional if needed) -->
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    // Flash auto close
     document.addEventListener('DOMContentLoaded', function () {
-      const alerts = document.querySelectorAll('.alert');
+      const alerts = document.querySelectorAll('.flash-messages .alert');
       alerts.forEach(alert => {
         setTimeout(() => {
-          alert.classList.add('fade');
-          alert.style.opacity = '0';
-          setTimeout(() => alert.remove(), 300);
+          const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+          bsAlert.close();
         }, 5000);
       });
     });
+
+    // Show / hide password
+    (function(){
+      const toggle = document.getElementById('togglePassword');
+      const icon = document.getElementById('togglePasswordIcon');
+      const input = document.getElementById('password');
+
+      if(toggle && icon && input){
+        toggle.addEventListener('click', () => {
+          const isPwd = input.getAttribute('type') === 'password';
+          input.setAttribute('type', isPwd ? 'text' : 'password');
+          icon.classList.toggle('bi-eye');
+          icon.classList.toggle('bi-eye-slash');
+        });
+      }
+    })();
+
+    // Dark / light theme toggle (persisted)
+    (function(){
+      const html = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const icon = document.getElementById('themeIcon');
+
+      const saved = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+      applyTheme(saved);
+
+      btn.addEventListener('click', () => {
+        const current = html.getAttribute('data-bs-theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        localStorage.setItem('theme', next);
+      });
+
+      function applyTheme(mode){
+        html.setAttribute('data-bs-theme', mode);
+        if(mode === 'dark'){
+          icon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+        }else{
+          icon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+        }
+      }
+    })();
   </script>
 </body>
 </html>
