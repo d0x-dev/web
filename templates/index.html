@@ -1,19 +1,38 @@
 {% extends "base.html" %}
-
 {% block title %}Home - GOVT. BOYS HIGH SCHOOL PETH MAKHAMA{% endblock %}
+
+{# 
+  ========================================================================
+  ANDROID-STYLE, HIGHLY POLISHED HOME / INDEX TEMPLATE
+  - Keeps your OLD UI concepts (hero, chips, quick links, h-scroll cards)
+  - Keeps reveal-on-scroll animation
+  - Fixes the About icon visibility in light mode
+  - Plenty of comments so you (or future you) can tweak easily
+  - Intentionally verbose (350+ lines) per your request
+  ========================================================================
+#}
 
 {% block content %}
 <style>
-/* ---------- THEME TOKENS (local to this page) ---------- */
+/* =========================================================================
+   THEME TOKENS (scoped to this page)
+   -------------------------------------------------------------------------
+   You can tweak the gradients, radiuses, and shadows to match your brand.
+   ========================================================================= */
 :root {
   --grad-1: linear-gradient(135deg, #0d6efd 0%, #5b8cff 100%);
   --grad-2: linear-gradient(135deg, #6610f2 0%, #b37aff 100%);
+  --grad-3: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%);
   --card-radius: 18px;
   --soft-shadow: 0 6px 18px rgba(0,0,0,.08);
+  --soft-shadow-strong: 0 10px 24px rgba(0,0,0,.12);
   --soft-shadow-dark: 0 6px 18px rgba(0,0,0,.22);
+  --wave-opacity: .15;
 }
 
-/* ---------- HERO ---------- */
+/* =========================================================================
+   HERO (Android-y, bold, elevated)
+   ========================================================================= */
 .hero-android {
   background: var(--grad-1);
   color: #fff;
@@ -26,9 +45,13 @@
 .hero-android .title {
   font-weight: 800;
   letter-spacing: .2px;
+  line-height: 1.15;
 }
 .hero-android .lead {
   opacity: .9;
+}
+.hero-android .badge-soft {
+  backdrop-filter: blur(4px);
 }
 .wave {
   position: absolute;
@@ -42,7 +65,44 @@
   font-weight: 600;
 }
 
-/* ---------- SIMPLIFIED QUICK LINKS ---------- */
+/* =========================================================================
+   CHIPS (Horizontal tiny shortcuts)
+   ========================================================================= */
+.chips {
+  display: flex;
+  overflow-x: auto;
+  gap: .5rem;
+  padding-bottom: .35rem;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+.chips::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+.chip {
+  white-space: nowrap;
+  border-radius: 999px;
+  padding: .35rem .85rem;
+  background: rgba(13, 110, 253, .08);
+  color: #0d6efd;
+  font-size: .85rem;
+  font-weight: 600;
+  border: 0;
+  text-decoration: none;
+}
+.dark-mode .chip {
+  background: rgba(255,255,255,.06);
+  color: #0dcaf0;
+}
+
+/* =========================================================================
+   QUICK LINKS GRID
+   - No "Open" button – the whole tile is tappable
+   - 2 columns on mobile, 4+ on desktop
+   ========================================================================= */
+.quick-links-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: .85rem;
+}
 .quick-links-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -60,24 +120,38 @@
   justify-content: center;
   padding: 1rem 0.5rem;
   border-radius: var(--card-radius);
-  background: white;
+  background: #ffffff;
   box-shadow: var(--soft-shadow);
   transition: all 0.2s ease;
   text-decoration: none;
   color: inherit;
   height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.quick-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: rgba(0,0,0,.03);
+  transition: opacity .18s ease;
+}
+.quick-link:hover::after {
+  opacity: 1;
 }
 .quick-link:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  box-shadow: var(--soft-shadow-strong);
 }
 .dark-mode .quick-link {
   background: #2a2a2a;
   box-shadow: var(--soft-shadow-dark);
 }
 .quick-link-icon {
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -91,31 +165,34 @@
   text-align: center;
   margin: 0;
 }
+.quick-link small {
+  font-size: .75rem;
+  opacity: .65;
+}
 
-/* ---------- HORIZONTAL CHIPS ---------- */
-.chips {
+/* =========================================================================
+   SECTION TITLES
+   ========================================================================= */
+.section-title,
+.section-title-big {
   display: flex;
-  overflow-x: auto;
-  gap: .5rem;
-  padding-bottom: .35rem;
-  scrollbar-width: none;
+  align-items: center;
+  gap: .35rem;
 }
-.chips::-webkit-scrollbar { display: none; }
-.chip {
-  white-space: nowrap;
-  border-radius: 999px;
-  padding: .35rem .85rem;
-  background: rgba(13, 110, 253, .08);
-  color: #0d6efd;
-  font-size: .85rem;
-  font-weight: 600;
+.section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 .75rem;
 }
-.dark-mode .chip {
-  background: rgba(255,255,255,.06);
-  color: #0dcaf0;
+.section-title-big {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: .85rem;
 }
 
-/* ---------- HORIZONTAL CARD SCROLLER ---------- */
+/* =========================================================================
+   H-SCROLL (Notifications & Syllabus carousels)
+   ========================================================================= */
 .h-scroll {
   display: flex;
   overflow-x: auto;
@@ -131,22 +208,26 @@
   .h-scroll > * { min-width: 48%; }
 }
 
-/* ---------- ANIMATIONS ---------- */
-@keyframes fadeSlideUp {
-  0% { opacity: 0; transform: translateY(12px); }
-  100% { opacity: 1; transform: translateY(0); }
+/* =========================================================================
+   CARDS (Android-like)
+   ========================================================================= */
+.card-android {
+  border: 0;
+  border-radius: var(--card-radius);
+  box-shadow: var(--soft-shadow);
+  transition: transform .18s ease, box-shadow .18s ease;
 }
-.reveal {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: all .6s cubic-bezier(.2,.8,.2,1);
+.card-android:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--soft-shadow-strong);
 }
-.reveal.show {
-  opacity: 1;
-  transform: translateY(0);
+.dark-mode .card-android {
+  box-shadow: var(--soft-shadow-dark);
 }
 
-/* ---------- UTIL ---------- */
+/* =========================================================================
+   UTILITIES
+   ========================================================================= */
 .text-ellipsis-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -158,29 +239,82 @@
   color: #fff;
   border-radius: 999px;
 }
-
-.dark-mode .hero-android {
-  box-shadow: var(--soft-shadow-dark);
-}
 .dark-mode .badge-soft {
   background: rgba(255,255,255,.08);
 }
+
+/* =========================================================================
+   REVEAL ON SCROLL ANIMATION
+   ========================================================================= */
+@keyframes fadeSlideUp {
+  0%   { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0);     }
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all .6s cubic-bezier(.2,.8,.2,1);
+}
+.reveal.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================================================================
+   DARK MODE SPECIFICS (if you want extra tuning here)
+   ========================================================================= */
+.dark-mode .hero-android {
+  box-shadow: var(--soft-shadow-dark);
+}
+.dark-mode .h-scroll::-webkit-scrollbar,
+.dark-mode .chips::-webkit-scrollbar {
+  background: transparent;
+}
+
+/* =========================================================================
+   OPTIONAL: Add subtle animated gradient shine on hero text
+   (commented out by default)
+   ========================================================================= */
+/*
+.hero-android .title span.gradient {
+  background: linear-gradient(90deg, #fff 0%, #ffe9b5 50%, #fff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 3s linear infinite;
+  background-size: 200% auto;
+}
+@keyframes shine {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+*/
 </style>
 
-<!-- ===================== HERO ===================== -->
+<!-- =========================================================================
+     HERO SECTION (with animated wave)
+     ========================================================================= -->
 <section class="hero-android mb-4 reveal">
   <div class="d-flex flex-column align-items-center text-center">
     <span class="badge badge-soft mb-2 px-2 py-1">Welcome</span>
-    <h1 class="title mb-2">GOVT. BOYS HIGH SCHOOL<br/>PETH MAKHAMA</h1>
-    <p class="lead mb-3">A premier institution dedicated to excellence in education</p>
+
+    {# Add span.gradient if you want animated gradient text #}
+    <h1 class="title mb-2">
+      GOVT. BOYS HIGH SCHOOL<br/>PETH MAKHAMA
+    </h1>
+
+    <p class="lead mb-3">
+      A premier institution dedicated to excellence in education
+    </p>
+
     <a href="{{ url_for('about') }}" class="btn btn-light hero-btn">
-      <i class="bi bi-info-circle-fill me-1"></i> Learn More
+      <i class="bi bi-info-circle-fill me-1"></i>
+      Learn More
     </a>
   </div>
 
-  <!-- soft animated wave -->
+  <!-- subtle animated wave -->
   <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none">
-    <path fill="rgba(255,255,255,.15)">
+    <path fill="rgba(255,255,255,var(--wave-opacity))">
       <animate attributeName="d" dur="10s" repeatCount="indefinite"
         values="
         M0,64L80,69.3C160,75,320,85,480,85.3C640,85,800,75,960,69.3C1120,64,1280,64,1360,64L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z;
@@ -191,75 +325,195 @@
   </svg>
 </section>
 
-<!-- ===================== QUICK CHIPS ===================== -->
+<!-- =========================================================================
+     QUICK CHIPS (OPTIONAL SHORTCUTS)
+     ========================================================================= -->
 <div class="chips mb-3 reveal">
-  <a href="{{ url_for('syllabus') }}" class="chip"><i class="bi bi-journal-bookmark me-1"></i> Syllabus</a>
+  <a href="{{ url_for('syllabus') }}"    class="chip"><i class="bi bi-journal-bookmark me-1"></i> Syllabus</a>
   <a href="{{ url_for('notifications') }}" class="chip"><i class="bi bi-bell me-1"></i> Notifications</a>
-  <a href="{{ url_for('documents') }}" class="chip"><i class="bi bi-file-earmark-text me-1"></i> Documents</a>
-  <a href="{{ url_for('books') }}" class="chip"><i class="bi bi-book me-1"></i> Books</a>
-  <a href="{{ url_for('homework') }}" class="chip"><i class="bi bi-house-door me-1"></i> Homework</a>
-  <a href="{{ url_for('classwork') }}" class="chip"><i class="bi bi-journal-text me-1"></i> Class Work</a>
+  <a href="{{ url_for('documents') }}"  class="chip"><i class="bi bi-file-earmark-text me-1"></i> Documents</a>
+  <a href="{{ url_for('books') }}"      class="chip"><i class="bi bi-book me-1"></i> Books</a>
+  <a href="{{ url_for('homework') }}"   class="chip"><i class="bi bi-house-door me-1"></i> Homework</a>
+  <a href="{{ url_for('classwork') }}"  class="chip"><i class="bi bi-journal-text me-1"></i> Class Work</a>
+  <a href="{{ url_for('about') }}"      class="chip"><i class="bi bi-info-circle me-1"></i> About</a>
 </div>
 
-<!-- ===================== QUICK LINKS ===================== -->
+<!-- =========================================================================
+     QUICK LINKS (GRID) - Tappable tiles, no “Open” buttons
+     ========================================================================= -->
 <section class="mb-4 reveal">
-  <h2 class="section-title-big">Quick Links</h2>
+  <h2 class="quick-links-title">Quick Links</h2>
+
   <div class="quick-links-grid">
+    <!-- Syllabus -->
     <a href="{{ url_for('syllabus') }}" class="quick-link">
       <div class="quick-link-icon bg-primary text-white">
         <i class="bi bi-journal-bookmark"></i>
       </div>
       <p class="quick-link-name">Syllabus</p>
+      <small>View and download</small>
     </a>
 
+    <!-- Notifications -->
     <a href="{{ url_for('notifications') }}" class="quick-link">
       <div class="quick-link-icon bg-danger text-white">
         <i class="bi bi-megaphone"></i>
       </div>
       <p class="quick-link-name">Notifications</p>
+      <small>Latest announcements</small>
     </a>
 
+    <!-- Contact -->
     <a href="{{ url_for('contact') }}" class="quick-link">
       <div class="quick-link-icon bg-secondary text-white">
         <i class="bi bi-telephone"></i>
       </div>
       <p class="quick-link-name">Contact</p>
+      <small>Get in touch</small>
     </a>
 
+    <!-- Class Work -->
     <a href="{{ url_for('classwork') }}" class="quick-link">
       <div class="quick-link-icon bg-info text-white">
         <i class="bi bi-journal-text"></i>
       </div>
       <p class="quick-link-name">Class Work</p>
+      <small>Today's work</small>
     </a>
 
+    <!-- Homework -->
     <a href="{{ url_for('homework') }}" class="quick-link">
       <div class="quick-link-icon bg-warning text-white">
         <i class="bi bi-house-door"></i>
       </div>
       <p class="quick-link-name">Homework</p>
+      <small>Assigned tasks</small>
     </a>
 
+    <!-- Books -->
     <a href="{{ url_for('books') }}" class="quick-link">
       <div class="quick-link-icon bg-dark text-white">
         <i class="bi bi-book"></i>
       </div>
       <p class="quick-link-name">Books</p>
+      <small>School books</small>
     </a>
-    
+
+    <!-- Documents -->
     <a href="{{ url_for('documents') }}" class="quick-link">
       <div class="quick-link-icon bg-success text-white">
         <i class="bi bi-file-earmark-text"></i>
       </div>
       <p class="quick-link-name">Documents</p>
+      <small>Official docs</small>
     </a>
-    
-    <!-- FIXED ABOUT LINK -->
+
+    <!-- About (FIXED ICON VISIBILITY) -->
     <a href="{{ url_for('about') }}" class="quick-link">
-      <div class="quick-link-icon" style="background: #6f42c1; color: #fff;">
+      <div class="quick-link-icon" style="background:#6f42c1; color:#fff;">
         <i class="bi bi-info-circle-fill"></i>
       </div>
       <p class="quick-link-name">About</p>
+      <small>Know our school</small>
     </a>
   </div>
 </section>
+
+<!-- =========================================================================
+     LATEST NOTIFICATIONS (HORIZONTAL SCROLLER)
+     ========================================================================= -->
+<section class="mb-4 reveal">
+  <div class="d-flex justify-content-between align-items-center">
+    <h2 class="section-title">Latest Notifications</h2>
+    <a href="{{ url_for('notifications') }}" class="btn btn-link btn-sm text-decoration-none">
+      View All <i class="bi bi-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="h-scroll">
+    {% for notice in pinned_notices %}
+    <div class="card card-android">
+      <div class="card-header d-flex justify-content-between align-items-center py-2 {% if notice['is_pinned'] %}bg-warning text-dark{% else %}bg-light{% endif %}">
+        <span class="small d-flex align-items-center">
+          {% if notice['is_pinned'] %}
+            <i class="bi bi-pin-angle-fill me-2"></i>
+          {% endif %}
+          {{ notice['title'] }}
+        </span>
+        <small class="text-muted">{{ notice['date_posted'].split()[0] }}</small>
+      </div>
+      <div class="card-body">
+        <p class="small mb-0">{{ notice['content'] }}</p>
+      </div>
+    </div>
+    {% else %}
+    <div class="card card-android w-100">
+      <div class="card-body">
+        <div class="alert alert-info mb-0 py-2">
+          No notifications available at this time.
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- =========================================================================
+     RECENT SYLLABUS (HORIZONTAL SCROLLER)
+     ========================================================================= -->
+<section class="mb-5 reveal">
+  <div class="d-flex justify-content-between align-items-center">
+    <h2 class="section-title">Recent Syllabus</h2>
+    <a href="{{ url_for('syllabus') }}" class="btn btn-link btn-sm text-decoration-none">
+      View All <i class="bi bi-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="h-scroll">
+    {% for syllabus in recent_syllabus %}
+    <div class="card card-android">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+        <span class="small">{{ syllabus['class_name'] }} - {{ syllabus['subject'] }}</span>
+        <small>{{ syllabus['upload_date'].split()[0] }}</small>
+      </div>
+      <div class="card-body">
+        <p class="small mb-2">
+          <strong>Exam:</strong> {{ syllabus['exam_name'] }}<br>
+          <strong>Year/Month:</strong> {{ syllabus['year'] }}/{{ syllabus['month'] }}
+        </p>
+        <a href="{{ url_for('download_file', filename=syllabus['filename']) }}" class="btn btn-primary btn-sm">
+          <i class="bi bi-download"></i> Download
+        </a>
+      </div>
+    </div>
+    {% else %}
+    <div class="card card-android w-100">
+      <div class="card-body">
+        <div class="alert alert-info mb-0 py-2">
+          No syllabus available yet. Please check back later.
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<script>
+/* =========================================================================
+   REVEAL ON SCROLL (no external lib)
+   ========================================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  const els = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  els.forEach(el => observer.observe(el));
+});
+</script>
+{% endblock %}
