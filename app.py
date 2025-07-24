@@ -161,16 +161,11 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('logged_in'):
-            print(f"Access denied to {request.path} - not logged in")  # Debug print
-            print(f"Current session: {session}")  # Debug print
             flash('Please log in to access this page', 'danger')
-            
-            # Store the original URL to redirect back after login
-            session['next_url'] = request.url
-            return redirect(url_for('login'))
+            return redirect(url_for('login', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
-    
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -195,15 +190,12 @@ def login():
         password = request.form.get('password')
         ip_address = request.remote_addr
 
-        # Debug print
-        print(f"Login attempt for username: {username}")
-
-        # 1. Check if user/IP is blocked
+        # ✅ 1. Check if user/IP is blocked
         if is_blocked(username, ip_address):
             flash('Too many failed attempts. Please try again after 24 hours.', 'danger')
             return redirect(url_for('login'))
 
-        # 2. Check if user is declined
+        # ✅ 2. Check if user is in declined_users.json
         declined_users = load_json('declined_users.json')
         declined_user = next((u for u in declined_users if u['username'] == username), None)
         if declined_user:
@@ -211,41 +203,27 @@ def login():
             flash(f'You are Declined. Reason: {reason}', 'danger')
             return redirect(url_for('login'))
 
-        # 3. Validate against regular users
+        # ✅ 3. Validate against regular users
         users = load_json(USERS_FILE)
-        print(f"Loaded users: {users}")  # Debug print
-        
         user = next((u for u in users if u['username'] == username), None)
-        
-        if user:
-            print(f"Found user: {user}")  # Debug print
-            if user['password'] == password:
-                # Successful login
-                attempts_data = load_failed_attempts()
-                if username in attempts_data:
-                    attempts_data[username]['attempts'] = 0
-                if ip_address in attempts_data:
-                    attempts_data[ip_address]['attempts'] = 0
-                save_failed_attempts(attempts_data)
 
-                # Set session variables
-                session['logged_in'] = True
-                session['username'] = username
-                session['role'] = user.get('role', 'student')
-                session.permanent = True  # Make session persistent
-                
-                print(f"Session after login: {session}")  # Debug print
-                flash('Login successful!', 'success')
-                return redirect(url_for('home'))
-            else:
-                # Password mismatch
-                record_failed_attempt(username, ip_address)
-                flash('Invalid password', 'danger')
+        if user and user['password'] == password:
+            # ✅ Successful login - reset attempts
+            attempts_data = load_failed_attempts()
+            if username in attempts_data:
+                attempts_data[username]['attempts'] = 0
+            if ip_address in attempts_data:
+                attempts_data[ip_address]['attempts'] = 0
+            save_failed_attempts(attempts_data)
+
+            session['logged_in'] = True
+            session['username'] = username
+            session['role'] = user.get('role', 'student')
+            return redirect(url_for('home'))
         else:
-            # User not found
+            # ❌ Failed login - record attempt
             record_failed_attempt(username, ip_address)
-            flash('User not found. Please sign up first.', 'danger')
-            return redirect(url_for('signup'))
+            flash('Invalid username or password', 'danger')
 
     return render_template('login.html')
 
@@ -387,75 +365,6 @@ def notifications():
 @login_required
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
-
-# Add these new routes to app.py
-
-@app.route('/profile')
-@login_required
-def profile():
-    # Get user data from users.json
-    users = load_json(USERS_FILE)
-    user = next((u for u in users if u['username'] == session['username']), None)
-    
-    if not user:
-        flash('User profile not found', 'danger')
-        return redirect(url_for('home'))
-    
-    return render_template('profile.html', user=user)
-
-@app.route('/profile/edit', methods=['GET', 'POST'])
-@login_required
-def edit_profile():
-    users = load_json(USERS_FILE)
-    user = next((u for u in users if u['username'] == session['username']), None)
-    
-    if not user:
-        flash('User profile not found', 'danger')
-        return redirect(url_for('home'))
-    
-    if request.method == 'POST':
-        try:
-            # Update user data
-            user['first_name'] = request.form.get('first_name', user['first_name'])
-            user['last_name'] = request.form.get('last_name', user['last_name'])
-            user['class'] = request.form.get('class', user['class'])
-            user['roll_number'] = request.form.get('roll_number', user['roll_number'])
-            
-            # Save updated data
-            updated_users = [u if u['username'] != session['username'] else user for u in users]
-            save_json(updated_users, USERS_FILE)
-            
-            flash('Profile updated successfully!', 'success')
-            return redirect(url_for('profile'))
-        except Exception as e:
-            print(f"Error updating profile: {e}")
-            flash('Failed to update profile', 'danger')
-    
-    return render_template('edit_profile.html', user=user)
-
-@app.route('/about-app')
-@login_required
-def about_app():
-    return render_template('about_app.html')
-
-@app.route('/developer')
-@login_required
-def developer():
-    developers = [
-        {
-            'name': 'Dar Furkan',
-            'email': 'Fdar336@outlook.com',
-            'phone': '+919682303969',
-            'github': 'https://github.com'
-        },
-        {
-            'name': 'Ubaid Bilal',
-            'email': 'Ubaid@gmail.com',
-            'phone': '+917006336467',
-            'github': 'https://github.com'
-        }
-    ]
-    return render_template('developer.html', developers=developers)
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
