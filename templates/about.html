@@ -4,136 +4,160 @@
 
 {% block content %}
 <style>
-    .android-card {
+    .about-card {
         border-radius: 12px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         margin-bottom: 16px;
         overflow: hidden;
-        background: white;
+        background-color: var(--bs-card-bg);
     }
-    .android-header {
+    
+    .about-header {
         padding: 16px;
-        background-color: #1a73e8;
+        background-color: var(--bs-primary);
         color: white;
         font-weight: 500;
     }
-    .android-body {
+    
+    .about-body {
         padding: 16px;
+        color: var(--bs-body-color);
     }
-    .android-list-item {
+    
+    .about-list-item {
         padding: 12px 16px;
-        border-bottom: 1px solid #f1f1f1;
+        border-bottom: 1px solid var(--bs-border-color);
         display: flex;
         align-items: center;
     }
-    .android-list-item:last-child {
+    
+    .about-list-item:last-child {
         border-bottom: none;
     }
+    
     .material-icon {
         margin-right: 16px;
-        color: #5f6368;
+        color: var(--bs-secondary-color);
     }
+    
     .section-title {
         font-size: 1.25rem;
         font-weight: 500;
         margin: 24px 0 16px 16px;
-        color: #202124;
+        color: var(--bs-heading-color);
     }
+    
     .achievement-card {
         text-align: center;
         padding: 16px;
     }
+    
     .achievement-icon {
         width: 48px;
         height: 48px;
         border-radius: 24px;
-        background-color: #e8f0fe;
+        background-color: var(--bs-primary-bg-subtle);
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 12px;
-        color: #1a73e8;
+        color: var(--bs-primary);
     }
-    /* Original Staff Section Styles */
+    
+    /* Staff Section Styles */
     .staff-profile {
         margin-bottom: 20px;
     }
+    
     .staff-image-container {
         width: 100px;
         height: 100px;
         margin: 0 auto;
         border-radius: 50%;
         overflow: hidden;
-        border: 3px solid #f1f1f1;
+        border: 3px solid var(--bs-border-color);
     }
+    
     .staff-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
+    
     .staff-details {
         text-align: center;
         margin-top: 10px;
     }
+    
     .position {
-        color: #6c757d;
+        color: var(--bs-secondary-color);
         font-style: italic;
     }
+    
     .qualifications {
         font-size: 0.9rem;
-        color: #6c757d;
+        color: var(--bs-secondary-color);
+    }
+    
+    /* Custom dark mode adjustments */
+    [data-bs-theme="dark"] .about-card {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    [data-bs-theme="dark"] .staff-image-container {
+        border-color: var(--bs-border-color);
     }
 </style>
 
 <div class="container" style="max-width: 800px; margin: 0 auto; padding: 0 16px;">
     <!-- School History Card -->
-    <div class="android-card">
-        <div class="android-header">
+    <div class="about-card">
+        <div class="about-header">
             <i class="bi bi-building me-2"></i> Our History
         </div>
-        <div class="android-body">
-            <p style="margin-bottom: 16px; color: #202124;">Established in 1950, GOVT. BOYS HIGH SCHOOL PETH MAKHAMA has been a cornerstone of education in the region for over 70 years.</p>
-            <p style="color: #5f6368;">We began as a small village school and have grown into one of the most respected government schools in Jammu and Kashmir. Our alumni include prominent civil servants, doctors, engineers, and leaders who have made significant contributions to society.</p>
+        <div class="about-body">
+            <p style="margin-bottom: 16px;">Established in 1950, GOVT. BOYS HIGH SCHOOL PETH MAKHAMA has been a cornerstone of education in the region for over 70 years.</p>
+            <p>We began as a small village school and have grown into one of the most respected government schools in Jammu and Kashmir. Our alumni include prominent civil servants, doctors, engineers, and leaders who have made significant contributions to society.</p>
             <div style="margin-top: 16px; text-align: center;">
                 <img src="{{ url_for('static', filename='images/school-old.jpg') }}" alt="School in early days" style="width: 100%; border-radius: 8px;">
-                <p style="color: #9aa0a6; font-size: 0.75rem; margin-top: 8px;">Our school in the early days</p>
+                <p style="color: var(--bs-secondary-color); font-size: 0.75rem; margin-top: 8px;">Our school in the early days</p>
             </div>
         </div>
     </div>
 
     <!-- Mission & Vision Card -->
-    <div class="android-card">
-        <div class="android-header" style="background-color: #0b8043;">
+    <div class="about-card">
+        <div class="about-header" style="background-color: var(--bs-success);">
             <i class="bi bi-bullseye me-2"></i> Our Mission & Vision
         </div>
-        <div class="android-body">
+        <div class="about-body">
             <div style="margin-bottom: 16px;">
-                <h5 style="color: #1a73e8; margin-bottom: 8px;">Mission:</h5>
-                <p style="color: #202124;">To provide quality education that empowers students from all backgrounds to achieve their full potential and become responsible citizens.</p>
+                <h5 style="color: var(--bs-primary); margin-bottom: 8px;">Mission:</h5>
+                <p>To provide quality education that empowers students from all backgrounds to achieve their full potential and become responsible citizens.</p>
             </div>
             
             <div style="margin-bottom: 16px;">
-                <h5 style="color: #1a73e8; margin-bottom: 8px;">Vision:</h5>
-                <p style="color: #202124;">To be a center of excellence that nurtures intellectual curiosity, creativity, and character development.</p>
+                <h5 style="color: var(--bs-primary); margin-bottom: 8px;">Vision:</h5>
+                <p>To be a center of excellence that nurtures intellectual curiosity, creativity, and character development.</p>
             </div>
             
             <div>
-                <h5 style="color: #1a73e8; margin-bottom: 8px;">We strive to:</h5>
-                <div style="background: #f8f9fa; border-radius: 8px; overflow: hidden;">
-                    <div class="android-list-item">
-                        <i class="bi bi-check-circle material-icon" style="color: #0b8043;"></i>
+                <h5 style="color: var(--bs-primary); margin-bottom: 8px;">We strive to:</h5>
+                <div style="background: var(--bs-tertiary-bg); border-radius: 8px; overflow: hidden;">
+                    <div class="about-list-item">
+                        <i class="bi bi-check-circle material-icon" style="color: var(--bs-success);"></i>
                         Deliver excellent academic instruction
                     </div>
-                    <div class="android-list-item">
-                        <i class="bi bi-check-circle material-icon" style="color: #0b8043;"></i>
+                    <div class="about-list-item">
+                        <i class="bi bi-check-circle material-icon" style="color: var(--bs-success);"></i>
                         Foster critical thinking and creativity
                     </div>
-                    <div class="android-list-item">
-                        <i class="bi bi-check-circle material-icon" style="color: #0b8043;"></i>
+                    <div class="about-list-item">
+                        <i class="bi bi-check-circle material-icon" style="color: var(--bs-success);"></i>
                         Promote values of integrity and service
                     </div>
-                    <div class="android-list-item">
-                        <i class="bi bi-check-circle material-icon" style="color: #0b8043;"></i>
+                    <div class="about-list-item">
+                        <i class="bi bi-check-circle material-icon" style="color: var(--bs-success);"></i>
                         Develop well-rounded individuals
                     </div>
                 </div>
@@ -147,43 +171,43 @@
     </h3>
     
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
-        <div class="android-card">
+        <div class="about-card">
             <div class="achievement-card">
                 <div class="achievement-icon">
                     <i class="bi bi-trophy" style="font-size: 1.5rem;"></i>
                 </div>
-                <h5 style="margin-bottom: 8px; color: #202124;">Academic Excellence</h5>
-                <p style="color: #5f6368; font-size: 0.875rem;">Consistently high pass percentages in board examinations with several state rank holders</p>
+                <h5 style="margin-bottom: 8px;">Academic Excellence</h5>
+                <p style="color: var(--bs-secondary-color); font-size: 0.875rem;">Consistently high pass percentages in board examinations with several state rank holders</p>
             </div>
         </div>
         
-        <div class="android-card">
+        <div class="about-card">
             <div class="achievement-card">
                 <div class="achievement-icon">
                     <i class="bi bi-people" style="font-size: 1.5rem;"></i>
                 </div>
-                <h5 style="margin-bottom: 8px; color: #202124;">Sports</h5>
-                <p style="color: #5f6368; font-size: 0.875rem;">Multiple district and state level championships in cricket, football, and athletics</p>
+                <h5 style="margin-bottom: 8px;">Sports</h5>
+                <p style="color: var(--bs-secondary-color); font-size: 0.875rem;">Multiple district and state level championships in cricket, football, and athletics</p>
             </div>
         </div>
         
-        <div class="android-card">
+        <div class="about-card">
             <div class="achievement-card">
                 <div class="achievement-icon">
                     <i class="bi bi-building" style="font-size: 1.5rem;"></i>
                 </div>
-                <h5 style="margin-bottom: 8px; color: #202124;">Facilities</h5>
-                <p style="color: #5f6368; font-size: 0.875rem;">Well-equipped labs, library with 10,000+ books, and modern sports facilities</p>
+                <h5 style="margin-bottom: 8px;">Facilities</h5>
+                <p style="color: var(--bs-secondary-color); font-size: 0.875rem;">Well-equipped labs, library with 10,000+ books, and modern sports facilities</p>
             </div>
         </div>
     </div>
 
-    <!-- Original Staff Section -->
-    <div class="android-card">
-        <div class="android-header" style="background-color: #ff9800;">
+    <!-- Staff Section -->
+    <div class="about-card">
+        <div class="about-header" style="background-color: var(--bs-warning); color: var(--bs-dark);">
             <i class="bi bi-person-video3 me-2"></i> Our Staff
         </div>
-        <div class="android-body">
+        <div class="about-body">
             <div class="row g-4">
                 <!-- Principal -->
                 <div class="col-md-6 col-lg-3">
