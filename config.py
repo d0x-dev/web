@@ -1,7 +1,7 @@
 import os
 
 # Secret key for session management
-SECRET_KEY = 'your-very-secret-key-here-change-this-in-production'
+SECRET_KEY = 'd2f8a9d4e7b1c6f3e8a5b2d9f4c7e1b6a8d3f5e2c9b1a7f6d4e9c2b5a8f3d1e6'
 
 # Database configuration
 DATABASE = 'school.db'
