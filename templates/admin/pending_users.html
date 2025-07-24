@@ -4,98 +4,256 @@
 {% block title %}Pending Users - Admin{% endblock %}
 
 {% block content %}
-<div class="container mb-5 pb-5 mt-3">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h4">Pending User Approvals</h1>
-        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary btn-sm">
-            <i class="bi bi-arrow-left"></i> Back to Dashboard
-        </a>
-    </div>
-    
-    {% if users %}
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Name</th>
-                            <th>Username</th>
-                            <th>Class</th>
-                            <th>Roll No.</th>
-                            <th>Date Applied</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                        <tr>
-                            <td>{{ user.first_name }} {{ user.last_name }}</td>
-                            <td>{{ user.username }}</td>
-                            <td>Class {{ user.class }}</td>
-                            <td>{{ user.roll_number }}</td>
-                            <td>{{ user.date.split()[0] }}</td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <a href="{{ url_for('approve_user', username=user.username) }}" class="btn btn-sm btn-success">
-                                        <i class="bi bi-check-lg"></i> Approve
-                                    </a>
-                                    <a href="{{ url_for('decline_user', username=user.username) }}" class="btn btn-sm btn-danger">
-                                        <i class="bi bi-x-lg"></i> Decline
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<style>
+  :root{
+    --adm-radius: 16px;
+    --adm-shadow: 0 8px 20px rgba(0,0,0,.08);
+    --adm-shadow-dark: 0 8px 24px rgba(0,0,0,.25);
+  }
+  .pending-wrapper{
+    padding-bottom: 110px; /* keep clear of fixed admin bottom bar */
+  }
+  .section-title{
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  .user-card{
+    border: 0;
+    border-radius: var(--adm-radius);
+    box-shadow: var(--adm-shadow);
+    transition: transform .15s ease, box-shadow .15s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .user-card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0,0,0,.12);
+  }
+  [data-bs-theme="dark"] .user-card{
+    box-shadow: var(--adm-shadow-dark);
+    background: #1e1e1e;
+  }
+  .user-chip{
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    border-radius: 999px;
+    padding: .15rem .6rem;
+    font-size: .75rem;
+    background: rgba(13,110,253,.08);
+    color: #0d6efd;
+    font-weight: 600;
+  }
+  [data-bs-theme="dark"] .user-chip{
+    background: rgba(255,255,255,.06);
+    color: #0dcaf0;
+  }
+  .avatar-circle{
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex: 0 0 52px;
+  }
+  [data-bs-theme="dark"] .avatar-circle{
+    background: rgba(255,255,255,.08);
+    color: #0dcaf0;
+  }
+  .user-meta{
+    color: var(--bs-secondary-color);
+    font-size: .85rem;
+  }
+
+  .search-box{
+    position: sticky;
+    top: calc(var(--header-h,60px) + .5rem);
+    z-index: 10;
+  }
+
+  /* Modal tweaks */
+  .modal-content{
+    border: 0;
+    border-radius: 18px;
+    box-shadow: var(--adm-shadow);
+  }
+  [data-bs-theme="dark"] .modal-content{
+    box-shadow: var(--adm-shadow-dark);
+    background: #1e1e1e;
+  }
+</style>
+
+<div class="container pending-wrapper mt-3 mb-4 pb-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h5 mb-0 section-title">Pending User Approvals</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary btn-sm">
+      <i class="bi bi-arrow-left"></i> Back
+    </a>
+  </div>
+
+  {% if users %}
+  <!-- Search (client-side) -->
+  <div class="search-box mb-3">
+    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Search by name, username, class, roll no...">
+  </div>
+
+  <div class="row g-3" id="usersGrid">
+    {% for user in users %}
+    {% set idx = loop.index %}
+    <div class="col-12 col-md-6 user-card-wrap">
+      <div class="card user-card p-3"
+           data-bs-toggle="modal"
+           data-bs-target="#userModal-{{ idx }}"
+           data-name="{{ (user.first_name ~ ' ' ~ user.last_name)|lower }}"
+           data-username="{{ user.username|lower }}"
+           data-class="{{ user.class|string|lower }}"
+           data-roll="{{ user.roll_number|lower }}">
+        <div class="d-flex align-items-center">
+          <div class="avatar-circle me-3">
+            {{ (user.first_name[0] ~ (user.last_name[0] if user.last_name else ''))|upper }}
+          </div>
+          <div class="flex-grow-1">
+          <div class="d-flex align-items-center gap-1 flex-wrap">
+            <h6 class="mb-0">{{ user.first_name }} {{ user.last_name }}</h6>
+            <span class="user-chip ms-1">@{{ user.username }}</span>
+          </div>
+            <div class="user-meta mt-1">
+              Class {{ user.class }} • Roll {{ user.roll_number }}
             </div>
+          </div>
         </div>
-    </div>
-    {% else %}
-    <div class="card border-0 shadow-sm">
-        <div class="card-body text-center p-5">
-            <i class="bi bi-people fs-1 text-muted mb-3"></i>
-            <h4>No pending user approvals</h4>
-            <p class="text-muted">All user applications have been processed</p>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <span class="text-muted small"><i class="bi bi-clock-history me-1"></i> Applied: {{ user.date.split()[0] }}</span>
+          <span class="text-primary small">Tap to review <i class="bi bi-chevron-right"></i></span>
         </div>
+      </div>
     </div>
-    {% endif %}
+
+    <!-- Modal -->
+    <div class="modal fade" id="userModal-{{ idx }}" tabindex="-1" aria-labelledby="userModalLabel-{{ idx }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title" id="userModalLabel-{{ idx }}">User Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body pt-2">
+            <div class="d-flex align-items-center mb-3">
+              <div class="avatar-circle me-3">
+                {{ (user.first_name[0] ~ (user.last_name[0] if user.last_name else ''))|upper }}
+              </div>
+              <div>
+                <h6 class="mb-0">{{ user.first_name }} {{ user.last_name }}</h6>
+                <small class="text-muted">@{{ user.username }}</small>
+              </div>
+            </div>
+
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Name</span>
+                <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Username</span>
+                <strong>{{ user.username }}</strong>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Class</span>
+                <strong>{{ user.class }}</strong>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Roll No.</span>
+                <strong>{{ user.roll_number }}</strong>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Applied On</span>
+                <strong>{{ user.date.split()[0] }}</strong>
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer border-0 d-flex justify-content-between">
+            <a href="{{ url_for('decline_user', username=user.username) }}" class="btn btn-outline-danger w-50 me-2">
+              <i class="bi bi-x-lg"></i> Decline
+            </a>
+            <a href="{{ url_for('approve_user', username=user.username) }}" class="btn btn-success w-50">
+              <i class="bi bi-check-lg"></i> Approve
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card border-0 shadow-sm">
+    <div class="card-body text-center p-5">
+      <i class="bi bi-people fs-1 text-muted mb-3"></i>
+      <h4>No pending user approvals</h4>
+      <p class="text-muted mb-0">All user applications have been processed.</p>
+    </div>
+  </div>
+  {% endif %}
 </div>
 
 <!-- Admin Bottom Menu -->
 <nav class="navbar navbar-expand fixed-bottom shadow-sm" id="bottomMenu">
-    <div class="container justify-content-around">
-        <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
-            <i class="bi bi-speedometer2"></i><br>Dashboard
-        </a>
-        <a class="nav-link text-center" href="{{ url_for('admin_notifications') }}">
-            <i class="bi bi-megaphone"></i><br>Notify
-        </a>
-        <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
-            <i class="bi bi-box-arrow-right"></i><br>Logout
-        </a>
-    </div>
+  <div class="container justify-content-around">
+    <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
+      <i class="bi bi-speedometer2"></i><br>Dashboard
+    </a>
+    <a class="nav-link text-center" href="{{ url_for('admin_notifications') }}">
+      <i class="bi bi-megaphone"></i><br>Notify
+    </a>
+    <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
+      <i class="bi bi-box-arrow-right"></i><br>Logout
+    </a>
+  </div>
 </nav>
 
 <style>
-    .nav-link {
-        font-size: 0.8rem;
-        color: var(--bs-body-color);
-    }
-
-    #bottomMenu {
-        background-color: var(--bs-body-bg);
-        border-top: 1px solid var(--bs-border-color);
-    }
-
-    body.dark-mode .nav-link {
-        color: #eee;
-    }
-
-    body.dark-mode #bottomMenu {
-        background-color: #1a1a1a;
-        border-top: 1px solid #333;
-    }
+  .nav-link {
+    font-size: 0.8rem;
+    color: var(--bs-body-color);
+  }
+  #bottomMenu {
+    background-color: var(--bs-body-bg);
+    border-top: 1px solid var(--bs-border-color);
+  }
+  body.dark-mode .nav-link {
+    color: #eee;
+  }
+  body.dark-mode #bottomMenu {
+    background-color: #1a1a1a;
+    border-top: 1px solid #333;
+  }
 </style>
+
+{% if users %}
+<script>
+  // Simple client-side search filter
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('#usersGrid .user-card-wrap .user-card');
+
+    if(!input) return;
+
+    input.addEventListener('input', function(){
+      const q = this.value.toLowerCase().trim();
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name') || '';
+        const username = card.getAttribute('data-username') || '';
+        const cls = card.getAttribute('data-class') || '';
+        const roll = card.getAttribute('data-roll') || '';
+        const hay = [name, username, cls, roll].join(' ');
+        card.closest('.user-card-wrap').style.display = hay.includes(q) ? '' : 'none';
+      });
+    });
+  });
+</script>
+{% endif %}
 {% endblock %}
