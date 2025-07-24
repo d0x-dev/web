@@ -33,31 +33,6 @@
         margin-right: 16px;
         color: #5f6368;
     }
-    .staff-card {
-        display: flex;
-        padding: 12px;
-        align-items: center;
-        border-bottom: 1px solid #f1f1f1;
-    }
-    .staff-avatar {
-        width: 56px;
-        height: 56px;
-        border-radius: 28px;
-        background-color: #e0e0e0;
-        margin-right: 16px;
-        overflow: hidden;
-    }
-    .staff-details {
-        flex: 1;
-    }
-    .staff-name {
-        font-weight: 500;
-        margin-bottom: 4px;
-    }
-    .staff-position {
-        color: #5f6368;
-        font-size: 0.875rem;
-    }
     .section-title {
         font-size: 1.25rem;
         font-weight: 500;
@@ -78,6 +53,35 @@
         justify-content: center;
         margin: 0 auto 12px;
         color: #1a73e8;
+    }
+    /* Original Staff Section Styles */
+    .staff-profile {
+        margin-bottom: 20px;
+    }
+    .staff-image-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid #f1f1f1;
+    }
+    .staff-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .staff-details {
+        text-align: center;
+        margin-top: 10px;
+    }
+    .position {
+        color: #6c757d;
+        font-style: italic;
+    }
+    .qualifications {
+        font-size: 0.9rem;
+        color: #6c757d;
     }
 </style>
 
@@ -174,97 +178,154 @@
         </div>
     </div>
 
-    <!-- Staff Section -->
-    <h3 class="section-title">
-        <i class="bi bi-person-video3 me-2"></i> Our Staff
-    </h3>
-    
+    <!-- Original Staff Section -->
     <div class="android-card">
-        <!-- Principal -->
-        <div class="staff-card">
-            <div class="staff-avatar">
-                <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
-                     style="width: 100%; height: 100%; object-fit: cover;"
-                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-            </div>
-            <div class="staff-details">
-                <div class="staff-name">Mr. Yousuf</div>
-                <div class="staff-position">Principal</div>
-                <div style="color: #5f6368; font-size: 0.75rem;">M.Ed, Ph.D in Education • 28+ years</div>
-            </div>
+        <div class="android-header" style="background-color: #ff9800;">
+            <i class="bi bi-person-video3 me-2"></i> Our Staff
         </div>
-        
-        <!-- Vice Principal -->
-        <div class="staff-card">
-            <div class="staff-avatar">
-                <img src="{{ url_for('static', filename='images/staff/vice-principal.png') }}" 
-                     style="width: 100%; height: 100%; object-fit: cover;"
-                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+        <div class="android-body">
+            <div class="row g-4">
+                <!-- Principal -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
+                                 class="staff-image" 
+                                 alt="Principal Yousuf"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Yousuf</h5>
+                            <p class="position">Principal</p>
+                            <p class="qualifications">M.Ed, Ph.D in Education<br>28+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vice Principal -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
+                                 class="staff-image" 
+                                 alt="Vice Principal Altaf"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Altaf</h5>
+                            <p class="position">Vice Principal</p>
+                            <p class="qualifications">M.Sc, B.Ed<br>22+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Member 1 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
+                                 class="staff-image" 
+                                 alt="Muzaffar Sir"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Muzaffar</h5>
+                            <p class="position">Senior Teacher</p>
+                            <p class="qualifications">M.A (English), B.Ed<br>18+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Member 2 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
+                                 class="staff-image" 
+                                 alt="Muzaffar"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Muzaffar</h5>
+                            <p class="position">Mathematics Teacher</p>
+                            <p class="qualifications">M.Sc (Maths), B.Ed<br>15+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Member 3 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
+                                 class="staff-image" 
+                                 alt="Waseem Abdullah"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Waseem Abdullah</h5>
+                            <p class="position">Science Teacher</p>
+                            <p class="qualifications">M.Sc (Physics), B.Ed<br>12+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Member 4 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
+                                 class="staff-image" 
+                                 alt="Tasleem"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Tasleem</h5>
+                            <p class="position">Social Studies Teacher</p>
+                            <p class="qualifications">M.A (History), B.Ed<br>10+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Member 5 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
+                                 class="staff-image" 
+                                 alt="Tahir Sir"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Tahir</h5>
+                            <p class="position">Urdu Teacher</p>
+                            <p class="qualifications">M.A (Urdu), B.Ed<br>14+ years experience</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Member 6 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="staff-profile">
+                        <div class="staff-image-container">
+                            <img src="{{ url_for('static', filename='images/staff/principal.png') }}" 
+                                 class="staff-image" 
+                                 alt="Physical Education Teacher"
+                                 onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
+                        </div>
+                        <div class="staff-details">
+                            <h5>Mr. Vijay Singh</h5>
+                            <p class="position">Physical Education</p>
+                            <p class="qualifications">M.P.Ed<br>State level athlete</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="staff-details">
-                <div class="staff-name">Mr. Altaf</div>
-                <div class="staff-position">Vice Principal</div>
-                <div style="color: #5f6368; font-size: 0.75rem;">M.Sc, B.Ed • 22+ years</div>
+            <div class="text-center mt-4">
+                <a href="{{ url_for('contact') }}" class="btn btn-primary">
+                    <i class="bi bi-envelope"></i> Contact Our Staff
+                </a>
             </div>
-        </div>
-        
-        <!-- Staff Members -->
-        <div class="staff-card">
-            <div class="staff-avatar">
-                <img src="{{ url_for('static', filename='images/staff/teacher1.png') }}" 
-                     style="width: 100%; height: 100%; object-fit: cover;"
-                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-            </div>
-            <div class="staff-details">
-                <div class="staff-name">Mr. Muzaffar</div>
-                <div class="staff-position">Senior Teacher (English)</div>
-                <div style="color: #5f6368; font-size: 0.75rem;">M.A (English), B.Ed • 18+ years</div>
-            </div>
-        </div>
-        
-        <div class="staff-card">
-            <div class="staff-avatar">
-                <img src="{{ url_for('static', filename='images/staff/teacher2.png') }}" 
-                     style="width: 100%; height: 100%; object-fit: cover;"
-                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-            </div>
-            <div class="staff-details">
-                <div class="staff-name">Mr. Muzaffar</div>
-                <div class="staff-position">Mathematics Teacher</div>
-                <div style="color: #5f6368; font-size: 0.75rem;">M.Sc (Maths), B.Ed • 15+ years</div>
-            </div>
-        </div>
-        
-        <div class="staff-card">
-            <div class="staff-avatar">
-                <img src="{{ url_for('static', filename='images/staff/teacher3.png') }}" 
-                     style="width: 100%; height: 100%; object-fit: cover;"
-                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-            </div>
-            <div class="staff-details">
-                <div class="staff-name">Mr. Waseem Abdullah</div>
-                <div class="staff-position">Science Teacher</div>
-                <div style="color: #5f6368; font-size: 0.75rem;">M.Sc (Physics), B.Ed • 12+ years</div>
-            </div>
-        </div>
-        
-        <div class="staff-card">
-            <div class="staff-avatar">
-                <img src="{{ url_for('static', filename='images/staff/teacher4.png') }}" 
-                     style="width: 100%; height: 100%; object-fit: cover;"
-                     onerror="this.src='{{ url_for('static', filename='images/default_staff.png') }}'">
-            </div>
-            <div class="staff-details">
-                <div class="staff-name">Mr. Tasleem</div>
-                <div class="staff-position">Social Studies Teacher</div>
-                <div style="color: #5f6368; font-size: 0.75rem;">M.A (History), B.Ed • 10+ years</div>
-            </div>
-        </div>
-        
-        <div style="padding: 16px; text-align: center;">
-            <a href="{{ url_for('contact') }}" style="display: inline-block; background-color: #1a73e8; color: white; padding: 10px 24px; border-radius: 20px; text-decoration: none; font-weight: 500;">
-                <i class="bi bi-envelope me-2"></i> Contact Our Staff
-            </a>
         </div>
     </div>
 </div>
