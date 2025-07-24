@@ -109,11 +109,12 @@
     }
 
     /* Fix for bottom menu overlap */
-    .container {
-        padding-bottom: 80px;
+    .about-page-wrapper {
+        padding-bottom: 100px; /* Extra bottom space for fixed menu */
     }
 </style>
 
+<div class="about-page-wrapper">
 <div class="container" style="max-width: 800px; margin: 0 auto; padding: 0 16px;">
     <!-- School History Card -->
     <div class="about-card">
@@ -357,5 +358,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
