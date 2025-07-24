@@ -4,19 +4,23 @@ from werkzeug.utils import secure_filename
 import os
 import json
 from flask import jsonify
-from datetime import datetime
+from datetime import datetime, timedelta
 import sqlite3
 from functools import wraps
+import secrets
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.secret_key = app.config['SECRET_KEY']
 
-import time
-from datetime import datetime, timedelta
-import json
+# Session configuration - keeps users logged in until they logout
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    PERMANENT_SESSION_LIFETIME=timedelta(days=30)  # Sessions last 30 days
 
-# Add these with your other configuration variables
+# Login attempt limits
 MAX_LOGIN_ATTEMPTS = 4
 BLOCK_TIME_HOURS = 24
 FAILED_ATTEMPTS_FILE = 'failed_attempts.json'
@@ -57,6 +61,18 @@ def init_db():
                 username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 last_login TEXT
+            )
+        ''')
+        
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS user_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                session_token TEXT NOT NULL,
+                ip_address TEXT NOT NULL,
+                login_time TEXT NOT NULL,
+                user_agent TEXT,
+                FOREIGN KEY (username) REFERENCES users(username)
             )
         ''')
         
@@ -105,41 +121,44 @@ def init_db():
                 admin_notes TEXT
             )
         ''')
+        
         conn.execute('''
-    CREATE TABLE IF NOT EXISTS classwork (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        class_name TEXT NOT NULL,
-        subject TEXT NOT NULL,
-        title TEXT NOT NULL,
-        description TEXT,
-        filename TEXT NOT NULL,
-        upload_date TEXT NOT NULL,
-        due_date TEXT
+            CREATE TABLE IF NOT EXISTS classwork (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                class_name TEXT NOT NULL,
+                subject TEXT NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT,
+                filename TEXT NOT NULL,
+                upload_date TEXT NOT NULL,
+                due_date TEXT
             )
         ''')
+        
         conn.execute('''
-    CREATE TABLE IF NOT EXISTS homework (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        class_name TEXT NOT NULL,
-        subject TEXT NOT NULL,
-        title TEXT NOT NULL,
-        description TEXT,
-        filename TEXT NOT NULL,
-        upload_date TEXT NOT NULL,
-        due_date TEXT
-    )
-''')
+            CREATE TABLE IF NOT EXISTS homework (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                class_name TEXT NOT NULL,
+                subject TEXT NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT,
+                filename TEXT NOT NULL,
+                upload_date TEXT NOT NULL,
+                due_date TEXT
+            )
+        ''')
+        
         conn.execute('''
-    CREATE TABLE IF NOT EXISTS books (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        author TEXT,
-        subject TEXT,
-        class_name TEXT,
-        filename TEXT NOT NULL,
-        upload_date TEXT NOT NULL
-    )
-''')
+            CREATE TABLE IF NOT EXISTS books (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                author TEXT,
+                subject TEXT,
+                class_name TEXT,
+                filename TEXT NOT NULL,
+                upload_date TEXT NOT NULL
+            )
+        ''')
         
         # Create default admin if not exists
         admin = conn.execute('SELECT * FROM admin WHERE username = ?', ('admin',)).fetchone()
@@ -163,6 +182,22 @@ def login_required(f):
         if not session.get('logged_in'):
             flash('Please log in to access this page', 'danger')
             return redirect(url_for('login', next=request.url))
+        
+        # Verify the session is still valid
+        conn = get_db_connection()
+        try:
+            active_session = conn.execute(
+                'SELECT * FROM user_sessions WHERE username = ? AND session_token = ?',
+                (session['username'], session.get('session_token', ''))
+            ).fetchone()
+            
+            if not active_session:
+                session.clear()
+                flash('Your session is no longer valid', 'warning')
+                return redirect(url_for('login'))
+        finally:
+            conn.close()
+            
         return f(*args, **kwargs)
     return decorated_function
 
@@ -175,6 +210,95 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# Session management functions
+def record_user_session(username, session_token, ip_address):
+    conn = get_db_connection()
+    try:
+        # End any existing sessions for this user
+        conn.execute('DELETE FROM user_sessions WHERE username = ?', (username,))
+        
+        # Record new session
+        conn.execute(
+            '''INSERT INTO user_sessions 
+            (username, session_token, ip_address, login_time, user_agent) 
+            VALUES (?, ?, ?, ?, ?)''',
+            (username, session_token, ip_address, datetime.now().isoformat(), request.user_agent.string)
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+def validate_user_session(username, session_token):
+    conn = get_db_connection()
+    try:
+        session_data = conn.execute(
+            'SELECT * FROM user_sessions WHERE username = ? AND session_token = ?',
+            (username, session_token)
+        ).fetchone()
+        return session_data is not None
+    finally:
+        conn.close()
+
+# Login attempt functions
+def load_failed_attempts():
+    try:
+        with open(FAILED_ATTEMPTS_FILE, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+def save_failed_attempts(data):
+    with open(FAILED_ATTEMPTS_FILE, 'w') as f:
+        json.dump(data, f)
+
+def is_blocked(username, ip_address):
+    attempts_data = load_failed_attempts()
+    now = datetime.now()
+    
+    # Check by username
+    if username in attempts_data:
+        last_attempt = datetime.fromisoformat(attempts_data[username]['timestamp'])
+        if attempts_data[username]['attempts'] >= MAX_LOGIN_ATTEMPTS:
+            if now - last_attempt < timedelta(hours=BLOCK_TIME_HOURS):
+                return True
+            else:
+                # Block period expired, reset attempts
+                attempts_data[username]['attempts'] = 0
+                save_failed_attempts(attempts_data)
+    
+    # Check by IP address
+    if ip_address in attempts_data:
+        last_attempt = datetime.fromisoformat(attempts_data[ip_address]['timestamp'])
+        if attempts_data[ip_address]['attempts'] >= MAX_LOGIN_ATTEMPTS:
+            if now - last_attempt < timedelta(hours=BLOCK_TIME_HOURS):
+                return True
+            else:
+                # Block period expired, reset attempts
+                attempts_data[ip_address]['attempts'] = 0
+                save_failed_attempts(attempts_data)
+    
+    return False
+
+def record_failed_attempt(username, ip_address):
+    attempts_data = load_failed_attempts()
+    now = datetime.now().isoformat()
+    
+    # Track by username
+    if username in attempts_data:
+        attempts_data[username]['attempts'] += 1
+        attempts_data[username]['timestamp'] = now
+    else:
+        attempts_data[username] = {'attempts': 1, 'timestamp': now}
+    
+    # Track by IP address
+    if ip_address in attempts_data:
+        attempts_data[ip_address]['attempts'] += 1
+        attempts_data[ip_address]['timestamp'] = now
+    else:
+        attempts_data[ip_address] = {'attempts': 1, 'timestamp': now}
+    
+    save_failed_attempts(attempts_data)
+
 # Routes
 @app.route('/')
 def index():
@@ -183,7 +307,11 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if session.get('logged_in'):
-        return redirect(url_for('home'))
+        # Check if session is still valid
+        if validate_user_session(session['username'], session.get('session_token', '')):
+            return redirect(url_for('home'))
+        else:
+            session.clear()
     
     if request.method == 'POST':
         username = request.form.get('username')
@@ -223,9 +351,18 @@ def login():
                 attempts_data[ip_address]['attempts'] = 0
             save_failed_attempts(attempts_data)
 
+            # Create new session
+            session_token = secrets.token_hex(16)
             session['logged_in'] = True
             session['username'] = username
             session['role'] = user.get('role', 'student')
+            session['session_token'] = session_token
+            session['ip_address'] = ip_address
+            
+            # Record session in database
+            record_user_session(username, session_token, ip_address)
+            
+            flash('Login successful!', 'success')
             return redirect(url_for('home'))
         else:
             record_failed_attempt(username, ip_address)
@@ -269,6 +406,18 @@ def contact():
 
 @app.route('/logout')
 def logout():
+    if 'username' in session:
+        # Remove session from database
+        conn = get_db_connection()
+        try:
+            conn.execute(
+                'DELETE FROM user_sessions WHERE username = ? AND session_token = ?',
+                (session['username'], session.get('session_token', ''))
+            )
+            conn.commit()
+        finally:
+            conn.close()
+    
     session.clear()
     flash('You have been logged out successfully', 'success')
     return redirect(url_for('login'))
