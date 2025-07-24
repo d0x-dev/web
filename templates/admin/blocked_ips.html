@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% set hide_header = True %}
+
+{% block title %}Blocked IPs - Admin{% endblock %}
+
+{% block content %}
+<style>
+  :root{
+    --adm-radius: 16px;
+    --adm-shadow: 0 8px 20px rgba(0,0,0,.08);
+    --adm-shadow-dark: 0 8px 24px rgba(0,0,0,.25);
+  }
+  .blocked-wrapper{
+    padding-bottom: 110px;
+  }
+  .section-title{
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  .ip-card{
+    border: 0;
+    border-radius: var(--adm-radius);
+    box-shadow: var(--adm-shadow);
+    transition: transform .15s ease, box-shadow .15s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .ip-card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0,0,0,.12);
+  }
+  [data-bs-theme="dark"] .ip-card{
+    box-shadow: var(--adm-shadow-dark);
+    background: #1e1e1e;
+  }
+  .ip-chip{
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    border-radius: 999px;
+    padding: .15rem .6rem;
+    font-size: .75rem;
+    background: rgba(220,53,69,.08);
+    color: #dc3545;
+    font-weight: 600;
+  }
+  [data-bs-theme="dark"] .ip-chip{
+    background: rgba(255,255,255,.06);
+    color: #dc3545;
+  }
+  .ip-meta{
+    color: var(--bs-secondary-color);
+    font-size: .85rem;
+  }
+
+  .search-box{
+    position: sticky;
+    top: calc(var(--header-h,60px) + .5rem);
+    z-index: 10;
+  }
+
+  /* Modal tweaks */
+  .modal-content{
+    border: 0;
+    border-radius: 18px;
+    box-shadow: var(--adm-shadow);
+  }
+  [data-bs-theme="dark"] .modal-content{
+    box-shadow: var(--adm-shadow-dark);
+    background: #1e1e1e;
+  }
+</style>
+
+<div class="container blocked-wrapper mt-3 mb-4 pb-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h5 mb-0 section-title">Blocked IPs & Usernames</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary btn-sm">
+      <i class="bi bi-arrow-left"></i> Back
+    </a>
+  </div>
+
+  {% if blocked_ips %}
+  <!-- Search (client-side) -->
+  <div class="search-box mb-3">
+    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Search by IP or username...">
+  </div>
+
+  <div class="row g-3" id="ipsGrid">
+    {% for ip, data in blocked_ips.items() %}
+    {% if data.attempts >= 3 %}
+    {% set idx = loop.index %}
+    <div class="col-12 col-md-6 ip-card-wrap">
+      <div class="card ip-card p-3"
+           data-bs-toggle="modal"
+           data-bs-target="#ipModal-{{ idx }}"
+           data-ip="{{ ip|lower }}"
+           data-attempts="{{ data.attempts }}">
+        <div class="d-flex align-items-center">
+          <div class="me-3">
+            <i class="bi bi-shield-lock fs-2 text-danger"></i>
+          </div>
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-1 flex-wrap">
+              <h6 class="mb-0">{{ ip }}</h6>
+              <span class="ip-chip ms-1">{{ data.attempts }} attempts</span>
+            </div>
+            <div class="ip-meta mt-1">
+              Blocked since: {{ data.timestamp.split('T')[0] }}
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <span class="text-muted small"><i class="bi bi-clock-history me-1"></i> {{ data.timestamp.split('T')[1].split('.')[0] }}</span>
+          <span class="text-primary small">Tap to manage <i class="bi bi-chevron-right"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="ipModal-{{ idx }}" tabindex="-1" aria-labelledby="ipModalLabel-{{ idx }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title" id="ipModalLabel-{{ idx }}">Block Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body pt-2">
+            <div class="d-flex align-items-center mb-3">
+              <div class="me-3">
+                <i class="bi bi-shield-lock fs-1 text-danger"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">{{ ip }}</h6>
+                <small class="text-muted">{{ data.attempts }} failed attempts</small>
+              </div>
+            </div>
+
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Blocked Since</span>
+                <strong>{{ data.timestamp.split('T')[0] }}</strong>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Time</span>
+                <strong>{{ data.timestamp.split('T')[1].split('.')[0] }}</strong>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Attempts</span>
+                <strong>{{ data.attempts }}</strong>
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer border-0 d-flex justify-content-between">
+            <button type="button" class="btn btn-outline-secondary w-25" data-bs-dismiss="modal">
+              Cancel
+            </button>
+            <a href="{{ url_for('unblock_ip', ip=ip) }}" class="btn btn-success w-50">
+              <i class="bi bi-unlock"></i> Unblock
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card border-0 shadow-sm">
+    <div class="card-body text-center p-5">
+      <i class="bi bi-shield-check fs-1 text-muted mb-3"></i>
+      <h4>No blocked IPs or usernames</h4>
+      <p class="text-muted mb-0">All access attempts are within normal limits.</p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Admin Bottom Menu -->
+<nav class="navbar navbar-expand fixed-bottom shadow-sm" id="bottomMenu">
+  <div class="container justify-content-around">
+    <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
+      <i class="bi bi-speedometer2"></i><br>Dashboard
+    </a>
+    <a class="nav-link text-center" href="{{ url_for('admin_notifications') }}">
+      <i class="bi bi-megaphone"></i><br>Notify
+    </a>
+    <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
+      <i class="bi bi-box-arrow-right"></i><br>Logout
+    </a>
+  </div>
+</nav>
+
+<style>
+  .nav-link {
+    font-size: 0.8rem;
+    color: var(--bs-body-color);
+  }
+  #bottomMenu {
+    background-color: var(--bs-body-bg);
+    border-top: 1px solid var(--bs-border-color);
+  }
+  body.dark-mode .nav-link {
+    color: #eee;
+  }
+  body.dark-mode #bottomMenu {
+    background-color: #1a1a1a;
+    border-top: 1px solid #333;
+  }
+</style>
+
+{% if blocked_ips %}
+<script>
+  // Simple client-side search filter
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('#ipsGrid .ip-card-wrap .ip-card');
+
+    if(!input) return;
+
+    input.addEventListener('input', function(){
+      const q = this.value.toLowerCase().trim();
+      cards.forEach(card => {
+        const ip = card.getAttribute('data-ip') || '';
+        const attempts = card.getAttribute('data-attempts') || '';
+        const hay = [ip, attempts].join(' ');
+        card.closest('.ip-card-wrap').style.display = hay.includes(q) ? '' : 'none';
+      });
+    });
+  });
+</script>
+{% endif %}
+{% endblock %}
