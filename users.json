@@ -1,12 +1,12 @@
 [
   {
-    "first_name": "dark",
-    "last_name": "boy",
+    "first_name": "Admin",
+    "last_name": "User",
     "username": "admin",
     "password": "admin123",
-    "class": "11",
-    "roll_number": "10",
-    "status": "pending",
-    "date": "2025-07-24 17:42:45"
+    "class": "12",
+    "roll_number": "1",
+    "status": "approved",
+    "date": "2023-01-01 00:00:00"
   }
 ]
