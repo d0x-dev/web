@@ -9,4 +9,18 @@
     "status": "approved",
     "date": "2023-01-01 00:00:00"
   }
+
+
+  {
+    "first_name": "Dark",
+    "last_name": "Boy",
+    "username": "Dark",
+    "password": "Dark",
+    "class": "12",
+    "roll_number": "1",
+    "status": "approved",
+    "date": "2023-01-01 00:00:00"
+  }
+]
+
 ]
