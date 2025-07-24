@@ -1,43 +1,221 @@
 {% extends "base.html" %}
+{% block title %}Profile - {{ user.first_name }} {{ user.last_name }}{% endblock %}
 
 {% block content %}
-<div class="card shadow-sm">
-  <div class="card-body">
-    <div class="d-flex align-items-center mb-4">
-      <img src="{{ url_for('static', filename='images/staff/default_staff.png') }}" 
-           class="rounded-circle me-3" 
-           width="80" 
-           height="80">
-      <div>
-        <h4 class="mb-0">{{ user.first_name }} {{ user.last_name }}</h4>
-        <p class="text-muted mb-1">@{{ user.username }}</p>
-        <a href="{{ url_for('edit_profile') }}" class="btn btn-sm btn-primary">Edit Profile</a>
+<style>
+  /* ------- Local tokens (keeps in sync with your android-like base) ------- */
+  :root{
+    --card-r: 18px;
+    --shadow-soft: 0 6px 18px rgba(0,0,0,.08);
+    --shadow-soft-dark: 0 6px 18px rgba(0,0,0,.22);
+  }
+  [data-bs-theme="dark"] .card-android{
+    box-shadow: var(--shadow-soft-dark);
+    background-color:#1e1e1e !important;
+    color:#f1f1f1 !important;
+    border-color:#333 !important;
+  }
+
+  /* ------- Hero header ------- */
+  .profile-hero{
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color:#fff;
+    border-radius: 20px;
+    padding: 2rem 1.25rem 1.25rem;
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow:hidden;
+  }
+  .profile-hero::after{
+    content:'';
+    position:absolute;
+    width:220px;height:220px;
+    right:-60px;top:-60px;
+    background: rgba(255,255,255,.08);
+    border-radius:50%;
+    filter: blur(4px);
+  }
+  .avatar{
+    width:96px;height:96px;
+    border-radius:50%;
+    border:3px solid rgba(255,255,255,.35);
+    object-fit:cover;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12);
+  }
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:.35rem;
+    padding:.2rem .6rem;
+    border-radius:999px;
+    background: rgba(255,255,255,.18);
+    color:#fff;
+    font-size:.8rem;
+    font-weight:600;
+  }
+  .chip.success{
+    background: rgba(25,135,84,.25);
+  }
+
+  /* ------- Cards ------- */
+  .card-android{
+    border:0;
+    border-radius: var(--card-r);
+    box-shadow: var(--shadow-soft);
+    transition: transform .18s ease, box-shadow .18s ease;
+    background:#fff;
+  }
+  .card-android:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0,0,0,.12);
+  }
+  .section-title{
+    font-size:1.05rem;
+    font-weight:700;
+    margin-bottom:.85rem;
+  }
+
+  /* ------- Small animation / reveal ------- */
+  .reveal{
+    opacity:0;transform: translateY(12px);
+    transition: all .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .reveal.show{
+    opacity:1;transform: translateY(0);
+  }
+
+  /* ------- Floating Edit FAB ------- */
+  .fab-edit{
+    position: fixed;
+    bottom: calc(var(--bottom-h) + 16px);
+    right: 16px;
+    z-index: 1040;
+    border-radius: 50%;
+    width: 58px;
+    height: 58px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow: 0 8px 18px rgba(0,0,0,.18);
+  }
+
+  /* Make sure nothing is hidden behind bottom nav */
+  .profile-page-wrapper{
+    padding-bottom: calc(var(--bottom-h) + 32px);
+  }
+
+  /* List styles inside the info card to look cleaner */
+  .info-list .list-group-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border:0;
+    border-bottom:1px solid rgba(0,0,0,.06);
+    background:transparent;
+    padding:.65rem .25rem;
+  }
+  [data-bs-theme="dark"] .info-list .list-group-item{
+    border-bottom-color:#333;
+  }
+  .info-list .key{
+    color: var(--muted);
+    font-size:.9rem;
+  }
+  .info-list .val{
+    font-weight:600;
+  }
+</style>
+
+<div class="profile-page-wrapper">
+  <!-- HERO -->
+  <section class="profile-hero reveal">
+    <div class="d-flex align-items-center">
+      <img
+        src="{{ url_for('static', filename='images/staff/default_staff.png') }}"
+        alt="Avatar"
+        class="avatar me-3">
+      <div class="flex-grow-1">
+        <h4 class="mb-0 fw-bold">{{ user.first_name }} {{ user.last_name }}</h4>
+        <p class="mb-1 opacity-75">@{{ user.username }}</p>
+        <span class="chip success">
+          <i class="bi bi-check-circle"></i> Active
+        </span>
       </div>
     </div>
+  </section>
 
-    <div class="row">
-      <div class="col-md-6">
-        <div class="card mb-3">
+  <!-- CONTENT -->
+  <div class="mt-3">
+    <div class="row g-3">
+      <!-- Student Info -->
+      <div class="col-12 col-md-6 reveal">
+        <div class="card card-android h-100">
           <div class="card-body">
-            <h5 class="card-title">Student Information</h5>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Class:</span>
-                <span class="fw-bold">{{ user.class }}</span>
+            <h6 class="section-title"><i class="bi bi-mortarboard me-2"></i>Student Information</h6>
+            <ul class="list-group list-group-flush info-list">
+              <li class="list-group-item">
+                <span class="key">Class</span>
+                <span class="val">{{ user.class }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Roll Number:</span>
-                <span class="fw-bold">{{ user.roll_number }}</span>
+              <li class="list-group-item">
+                <span class="key">Roll Number</span>
+                <span class="val">{{ user.roll_number }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Status:</span>
-                <span class="fw-bold text-success">Active</span>
+              <li class="list-group-item">
+                <span class="key">Status</span>
+                <span class="val text-success">Active</span>
               </li>
             </ul>
           </div>
         </div>
       </div>
+
+      <!-- Account Info (optional / safe fallbacks) -->
+      <div class="col-12 col-md-6 reveal">
+        <div class="card card-android h-100">
+          <div class="card-body">
+            <h6 class="section-title"><i class="bi bi-person-badge me-2"></i>Account</h6>
+            <ul class="list-group list-group-flush info-list">
+              <li class="list-group-item">
+                <span class="key">Username</span>
+                <span class="val">@{{ user.username }}</span>
+              </li>
+              {% if session.get('role') %}
+              <li class="list-group-item">
+                <span class="key">Role</span>
+                <span class="val text-capitalize">{{ session.get('role') }}</span>
+              </li>
+              {% endif %}
+              <li class="list-group-item">
+                <span class="key">Login</span>
+                <span class="val">Student Portal</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- You can add more cards/sections here if needed -->
     </div>
   </div>
+
+  <!-- Floating Edit Button -->
+  <a href="{{ url_for('edit_profile') }}" class="btn btn-primary fab-edit">
+    <i class="bi bi-pencil-square fs-5"></i>
+  </a>
 </div>
+
+<script>
+  // simple reveal-on-scroll without lib
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const els = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('show');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, {threshold: .12});
+    els.forEach(el=>obs.observe(el));
+  });
+</script>
 {% endblock %}
