@@ -81,7 +81,7 @@
       transform: scale(.92) rotate(8deg);
     }
 
-    /* Profile dropdown */
+    /* profile img */
     .profile-img {
       width: 32px;
       height: 32px;
@@ -91,26 +91,6 @@
     }
     .profile-img:hover {
       border-color: rgba(255,255,255,0.6);
-    }
-    .dropdown-menu {
-      border: none;
-      box-shadow: var(--shadow-strong);
-      margin-top: 8px;
-    }
-    [data-bs-theme="dark"] .dropdown-menu {
-      background-color: #2a2a2a;
-    }
-    [data-bs-theme="dark"] .dropdown-item {
-      color: #f1f1f1;
-    }
-    [data-bs-theme="dark"] .dropdown-item:hover {
-      background-color: #3a3a3a;
-    }
-    .dropdown-divider {
-      border-color: rgba(0,0,0,0.1);
-    }
-    [data-bs-theme="dark"] .dropdown-divider {
-      border-color: rgba(255,255,255,0.1);
     }
 
     main.container{
@@ -282,25 +262,12 @@
   <div class="app-header">
     <span class="app-title">BHS MAKHAMA</span>
     <div class="d-flex align-items-center">
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <!-- default icon injected by JS -->
-      </button>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
       {% if session.get('logged_in') %}
-      <div class="dropdown ms-2">
-        <a href="#" class="d-block text-white" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          <img src="{{ url_for('static', filename='images/staff/default_staff.png') }}" 
-               alt="Profile" 
-               class="profile-img rounded-circle">
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-          <li><h6 class="dropdown-header">{{ session.get('username') }}</h6></li>
-          <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="bi bi-person me-2"></i>My Profile</a></li>
-          <li><a class="dropdown-item" href="{{ url_for('about_app') }}"><i class="bi bi-info-circle me-2"></i>About App</a></li>
-          <li><a class="dropdown-item" href="{{ url_for('developer') }}"><i class="bi bi-code-slash me-2"></i>Developer</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-        </ul>
-      </div>
+      <!-- changed: just a link to /account -->
+      <a href="{{ url_for('account') }}" class="ms-2 d-block text-white" aria-label="Account">
+        <img src="{{ url_for('static', filename='images/staff/default_staff.png') }}" alt="Profile" class="profile-img rounded-circle">
+      </a>
       {% endif %}
     </div>
   </div>
