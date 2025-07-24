@@ -42,66 +42,54 @@
   font-weight: 600;
 }
 
-/* ---------- CARDS / BLOCKS ---------- */
-.section-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  margin: 0 0 .75rem;
+/* ---------- SIMPLIFIED QUICK LINKS ---------- */
+.quick-links-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
-.section-title-big {
-  font-size: 1.35rem;
-  font-weight: 800;
-  margin-bottom: .85rem;
+@media (min-width: 768px) {
+  .quick-links-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
-/* make whole card clickable: use anchor styled as card */
-.link-card {
-  border: 0;
-  border-radius: var(--card-radius);
-  box-shadow: var(--soft-shadow);
-  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
-  text-decoration: none !important;
-  color: inherit !important;
+.quick-link {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  min-height: 170px;
-  padding: 1rem;
+  justify-content: center;
+  padding: 1rem 0.5rem;
+  border-radius: var(--card-radius);
+  background: white;
+  box-shadow: var(--soft-shadow);
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
   height: 100%;
 }
-.link-card:hover {
+.quick-link:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0,0,0,.12);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
-.dark-mode .link-card {
+.dark-mode .quick-link {
+  background: #2a2a2a;
   box-shadow: var(--soft-shadow-dark);
 }
-.link-card .icon-circle {
-  width: 64px;
-  height: 64px;
+.quick-link-icon {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
-  margin-bottom: .5rem;
-}
-.link-card h6 {
-  margin: .25rem 0 .15rem;
-  font-weight: 600;
-  text-align: center;
-  min-height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  margin-bottom: 8px;
+  font-size: 1.2rem;
 }
-.link-card p {
-  margin: 0;
-  font-size: .82rem;
-  color: #6c757d;
+.quick-link-name {
+  font-weight: 600;
+  font-size: 0.9rem;
   text-align: center;
-}
-.dark-mode .link-card p {
-  color: #adb5bd;
+  margin: 0;
 }
 
 /* ---------- HORIZONTAL CHIPS ---------- */
@@ -177,11 +165,6 @@
 .dark-mode .badge-soft {
   background: rgba(255,255,255,.08);
 }
-
-/* Ensure equal height for all cards */
-.quick-links-row .col {
-  display: flex;
-}
 </style>
 
 <!-- ===================== HERO ===================== -->
@@ -216,97 +199,73 @@
   <a href="{{ url_for('classwork') }}" class="chip"><i class="bi bi-journal-text me-1"></i> Class Work</a>
 </div>
 
-<!-- ===================== QUICK LINKS (GRID) ===================== -->
+<!-- ===================== SIMPLIFIED QUICK LINKS ===================== -->
 <section class="mb-4 reveal">
   <h2 class="section-title-big">Quick Links</h2>
-  <div class="row quick-links-row g-3">
+  <div class="quick-links-grid">
     <!-- Syllabus -->
-    <div class="col-6 col-lg-3">
-      <a href="{{ url_for('syllabus') }}" class="link-card">
-        <div class="icon-circle bg-primary text-white">
-          <i class="bi bi-journal-bookmark fs-3"></i>
-        </div>
-        <h6>Syllabus</h6>
-        <p>View and download class syllabi</p>
-      </a>
-    </div>
+    <a href="{{ url_for('syllabus') }}" class="quick-link">
+      <div class="quick-link-icon bg-primary text-white">
+        <i class="bi bi-journal-bookmark"></i>
+      </div>
+      <p class="quick-link-name">Syllabus</p>
+    </a>
 
     <!-- Notifications -->
-    <div class="col-6 col-lg-3">
-      <a href="{{ url_for('notifications') }}" class="link-card">
-        <div class="icon-circle bg-danger text-white">
-          <i class="bi bi-megaphone fs-3"></i>
-        </div>
-        <h6>Notifications</h6>
-        <p>Latest school announcements</p>
-      </a>
-    </div>
+    <a href="{{ url_for('notifications') }}" class="quick-link">
+      <div class="quick-link-icon bg-danger text-white">
+        <i class="bi bi-megaphone"></i>
+      </div>
+      <p class="quick-link-name">Notifications</p>
+    </a>
 
     <!-- Contact -->
-    <div class="col-6 col-lg-3">
-      <a href="{{ url_for('contact') }}" class="link-card">
-        <div class="icon-circle bg-secondary text-white">
-          <i class="bi bi-telephone fs-3"></i>
-        </div>
-        <h6>Contact Us</h6>
-        <p>Get in touch with school</p>
-      </a>
-    </div>
+    <a href="{{ url_for('contact') }}" class="quick-link">
+      <div class="quick-link-icon bg-secondary text-white">
+        <i class="bi bi-telephone"></i>
+      </div>
+      <p class="quick-link-name">Contact</p>
+    </a>
 
     <!-- Class Work -->
-    <div class="col-6 col-lg-3">
-      <a href="{{ url_for('classwork') }}" class="link-card">
-        <div class="icon-circle bg-info text-white">
-          <i class="bi bi-journal-text fs-3"></i>
-        </div>
-        <h6>Class Work</h6>
-        <p>View today's class work</p>
-      </a>
-    </div>
+    <a href="{{ url_for('classwork') }}" class="quick-link">
+      <div class="quick-link-icon bg-info text-white">
+        <i class="bi bi-journal-text"></i>
+      </div>
+      <p class="quick-link-name">Class Work</p>
+    </a>
 
     <!-- Homework -->
-    <div class="col-6 col-lg-3">
-      <a href="{{ url_for('homework') }}" class="link-card">
-        <div class="icon-circle bg-warning text-white">
-          <i class="bi bi-house-door fs-3"></i>
-        </div>
-        <h6>Homework</h6>
-        <p>View assigned homework</p>
-      </a>
-    </div>
+    <a href="{{ url_for('homework') }}" class="quick-link">
+      <div class="quick-link-icon bg-warning text-white">
+        <i class="bi bi-house-door"></i>
+      </div>
+      <p class="quick-link-name">Homework</p>
+    </a>
 
     <!-- Books -->
-    <div class="col-6 col-lg-3">
-      <a href="{{ url_for('books') }}" class="link-card">
-        <div class="icon-circle bg-dark text-white">
-          <i class="bi bi-book fs-3"></i>
-        </div>
-        <h6>Books</h6>
-        <p>View school books</p>
-      </a>
-    </div>
+    <a href="{{ url_for('books') }}" class="quick-link">
+      <div class="quick-link-icon bg-dark text-white">
+        <i class="bi bi-book"></i>
+      </div>
+      <p class="quick-link-name">Books</p>
+    </a>
     
     <!-- Documents -->
-    <div class="col-6 col-lg-3">
-      <a href="{{ url_for('documents') }}" class="link-card">
-        <div class="icon-circle bg-success text-white">
-          <i class="bi bi-file-earmark-text fs-3"></i>
-        </div>
-        <h6>Documents</h6>
-        <p>Important school documents</p>
-      </a>
-    </div>
+    <a href="{{ url_for('documents') }}" class="quick-link">
+      <div class="quick-link-icon bg-success text-white">
+        <i class="bi bi-file-earmark-text"></i>
+      </div>
+      <p class="quick-link-name">Documents</p>
+    </a>
     
     <!-- About -->
-    <div class="col-6 col-lg-3">
-      <a href="{{ url_for('about') }}" class="link-card">
-        <div class="icon-circle bg-purple text-white">
-          <i class="bi bi-info-circle fs-3"></i>
-        </div>
-        <h6>About School</h6>
-        <p>Learn about our institution</p>
-      </a>
-    </div>
+    <a href="{{ url_for('about') }}" class="quick-link">
+      <div class="quick-link-icon bg-purple text-white">
+        <i class="bi bi-info-circle"></i>
+      </div>
+      <p class="quick-link-name">About</p>
+    </a>
   </div>
 </section>
 
