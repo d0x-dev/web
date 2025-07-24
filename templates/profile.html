@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="d-flex align-items-center mb-4">
+      <img src="{{ url_for('static', filename='images/staff/default_staff.png') }}" 
+           class="rounded-circle me-3" 
+           width="80" 
+           height="80">
+      <div>
+        <h4 class="mb-0">{{ user.first_name }} {{ user.last_name }}</h4>
+        <p class="text-muted mb-1">@{{ user.username }}</p>
+        <a href="{{ url_for('edit_profile') }}" class="btn btn-sm btn-primary">Edit Profile</a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Student Information</h5>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Class:</span>
+                <span class="fw-bold">{{ user.class }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Roll Number:</span>
+                <span class="fw-bold">{{ user.roll_number }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Status:</span>
+                <span class="fw-bold text-success">Active</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
