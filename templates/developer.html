@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h4 class="card-title mb-4">Developers</h4>
+    
+    {% for dev in developers %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          <img src="{{ url_for('static', filename='images/staff/default_staff.png') }}" 
+               class="rounded-circle me-3" 
+               width="60" 
+               height="60">
+          <h5 class="mb-0">{{ dev.name }}</h5>
+        </div>
+        
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex align-items-center">
+            <i class="bi bi-envelope me-2"></i>
+            <a href="mailto:{{ dev.email }}">{{ dev.email }}</a>
+          </li>
+          <li class="list-group-item d-flex align-items-center">
+            <i class="bi bi-telephone me-2"></i>
+            <a href="tel:{{ dev.phone }}">{{ dev.phone }}</a>
+          </li>
+          <li class="list-group-item d-flex align-items-center">
+            <i class="bi bi-github me-2"></i>
+            <a href="{{ dev.github }}" target="_blank">GitHub Profile</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
