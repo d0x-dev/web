@@ -411,6 +411,75 @@ def admin_login():
             
     return render_template('admin/login.html')
 
+# Add these new routes to app.py
+
+@app.route('/profile')
+@login_required
+def profile():
+    # Get user data from users.json
+    users = load_json(USERS_FILE)
+    user = next((u for u in users if u['username'] == session['username']), None)
+    
+    if not user:
+        flash('User profile not found', 'danger')
+        return redirect(url_for('home'))
+    
+    return render_template('profile.html', user=user)
+
+@app.route('/profile/edit', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    users = load_json(USERS_FILE)
+    user = next((u for u in users if u['username'] == session['username']), None)
+    
+    if not user:
+        flash('User profile not found', 'danger')
+        return redirect(url_for('home'))
+    
+    if request.method == 'POST':
+        try:
+            # Update user data
+            user['first_name'] = request.form.get('first_name', user['first_name'])
+            user['last_name'] = request.form.get('last_name', user['last_name'])
+            user['class'] = request.form.get('class', user['class'])
+            user['roll_number'] = request.form.get('roll_number', user['roll_number'])
+            
+            # Save updated data
+            updated_users = [u if u['username'] != session['username'] else user for u in users]
+            save_json(updated_users, USERS_FILE)
+            
+            flash('Profile updated successfully!', 'success')
+            return redirect(url_for('profile'))
+        except Exception as e:
+            print(f"Error updating profile: {e}")
+            flash('Failed to update profile', 'danger')
+    
+    return render_template('edit_profile.html', user=user)
+
+@app.route('/about-app')
+@login_required
+def about_app():
+    return render_template('about_app.html')
+
+@app.route('/developer')
+@login_required
+def developer():
+    developers = [
+        {
+            'name': 'Dar Furkan',
+            'email': 'Fdar336@outlook.com',
+            'phone': '+919682303969',
+            'github': 'https://github.com'
+        },
+        {
+            'name': 'Ubaid Bilal',
+            'email': 'Ubaid@gmail.com',
+            'phone': '+917006336467',
+            'github': 'https://github.com'
+        }
+    ]
+    return render_template('developer.html', developers=developers)
+
 @app.route('/admin/dashboard')
 @admin_required
 def admin_dashboard():
@@ -1085,4 +1154,4 @@ if __name__ == '__main__':
     # Create upload folder if it doesn't exist
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5210, debug=True)
