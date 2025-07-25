@@ -167,6 +167,7 @@ def init_db():
             conn.execute(
                 'INSERT INTO admin (username, password) VALUES (?, ?)',
                 ('admin', generate_password_hash('admin123'))
+            )
             conn.commit()
         conn.close()
 
@@ -395,6 +396,7 @@ def contact():
             conn.execute(
                 'INSERT INTO feedback (name, email, subject, message, date) VALUES (?, ?, ?, ?, ?)',
                 (name, email, subject, message, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            )
             conn.commit()
             conn.close()
             
