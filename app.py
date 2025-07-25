@@ -167,14 +167,15 @@ def init_db():
             conn.execute(
                 'INSERT INTO admin (username, password) VALUES (?, ?)',
                 ('admin', generate_password_hash('admin123'))
-            )
             conn.commit()
         conn.close()
 
 init_db()
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+def allowed_file(filename, allowed_extensions=None):
+    if allowed_extensions is None:
+        allowed_extensions = app.config['ALLOWED_EXTENSIONS']
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 # Auth decorators
 def login_required(f):
@@ -394,7 +395,6 @@ def contact():
             conn.execute(
                 'INSERT INTO feedback (name, email, subject, message, date) VALUES (?, ?, ?, ?, ?)',
                 (name, email, subject, message, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-            )
             conn.commit()
             conn.close()
             
@@ -587,8 +587,6 @@ def admin_login():
             
     return render_template('admin/login.html')
 
-# Add these new routes to app.py
-
 @app.route('/profile')
 @login_required
 def profile():
@@ -692,8 +690,6 @@ def admin_dashboard():
     finally:
         conn.close()
 
-# Homework Routes
-# Class Work Routes
 @app.route('/classwork', methods=['GET', 'POST'])
 @login_required
 def classwork():
@@ -742,7 +738,6 @@ def classwork():
     finally:
         conn.close()
 
-# Homework Routes (similar structure)
 @app.route('/homework', methods=['GET', 'POST'])
 @login_required
 def homework():
@@ -789,7 +784,6 @@ def homework():
     finally:
         conn.close()
 
-# Add this to your existing routes
 @app.route('/admin/blocked-ips')
 @admin_required
 def blocked_ips():
@@ -872,7 +866,6 @@ def upload_classwork():
 
     return render_template('admin/upload_classwork.html')
 
-
 @app.route('/admin/upload_homework', methods=['GET', 'POST'])
 @admin_required
 def upload_homework():
@@ -917,7 +910,6 @@ def upload_homework():
 
     return render_template('admin/upload_homework.html')
 
-# Books Routes
 @app.route('/books')
 @login_required
 def books():
@@ -945,7 +937,10 @@ def upload_book():
 
             if file and allowed_file(file.filename, allowed_extensions=['pdf']):
                 filename = secure_filename(f"{title.replace(' ', '_')}_{file.filename}")
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                upload_folder = app.config['UPLOAD_FOLDER']
+                
+                os.makedirs(upload_folder, exist_ok=True)
+                file_path = os.path.join(upload_folder, filename)
                 file.save(file_path)
 
                 conn = get_db_connection()
