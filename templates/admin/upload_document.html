@@ -7,6 +7,8 @@
 <div class="container mb-4" style="padding-bottom: 100px;">
     <div class="row justify-content-center">
         <div class="col-lg-8">
+            <h2 class="mb-4 text-center">Upload Document</h2>
+
             <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -70,7 +72,6 @@
 </nav>
 
 <style>
-    /* Bottom Menu Styling */
     .navbar.fixed-bottom {
         z-index: 1030;
         border-top: 1px solid rgba(0,0,0,.1);
@@ -121,7 +122,6 @@
         color: #ccc;
     }
     
-    /* Responsive Adjustments */
     @media (max-width: 768px) {
         .btn-lg {
             font-size: 1rem;
