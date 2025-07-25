@@ -530,8 +530,16 @@ def download_file(filename):
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if session.get('admin_logged_in'):
-        return redirect(url_for('admin_dashboard'))
-        
+        # Verify the admin session is still valid
+        conn = get_db_connection()
+        try:
+            admin = conn.execute('SELECT * FROM admin WHERE username = ?', 
+                               (session['admin_username'],)).fetchone()
+            if admin:
+                return redirect(url_for('admin_dashboard'))
+        finally:
+            conn.close()
+            
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -543,31 +551,38 @@ def admin_login():
             return redirect(url_for('admin_login'))
         
         conn = get_db_connection()
-        admin = conn.execute('SELECT * FROM admin WHERE username = ?', (username,)).fetchone()
-        
-        if admin and check_password_hash(admin['password'], password):
-            # Successful login - reset attempts if any
-            attempts_data = load_failed_attempts()
-            if username in attempts_data:
-                attempts_data[username]['attempts'] = 0
-                save_failed_attempts(attempts_data)
-            if ip_address in attempts_data:
-                attempts_data[ip_address]['attempts'] = 0
-                save_failed_attempts(attempts_data)
+        try:
+            admin = conn.execute('SELECT * FROM admin WHERE username = ?', (username,)).fetchone()
             
-            session['admin_logged_in'] = True
-            session['admin_username'] = username
-            conn.execute(
-                'UPDATE admin SET last_login = ? WHERE username = ?',
-                (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username)
-            )
-            conn.commit()
-            conn.close()
-            return redirect(url_for('admin_dashboard'))
-        else:
-            # Failed login - record attempt
-            record_failed_attempt(username, ip_address)
-            flash('Invalid username or password', 'danger')
+            if admin and check_password_hash(admin['password'], password):
+                # Successful login - reset attempts if any
+                attempts_data = load_failed_attempts()
+                if username in attempts_data:
+                    attempts_data[username]['attempts'] = 0
+                    save_failed_attempts(attempts_data)
+                if ip_address in attempts_data:
+                    attempts_data[ip_address]['attempts'] = 0
+                    save_failed_attempts(attempts_data)
+                
+                # Set session variables
+                session['admin_logged_in'] = True
+                session['admin_username'] = username
+                session.permanent = True
+                
+                # Update last login time
+                conn.execute(
+                    'UPDATE admin SET last_login = ? WHERE username = ?',
+                    (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), username)
+                )
+                conn.commit()
+                
+                flash('Login successful!', 'success')
+                return redirect(url_for('admin_dashboard'))
+            else:
+                # Failed login - record attempt
+                record_failed_attempt(username, ip_address)
+                flash('Invalid username or password', 'danger')
+        finally:
             conn.close()
             
     return render_template('admin/login.html')
