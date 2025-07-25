@@ -646,13 +646,16 @@ def developer():
 def admin_dashboard():
     conn = get_db_connection()
     try:
-        # Dashboard counts
+        # Get counts for dashboard
         notifications_count = conn.execute('SELECT COUNT(*) FROM notifications').fetchone()[0]
         syllabus_count = conn.execute('SELECT COUNT(*) FROM syllabus').fetchone()[0]
         documents_count = conn.execute('SELECT COUNT(*) FROM documents').fetchone()[0]
+        feedbacks_count = conn.execute('SELECT COUNT(*) FROM feedback').fetchone()[0]
+        
+        # Get recent feedbacks
         feedbacks = conn.execute('SELECT * FROM feedback ORDER BY date DESC LIMIT 5').fetchall()
-
-        # User status counts
+        
+        # Load user approval stats
         pending_users = load_json(PENDING_FILE)
         approved_users = load_json(USERS_FILE)
         declined_users = load_json(DECLINED_FILE)
@@ -660,24 +663,16 @@ def admin_dashboard():
         pending_approvals = len(pending_users)
         approved_count = len(approved_users)
         declined_count = len(declined_users)
-
-        # Blocked IPs count
-        try:
-            with open('failed_attempts.json', 'r') as f:
-                blocked = json.load(f)
-            blocked_ips_count = sum(1 for data in blocked.values() if data.get('attempts', 0) >= 3)
-        except (FileNotFoundError, json.JSONDecodeError):
-            blocked_ips_count = 0
-
+        
         return render_template('admin/dashboard.html',
                                notifications_count=notifications_count,
                                syllabus_count=syllabus_count,
                                documents_count=documents_count,
+                               feedbacks_count=feedbacks_count,
                                feedbacks=feedbacks,
                                pending_approvals=pending_approvals,
                                approved_users=approved_count,
                                declined_users=declined_count,
-                               blocked_ips_count=blocked_ips_count,
                                hide_header=True)
     finally:
         conn.close()
