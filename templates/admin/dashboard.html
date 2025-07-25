@@ -4,34 +4,34 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mt-3 mb-5">
-    <h2 class="text-center mb-4">Admin Dashboard</h2>
+<div class="container mt-3 mb-5" style="padding-bottom: 130px;">
+    <h2 class="text-center mb-4 fw-bold">Admin Dashboard</h2>
 
     <!-- Summary Cards -->
     <div class="row g-3 text-center">
-        {% set box = "card p-2 h-100 shadow-sm text-decoration-none text-reset d-flex flex-column align-items-center justify-content-center" %}
-        <div class="col-3">
+        {% set box = "card p-3 h-100 shadow-sm text-decoration-none text-reset d-flex flex-column align-items-center justify-content-center dashboard-tile" %}
+        <div class="col-6 col-md-3">
             <a href="{{ url_for('pending_users') }}" class="{{ box }}">
                 <i class="bi bi-hourglass-split fs-2 text-warning mb-1"></i>
                 <div class="fw-semibold small">Pending</div>
                 <strong class="fs-6">{{ pending_approvals }}</strong>
             </a>
         </div>
-        <div class="col-3">
+        <div class="col-6 col-md-3">
             <div class="{{ box }}">
                 <i class="bi bi-person-check fs-2 text-success mb-1"></i>
                 <div class="fw-semibold small">Approved</div>
                 <strong class="fs-6">{{ approved_users }}</strong>
             </div>
         </div>
-        <div class="col-3">
+        <div class="col-6 col-md-3">
             <div class="{{ box }}">
                 <i class="bi bi-person-x fs-2 text-danger mb-1"></i>
                 <div class="fw-semibold small">Declined</div>
                 <strong class="fs-6">{{ declined_users }}</strong>
             </div>
         </div>
-        <div class="col-3">
+        <div class="col-6 col-md-3">
             <a href="{{ url_for('blocked_ips') }}" class="{{ box }}">
                 <i class="bi bi-shield-lock fs-2 text-secondary mb-1"></i>
                 <div class="fw-semibold small">Blocked IPs</div>
@@ -42,43 +42,43 @@
 
     <!-- Upload Sections -->
     <div class="row g-3 mt-3 text-center">
-        {% set card = "card p-3 shadow-sm text-decoration-none text-reset h-100" %}
-        <div class="col-6">
+        {% set card = "card p-3 shadow-sm text-decoration-none text-reset h-100 dashboard-tile" %}
+        <div class="col-6 col-md-4">
             <a href="{{ url_for('admin_notifications') }}" class="{{ card }}">
                 <i class="bi bi-megaphone fs-2 text-primary"></i>
                 <div>Notifications</div>
                 <small>{{ notifications_count }} items</small>
             </a>
         </div>
-        <div class="col-6">
+        <div class="col-6 col-md-4">
             <a href="{{ url_for('upload_syllabus') }}" class="{{ card }}">
                 <i class="bi bi-journal-text fs-2 text-success"></i>
                 <div>Syllabus</div>
                 <small>{{ syllabus_count }} files</small>
             </a>
         </div>
-        <div class="col-6">
+        <div class="col-6 col-md-4">
             <a href="{{ url_for('upload_document') }}" class="{{ card }}">
                 <i class="bi bi-file-earmark-text fs-2 text-info"></i>
                 <div>Documents</div>
                 <small>{{ documents_count }} files</small>
             </a>
         </div>
-        <div class="col-6">
+        <div class="col-6 col-md-4">
             <a href="{{ url_for('upload_classwork') }}" class="{{ card }}">
                 <i class="bi bi-journal-richtext fs-2 text-warning"></i>
                 <div>Classwork</div>
                 <small>{{ classwork_count }} files</small>
             </a>
         </div>
-        <div class="col-6">
+        <div class="col-6 col-md-4">
             <a href="{{ url_for('upload_homework') }}" class="{{ card }}">
                 <i class="bi bi-house-door fs-2 text-danger"></i>
                 <div>Homework</div>
                 <small>{{ homework_count }} files</small>
             </a>
         </div>
-        <div class="col-6">
+        <div class="col-6 col-md-4">
             <a href="{{ url_for('upload_book') }}" class="{{ card }}">
                 <i class="bi bi-book fs-2" style="color: #6f42c1;"></i>
                 <div>Books</div>
@@ -88,22 +88,22 @@
     </div>
 
     <!-- Recent Feedbacks -->
-    <div class="mt-4">
+    <div class="mt-5">
         <h5 class="text-muted">Recent Feedbacks</h5>
         {% if feedbacks %}
-        <ul class="list-group">
+        <ul class="list-group shadow-sm rounded">
             {% for fb in feedbacks %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+            <li class="list-group-item d-flex justify-content-between align-items-start feedback-item">
                 <div>
                     <strong>{{ fb.name }}</strong> - {{ fb.subject }}
-                    <br><small>{{ fb.date.split()[0] }}</small>
+                    <br><small class="text-muted">{{ fb.date.split()[0] }}</small>
                 </div>
                 {% if fb.status != 'resolved' %}
                 <form method="POST" action="{{ url_for('resolve_feedback', id=fb.id) }}">
-                    <button class="btn btn-sm btn-outline-success">Resolve</button>
+                    <button class="btn btn-outline-success btn-sm animated-button">Resolve</button>
                 </form>
                 {% else %}
-                <span class="badge bg-success">Resolved</span>
+                <span class="badge bg-success mt-1">Resolved</span>
                 {% endif %}
             </li>
             {% endfor %}
@@ -115,9 +115,9 @@
 </div>
 
 <!-- Bottom Menu -->
-<nav class="navbar navbar-expand fixed-bottom shadow-sm" id="bottomMenu">
+<nav class="navbar navbar-expand fixed-bottom shadow-lg" id="bottomMenu">
     <div class="container justify-content-around">
-        <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
+        <a class="nav-link text-center active" href="{{ url_for('admin_dashboard') }}">
             <i class="bi bi-speedometer2"></i><br>Dashboard
         </a>
         <a class="nav-link text-center" href="{{ url_for('change_password') }}">
@@ -130,37 +130,80 @@
 </nav>
 
 <style>
+    .dashboard-tile {
+        border-radius: 1rem;
+        transition: transform 0.2s ease, background-color 0.3s;
+    }
+
+    .dashboard-tile:hover {
+        transform: translateY(-3px);
+        background-color: #f1f1f1;
+    }
+
+    .animated-button {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .animated-button:active {
+        transform: scale(0.95);
+    }
+
     .nav-link {
         font-size: 0.8rem;
         color: var(--bs-body-color);
+        transition: color 0.3s;
     }
 
     #bottomMenu {
-        background-color: var(--bs-body-bg);
+        background: linear-gradient(to right, #f8f9fa, #e9ecef);
         border-top: 1px solid var(--bs-border-color);
+        z-index: 1030;
     }
 
-    .card:hover {
+    .nav-link.active {
+        color: #0dcaf0;
+        font-weight: bold;
+    }
+
+    .nav-link:hover {
+        color: #0dcaf0;
+    }
+
+    /* Feedback item hover */
+    .feedback-item {
+        transition: background 0.3s ease;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .feedback-item:hover {
         background-color: #f8f9fa;
     }
 
-    .fw-semibold.small {
-        font-size: 0.85rem;
-    }
-
+    /* Dark mode support */
     body.dark-mode {
         background-color: #121212;
         color: white;
     }
 
-    body.dark-mode .card,
-    body.dark-mode .list-group-item {
-        background-color: #1f1f1f;
+    body.dark-mode .dashboard-tile {
+        background-color: #1e1e1e;
         color: white;
     }
 
-    body.dark-mode .card:hover {
-        background-color: #2a2a2a;
+    body.dark-mode .dashboard-tile:hover {
+        background-color: #292929;
+    }
+
+    body.dark-mode .list-group-item {
+        background-color: #1f1f1f;
+        color: white;
+        border-color: #333;
+    }
+
+    body.dark-mode .btn-outline-success {
+        border-color: #0f0;
+        color: #0f0;
     }
 
     body.dark-mode #bottomMenu {
@@ -169,7 +212,25 @@
     }
 
     body.dark-mode .nav-link {
-        color: #eee;
+        color: #bbb;
+    }
+
+    body.dark-mode .nav-link.active {
+        color: #0dcaf0;
+    }
+
+    @media (max-width: 768px) {
+        .btn-sm {
+            font-size: 0.75rem;
+        }
+
+        .dashboard-tile {
+            padding: 1rem;
+        }
+
+        .container {
+            padding-bottom: 140px;
+        }
     }
 </style>
 {% endblock %}
