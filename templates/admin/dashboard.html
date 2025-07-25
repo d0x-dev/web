@@ -4,168 +4,321 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
+<style>
+  :root{
+    --ripple-color: rgba(255,255,255,.35);
+  }
+
+  /* ===== Animations ===== */
+  .reveal{
+    opacity: 0;
+    transform: translateY(12px) scale(.995);
+    transition: all .45s cubic-bezier(.2,.8,.2,1);
+  }
+  .reveal.show{
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* ===== Gradient Stat Cards ===== */
+  .stat-card{
+    position: relative;
+    border: 0;
+    border-radius: 16px;
+    min-height: 110px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    color: #fff;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .stat-card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(0,0,0,.12);
+  }
+  .stat-card:active{
+    transform: scale(.99);
+  }
+  .stat-card .icon{
+    font-size: 2rem;
+    line-height: 1;
+  }
+  .stat-title{
+    font-weight: 600;
+    font-size: .85rem;
+    opacity: .95;
+  }
+  .stat-value{
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  /* Individual gradients */
+  .grad-pending{   background: linear-gradient(135deg,#fdbb2d 0%,#ff8f00 100%); }
+  .grad-approved{  background: linear-gradient(135deg,#2ecc71 0%,#1abc9c 100%); }
+  .grad-declined{  background: linear-gradient(135deg,#ff416c 0%,#ff4b2b 100%); }
+  .grad-blocked{   background: linear-gradient(135deg,#3a7bd5 0%,#3a6073 100%); }
+
+  /* ===== Upload quick cards ===== */
+  .quick-card{
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.08);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .quick-card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0,0,0,.12);
+  }
+  .quick-card:active{
+    transform: scale(.995);
+  }
+
+  /* ===== Ripple ===== */
+  .ripple{
+    position: relative;
+    overflow: hidden;
+  }
+  .ripple span.ripple-ink{
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple .6s linear;
+    background-color: var(--ripple-color);
+  }
+  @keyframes ripple{
+    to{
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  /* ===== Feedback cards ===== */
+  .feedback-card{
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.06);
+    transition: box-shadow .15s ease, transform .15s ease;
+  }
+  .feedback-card:hover{
+    box-shadow: 0 8px 22px rgba(0,0,0,.1);
+    transform: translateY(-1px);
+  }
+  .badge-soft{
+    background: rgba(255,255,255,.2);
+    color: #fff;
+    border-radius: 999px;
+    padding: .15rem .55rem;
+    font-size: .75rem;
+  }
+  .btn-resolve{
+    border-radius: 999px;
+    transition: transform .1s ease;
+  }
+  .btn-resolve:active{
+    transform: scale(.97);
+  }
+
+  /* ===== Dark adjustments ===== */
+  [data-bs-theme="dark"] .stat-card{
+    box-shadow: 0 8px 20px rgba(0,0,0,.25);
+  }
+  [data-bs-theme="dark"] .quick-card{
+    background: #1e1e1e !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,.28);
+    color: #f1f1f1;
+  }
+  [data-bs-theme="dark"] .feedback-card{
+    background: #1f1f1f !important;
+    color: #f1f1f1;
+    box-shadow: 0 6px 16px rgba(0,0,0,.28);
+  }
+</style>
+
 <div class="container mt-3 mb-5">
-    <h2 class="text-center mb-4">Admin Dashboard</h2>
+  <h2 class="text-center mb-4 reveal">Admin Dashboard</h2>
 
-    <!-- Summary Cards -->
-    <div class="row g-3 text-center">
-        {% set box = "card p-2 h-100 shadow-sm text-decoration-none text-reset d-flex flex-column align-items-center justify-content-center" %}
-        <div class="col-3">
-            <a href="{{ url_for('pending_users') }}" class="{{ box }}">
-                <i class="bi bi-hourglass-split fs-3 text-warning mb-1"></i>
-                <div class="fw-semibold small">Pending</div>
-                <strong class="fs-6">{{ pending_approvals }}</strong>
-            </a>
+  <!-- Summary Cards -->
+  <div class="row g-3 text-center reveal">
+    <div class="col-6 col-md-3">
+      <a href="{{ url_for('pending_users') }}" class="text-decoration-none text-white">
+        <div class="stat-card grad-pending ripple d-flex flex-column justify-content-center align-items-center p-3">
+          <i class="bi bi-hourglass-split icon mb-1"></i>
+          <div class="stat-title">Pending</div>
+          <div class="stat-value">{{ pending_approvals }}</div>
         </div>
-        <div class="col-3">
-            <div class="{{ box }}">
-                <i class="bi bi-person-check fs-3 text-success mb-1"></i>
-                <div class="fw-semibold small">Approved</div>
-                <strong class="fs-6">{{ approved_users }}</strong>
-            </div>
-        </div>
-        <div class="col-3">
-            <div class="{{ box }}">
-                <i class="bi bi-person-x fs-3 text-danger mb-1"></i>
-                <div class="fw-semibold small">Declined</div>
-                <strong class="fs-6">{{ declined_users }}</strong>
-            </div>
-        </div>
-        <div class="col-3">
-            <a href="{{ url_for('blocked_ips') }}" class="{{ box }}">
-                <i class="bi bi-shield-lock fs-3 text-secondary mb-1"></i>
-                <div class="fw-semibold small">Blocked IPs</div>
-                <strong class="fs-6">{{ blocked_ips_count }}</strong>
-            </a>
-        </div>
+      </a>
     </div>
-
-    <!-- Upload Sections -->
-    <div class="row g-3 mt-3 text-center">
-        {% set card = "card p-3 shadow-sm text-decoration-none text-reset h-100" %}
-        <div class="col-6">
-            <a href="{{ url_for('admin_notifications') }}" class="{{ card }}">
-                <i class="bi bi-megaphone fs-2 text-primary"></i>
-                <div>Notifications</div>
-                <small>{{ notifications_count }} items</small>
-            </a>
-        </div>
-        <div class="col-6">
-            <a href="{{ url_for('upload_syllabus') }}" class="{{ card }}">
-                <i class="bi bi-journal-text fs-2 text-success"></i>
-                <div>Syllabus</div>
-                <small>{{ syllabus_count }} files</small>
-            </a>
-        </div>
-        <div class="col-6">
-            <a href="{{ url_for('upload_document') }}" class="{{ card }}">
-                <i class="bi bi-file-earmark-text fs-2 text-info"></i>
-                <div>Documents</div>
-                <small>{{ documents_count }} files</small>
-            </a>
-        </div>
-        <div class="col-6">
-            <a href="{{ url_for('upload_classwork') }}" class="{{ card }}">
-                <i class="bi bi-journal-richtext fs-2 text-warning"></i>
-                <div>Classwork</div>
-                <small>{{ classwork_count }} files</small>
-            </a>
-        </div>
-        <div class="col-6">
-            <a href="{{ url_for('upload_homework') }}" class="{{ card }}">
-                <i class="bi bi-house-door fs-2 text-danger"></i>
-                <div>Homework</div>
-                <small>{{ homework_count }} files</small>
-            </a>
-        </div>
-        <div class="col-6">
-            <a href="{{ url_for('upload_book') }}" class="{{ card }}">
-                <i class="bi bi-book fs-2" style="color: #6f42c1;"></i>
-                <div>Books</div>
-                <small>{{ books_count }} files</small>
-            </a>
-        </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card grad-approved ripple d-flex flex-column justify-content-center align-items-center p-3">
+        <i class="bi bi-person-check icon mb-1"></i>
+        <div class="stat-title">Approved</div>
+        <div class="stat-value">{{ approved_users }}</div>
+      </div>
     </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card grad-declined ripple d-flex flex-column justify-content-center align-items-center p-3">
+        <i class="bi bi-person-x icon mb-1"></i>
+        <div class="stat-title">Declined</div>
+        <div class="stat-value">{{ declined_users }}</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{{ url_for('blocked_ips') }}" class="text-decoration-none text-white">
+        <div class="stat-card grad-blocked ripple d-flex flex-column justify-content-center align-items-center p-3">
+          <i class="bi bi-shield-lock icon mb-1"></i>
+          <div class="stat-title">Blocked IPs</div>
+          <div class="stat-value">{{ blocked_ips_count }}</div>
+        </div>
+      </a>
+    </div>
+  </div>
 
-    <!-- Recent Feedbacks -->
-    <div class="mt-4">
-        <h5 class="text-muted">Recent Feedbacks</h5>
-        {% if feedbacks %}
-        <ul class="list-group">
-            {% for fb in feedbacks %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <strong>{{ fb.name }}</strong> - {{ fb.subject }}
-                    <br><small>{{ fb.date.split()[0] }}</small>
-                </div>
-                {% if fb.status != 'resolved' %}
-                <form method="POST" action="{{ url_for('resolve_feedback', id=fb.id) }}">
-                    <button class="btn btn-sm btn-outline-success">Resolve</button>
-                </form>
-                {% else %}
+  <!-- Upload Sections -->
+  <div class="row g-3 mt-3 text-center reveal">
+    <div class="col-6">
+      <a href="{{ url_for('admin_notifications') }}" class="card quick-card text-decoration-none text-reset p-3 ripple d-block">
+        <i class="bi bi-megaphone fs-2 text-primary"></i>
+        <div class="fw-semibold">Notifications</div>
+        <small class="text-muted">{{ notifications_count }} items</small>
+      </a>
+    </div>
+    <div class="col-6">
+      <a href="{{ url_for('upload_syllabus') }}" class="card quick-card text-decoration-none text-reset p-3 ripple d-block">
+        <i class="bi bi-journal-text fs-2 text-success"></i>
+        <div class="fw-semibold">Syllabus</div>
+        <small class="text-muted">{{ syllabus_count }} files</small>
+      </a>
+    </div>
+    <div class="col-6">
+      <a href="{{ url_for('upload_document') }}" class="card quick-card text-decoration-none text-reset p-3 ripple d-block">
+        <i class="bi bi-file-earmark-text fs-2 text-info"></i>
+        <div class="fw-semibold">Documents</div>
+        <small class="text-muted">{{ documents_count }} files</small>
+      </a>
+    </div>
+    <div class="col-6">
+      <a href="{{ url_for('upload_classwork') }}" class="card quick-card text-decoration-none text-reset p-3 ripple d-block">
+        <i class="bi bi-journal-richtext fs-2 text-warning"></i>
+        <div class="fw-semibold">Classwork</div>
+        <small class="text-muted">{{ classwork_count }} files</small>
+      </a>
+    </div>
+    <div class="col-6">
+      <a href="{{ url_for('upload_homework') }}" class="card quick-card text-decoration-none text-reset p-3 ripple d-block">
+        <i class="bi bi-house-door fs-2 text-danger"></i>
+        <div class="fw-semibold">Homework</div>
+        <small class="text-muted">{{ homework_count }} files</small>
+      </a>
+    </div>
+    <div class="col-6">
+      <a href="{{ url_for('upload_book') }}" class="card quick-card text-decoration-none text-reset p-3 ripple d-block">
+        <i class="bi bi-book fs-2" style="color:#6f42c1;"></i>
+        <div class="fw-semibold">Books</div>
+        <small class="text-muted">{{ books_count }} files</small>
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Feedbacks -->
+  <div class="mt-4 reveal">
+    <h5 class="text-muted mb-3">Recent Feedbacks</h5>
+    {% if feedbacks %}
+      <div class="d-flex flex-column gap-2">
+        {% for fb in feedbacks %}
+        <div class="feedback-card card p-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-1">{{ fb.subject }}</h6>
+              <div class="text-muted small mb-1">
+                From <strong>{{ fb.name }}</strong> • {{ fb.date.split()[0] }}
+              </div>
+              <p class="mb-2">{{ fb.message or '' }}</p>
+              {% if fb.status == 'resolved' %}
                 <span class="badge bg-success">Resolved</span>
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p class="text-muted">No feedbacks yet.</p>
-        {% endif %}
-    </div>
+              {% else %}
+                <span class="badge bg-warning text-dark">Pending</span>
+              {% endif %}
+            </div>
+
+            {% if fb.status != 'resolved' %}
+            <form method="POST" action="{{ url_for('resolve_feedback', id=fb.id) }}">
+              <button class="btn btn-sm btn-outline-success btn-resolve ripple">
+                <i class="bi bi-check2-circle me-1"></i> Resolve
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-muted">No feedbacks yet.</p>
+    {% endif %}
+  </div>
 </div>
 
 <!-- Bottom Menu -->
 <nav class="navbar navbar-expand fixed-bottom shadow-sm" id="bottomMenu">
-    <div class="container justify-content-around">
-        <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
-            <i class="bi bi-speedometer2"></i><br>Dashboard
-        </a>
-        <a class="nav-link text-center" href="{{ url_for('change_password') }}">
-            <i class="bi bi-key"></i><br>Password
-        </a>
-        <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
-            <i class="bi bi-box-arrow-right"></i><br>Logout
-        </a>
-    </div>
+  <div class="container justify-content-around">
+    <a class="nav-link text-center" href="{{ url_for('admin_dashboard') }}">
+      <i class="bi bi-speedometer2"></i><br>Dashboard
+    </a>
+    <a class="nav-link text-center" href="{{ url_for('change_password') }}">
+      <i class="bi bi-key"></i><br>Password
+    </a>
+    <a class="nav-link text-center" href="{{ url_for('admin_logout') }}">
+      <i class="bi bi-box-arrow-right"></i><br>Logout
+    </a>
+  </div>
 </nav>
 
 <style>
-    .nav-link {
-        font-size: 0.8rem;
-        color: var(--bs-body-color);
-    }
-
-    #bottomMenu {
-        background-color: var(--bs-body-bg);
-        border-top: 1px solid var(--bs-border-color);
-    }
-
-    .card:hover {
-        background-color: #f8f9fa;
-    }
-
-    body.dark-mode {
-        background-color: #121212;
-        color: white;
-    }
-
-    body.dark-mode .card,
-    body.dark-mode .list-group-item {
-        background-color: #1f1f1f;
-        color: white;
-    }
-
-    body.dark-mode .card:hover {
-        background-color: #2a2a2a;
-    }
-
-    body.dark-mode #bottomMenu {
-        background-color: #1a1a1a;
-        border-top: 1px solid #333;
-    }
-
-    body.dark-mode .nav-link {
-        color: #eee;
-    }
+  .nav-link{
+    font-size: .8rem;
+    color: var(--bs-body-color);
+  }
+  #bottomMenu{
+    background-color: var(--bs-body-bg);
+    border-top: 1px solid var(--bs-border-color);
+  }
+  body.dark-mode #bottomMenu{
+    background-color: #1a1a1a;
+    border-top: 1px solid #333;
+  }
+  body.dark-mode .nav-link{
+    color:#eee;
+  }
 </style>
+
+<script>
+  // Reveal on scroll
+  document.addEventListener('DOMContentLoaded', () => {
+    const els = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if(e.isIntersecting){
+          e.target.classList.add('show');
+          io.unobserve(e.target);
+        }
+      });
+    }, {threshold: 0.08});
+    els.forEach(el => io.observe(el));
+  });
+
+  // Ripple
+  document.addEventListener('click', function(e){
+    const target = e.target.closest('.ripple');
+    if(!target) return;
+
+    const rect = target.getBoundingClientRect();
+    const ink = document.createElement('span');
+    ink.classList.add('ripple-ink');
+    ink.style.left = (e.clientX - rect.left) + 'px';
+    ink.style.top  = (e.clientY - rect.top)  + 'px';
+    ink.style.width = ink.style.height = Math.max(rect.width, rect.height) + 'px';
+    target.appendChild(ink);
+    setTimeout(()=> ink.remove(), 600);
+  }, false);
+</script>
 {% endblock %}
